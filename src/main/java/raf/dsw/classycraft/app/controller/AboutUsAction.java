@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.border.Border;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.net.URL;
 
 
@@ -14,6 +15,20 @@ public class AboutUsAction extends AbstractClassyAction {
 
     public AboutUsAction() {
         super("About Us", "/images/aboutUs.png");
+        Icon icon = null;
+        URL ImageURL = getClass().getResource("/images/aboutUs.png");
+        if(ImageURL != null)
+        {
+            Image img = new ImageIcon(ImageURL).getImage();
+            Image newImg = img.getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+            icon = new ImageIcon(newImg);
+        }
+        else
+        {
+            System.err.println("File " + "images/aboutUs.png" + " not found");
+        }
+        putValue(SMALL_ICON, icon);
+        putValue(NAME, "AboutUs");
         putValue(SHORT_DESCRIPTION, "About us");
     }
 
