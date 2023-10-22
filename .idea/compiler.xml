@@ -6,7 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="dizajn-softvera-projekat-tim_dusanjevtic_nemanjavujic" />
+        <module name="ClassyCrafT" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
