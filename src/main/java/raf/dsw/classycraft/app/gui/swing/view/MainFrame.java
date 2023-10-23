@@ -3,30 +3,34 @@ package raf.dsw.classycraft.app.gui.swing.view;
 import javax.swing.*;
 import java.awt.*;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame
+{
     private static MainFrame instance;
 
     //buduca polja za sve komponente view-a na glavnom prozoru
 
-    private MainFrame(){
+    private MainFrame()
+    {
 
     }
 
-    private void initialize(){
+    private void initialize()
+    {
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
         int screenHeight = screenSize.height;
         int screenWidth = screenSize.width;
         setSize(screenWidth / 2, screenHeight / 2);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("ClassyCrafT");
+
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setTitle("ClassyCrafT");
 
         MyMenyBar menu = new MyMenyBar();
-        setJMenuBar(menu);
+        this.setJMenuBar(menu);
 
         MyToolBar toolBar = new MyToolBar();
-        add(toolBar, BorderLayout.NORTH);
+        this.add(toolBar, BorderLayout.NORTH);
     }
 
     public static MainFrame getInstance()

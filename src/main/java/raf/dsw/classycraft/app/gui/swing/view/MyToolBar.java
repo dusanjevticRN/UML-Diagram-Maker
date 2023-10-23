@@ -2,19 +2,19 @@ package raf.dsw.classycraft.app.gui.swing.view;
 
 import raf.dsw.classycraft.app.controller.AboutUsAction;
 import raf.dsw.classycraft.app.controller.ExitAction;
-
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 
-public class MyToolBar extends JToolBar {
-    public MyToolBar(){
+public class MyToolBar extends JToolBar
+{
+    public MyToolBar()
+    {
         super(HORIZONTAL);
-        setFloatable(false);
+        this.setFloatable(false);
 
-        ExitAction ea = new ExitAction();
-        AboutUsAction aua = new AboutUsAction();
+        ExitAction exitAction = new ExitAction();
+        AboutUsAction aboutUsAction = new AboutUsAction();
 
-        add(ea);
-        add(aua);
+        this.add(exitAction); //exitAction ce se executovati automatski tako što će se pokrenuti actionPerformed metoda, klikom na odgovarajući GUI element (ikonica).
+        this.add(aboutUsAction); // isto
     }
 }
