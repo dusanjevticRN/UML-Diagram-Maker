@@ -14,6 +14,7 @@ public class ExitAction extends AbstractClassyAction
 
         //bitno
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.CTRL_MASK)); //Keyboard shortcut za trigerovanje akcije
+        putValue(NAME, "Exit");
         putValue(SHORT_DESCRIPTION, "Exit"); //Tekst koji ce se prikazati kada hoverujemo GUI element
     }
     @Override

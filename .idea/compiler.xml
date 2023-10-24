@@ -9,8 +9,5 @@
         <module name="ClassyCrafT" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="dizajn-softvera-projekat-tim_dusanjevtic_nemanjavujic" target="10" />
-    </bytecodeTargetLevel>
   </component>
 </project>

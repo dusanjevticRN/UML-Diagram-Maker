@@ -15,6 +15,7 @@ public class AboutUsAction extends AbstractClassyAction
         super("/images/aboutUs.png");
 
         this.putValue(SHORT_DESCRIPTION, "About Us");
+        this.putValue(NAME, "About Us");
     }
 
     @Override
