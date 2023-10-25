@@ -5,8 +5,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.Image;
 import java.net.URL;
-
-
 public class AboutUsAction extends AbstractClassyAction
 {
 
@@ -25,16 +23,17 @@ public class AboutUsAction extends AbstractClassyAction
         aboutUsFrame.setSize(500, 500);
         aboutUsFrame.setLocationRelativeTo(null);
 
+        aboutUsFrame.setResizable(false);
+
         JPanel panel = new JPanel(new GridLayout(0, 2));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
 
         URL url1 = getClass().getResource("/images/vujavuja.jpg");
         URL url2 = getClass().getResource("/images/OpenHajniken.jpeg");
 
-        JLabel name1 = new JLabel("Nemanja Vujic");
-
         if(url1 != null)
         {
+            JLabel name1 = new JLabel("Nemanja Vujic");
             ImageIcon icon1 = new ImageIcon(url1);
             Image image1 = icon1.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
             JLabel labelImage1 = new JLabel(new ImageIcon(image1));
