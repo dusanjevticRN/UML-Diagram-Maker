@@ -1,11 +1,17 @@
 package raf.dsw.classycraft.app.gui.swing.view;
 
+import raf.dsw.classycraft.app.core.MessageGenerator;
+import raf.dsw.classycraft.app.messageGenerator.EventType;
+import raf.dsw.classycraft.app.messageGenerator.Message;
+import raf.dsw.classycraft.app.observer.ISubscriber;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class MainFrame extends JFrame
+public class MainFrame extends JFrame implements ISubscriber
 {
     private static MainFrame instance;
+    //private MessageGenerator messageGenerator;
 
     //buduca polja za sve komponente view-a na glavnom prozoru
 
@@ -41,5 +47,12 @@ public class MainFrame extends JFrame
             instance.initialize();
         }
         return instance;
+    }
+
+    @Override
+    public void update(Object notification, Object typeOfUpdate)
+    {
+        Message msg = (Message) notification;
+        JOptionPane.showMessageDialog(MainFrame.getInstance(), msg.getContent(), msg.getType(), 1);
     }
 }
