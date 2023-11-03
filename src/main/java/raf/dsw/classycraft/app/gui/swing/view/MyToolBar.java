@@ -20,6 +20,7 @@ public class MyToolBar extends JToolBar
         AddProjectAction addProjectAction = new AddProjectAction();
         AddDiagramAction addDiagramAction = new AddDiagramAction();
         EditAction editAction = new EditAction();
+        DeleteAction deleteAction = new DeleteAction();
 
         this.add(exitAction); //exitAction ce se executovati automatski tako što će se pokrenuti actionPerformed metoda, klikom na odgovarajući GUI element (ikonica).
         this.add(aboutUsAction); // isto
@@ -27,5 +28,6 @@ public class MyToolBar extends JToolBar
         this.add(addPackageAction); // isto
         this.add(addDiagramAction); // isto
         this.add(editAction); // isto
+        this.add(deleteAction); // isto
     }
 }

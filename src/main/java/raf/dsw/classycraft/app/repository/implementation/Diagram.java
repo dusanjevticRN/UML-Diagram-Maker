@@ -24,4 +24,9 @@ public class Diagram extends ClassyNodeLeaf {
     public void notifySubscriber(Object notification, Object typeOfUpdate) {
 
     }
+
+    @Override
+    public void delete() {
+
+    }
 }
