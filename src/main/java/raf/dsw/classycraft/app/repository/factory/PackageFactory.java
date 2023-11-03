@@ -8,7 +8,7 @@ public class PackageFactory extends ClassyNodeFactory{
 
 
     @Override
-    ClassyNode createFactory(ClassyNode node) {
+    public ClassyNode createFactory(ClassyNode node) {
         return new Package(node, "Package " + ((ClassyNodeComposite)node).getIndex(((ClassyNodeComposite) node).getChildren()));
 
     }

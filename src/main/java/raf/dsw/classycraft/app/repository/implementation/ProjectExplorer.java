@@ -28,10 +28,9 @@ public class ProjectExplorer extends ClassyNodeComposite {
         return super.getIndex(children);
     }
 
+
     @Override
-    public void deleteChild(ClassyNode child) {
-        if(!(child instanceof Project))
-            return;
-        super.deleteChild(child);
+    public void notifySubscriber(Object notification, Object typeOfUpdate) {
+
     }
 }

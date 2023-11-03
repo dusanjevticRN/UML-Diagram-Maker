@@ -1,27 +1,34 @@
 package raf.dsw.classycraft.app.repository.composite;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public abstract class ClassyNodeComposite extends ClassyNode{
 
-    private List<ClassyNode> children;
+    List<ClassyNode> children;
     public ClassyNodeComposite(ClassyNode parent, String name) {
         super(parent, name);
         this.children = new ArrayList<>();
     }
-
-    public void addChild(ClassyNode nodeToAdd){
-        if(nodeToAdd != null)
-            this.children.add(nodeToAdd);
+    public ClassyNodeComposite(ClassyNode parent, String name, List<ClassyNode> children) {
+        super(parent, name);
+        this.children = children;
     }
 
-    public void deleteChild(ClassyNode nodeToDelete){
-        if(nodeToDelete == null || this.children == null || this.children.isEmpty() || !this.children.contains(nodeToDelete)){
-            return;
+    public abstract void addChild(ClassyNode nodeToAdd);
+
+    public ClassyNode getChildByName(String name) {
+        for (ClassyNode child: this.getChildren()) {
+            if (name.equals(child.getName())) {
+                return child;
+            }
         }
-        nodeToDelete.setParent(null);
-        this.children.remove(nodeToDelete);
+        return null;
     }
 
     public int getIndex(List<ClassyNode> children){

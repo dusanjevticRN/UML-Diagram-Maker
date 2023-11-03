@@ -9,7 +9,7 @@ public abstract class ClassyNodeFactory {
         return newNode;
     }
 
-    abstract ClassyNode createFactory(ClassyNode node);
+    public abstract ClassyNode createFactory(ClassyNode node);
 
 
 }

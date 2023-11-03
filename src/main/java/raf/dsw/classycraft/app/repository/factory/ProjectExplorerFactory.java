@@ -6,7 +6,7 @@ import raf.dsw.classycraft.app.repository.implementation.ProjectExplorer;
 public class ProjectExplorerFactory extends ClassyNodeFactory{
 
     @Override
-    ClassyNode createFactory(ClassyNode node) {
+    public ClassyNode createFactory(ClassyNode node) {
         return new ProjectExplorer("Project Explorer");
     }
 }

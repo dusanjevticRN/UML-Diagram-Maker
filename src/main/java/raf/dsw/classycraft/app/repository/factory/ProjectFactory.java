@@ -7,8 +7,9 @@ import raf.dsw.classycraft.app.repository.implementation.Project;
 public class ProjectFactory extends ClassyNodeFactory{
 
     @Override
-    ClassyNode createFactory(ClassyNode node) {
-        Project newProject = new Project("Project " + ((ClassyNodeComposite)node).getIndex(((ClassyNodeComposite) node).getChildren()), node, "Unnamed author", null);
+    public ClassyNode createFactory(ClassyNode node) {
+        String userName = System.getProperty("user.name");
+        Project newProject = new Project("Project " + ((ClassyNodeComposite)node).getIndex(((ClassyNodeComposite) node).getChildren()), node, userName, null);
 
         return newProject;
     }

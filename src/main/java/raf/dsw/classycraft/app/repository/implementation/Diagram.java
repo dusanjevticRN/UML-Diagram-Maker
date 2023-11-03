@@ -2,17 +2,16 @@ package raf.dsw.classycraft.app.repository.implementation;
 
 import raf.dsw.classycraft.app.repository.composite.ClassyNode;
 import raf.dsw.classycraft.app.repository.composite.ClassyNodeComposite;
+import raf.dsw.classycraft.app.repository.composite.ClassyNodeLeaf;
 
 import java.util.List;
 
-public class Diagram extends ClassyNodeComposite {
+public class Diagram extends ClassyNodeLeaf {
 
-    private boolean isPattern;
-    private boolean hasCentralTopic;
+
 
     public Diagram(String name, ClassyNode parent, boolean isPattern) {
         super(parent, name + " ");
-        this.isPattern = isPattern;
     }
 
     @Override
@@ -20,29 +19,9 @@ public class Diagram extends ClassyNodeComposite {
         super.setName(name);
     }
 
-    @Override
-    public int getIndex(List<ClassyNode> children) {
-        return super.getIndex(children);
-    }
 
     @Override
-    public void deleteChild(ClassyNode child) {
-        if(!(child instanceof Package))
-            return;
-        super.deleteChild(child);
-    }
+    public void notifySubscriber(Object notification, Object typeOfUpdate) {
 
-    @Override
-    public void addChild(ClassyNode node) {
-        if(node instanceof Package && node != null){
-            Package e = (Package) node;
-            if(!this.getChildren().contains(e)){
-                this.getChildren().add(e);
-            }
-        }
-    }
-
-    public void setHasCentralTopic(boolean hasCentralTopic) {
-        this.hasCentralTopic = hasCentralTopic;
     }
 }

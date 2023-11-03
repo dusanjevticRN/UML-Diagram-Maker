@@ -1,14 +1,17 @@
 package raf.dsw.classycraft.app.repository.implementation;
 
+import lombok.Getter;
+import lombok.Setter;
 import raf.dsw.classycraft.app.repository.composite.ClassyNode;
 import raf.dsw.classycraft.app.repository.composite.ClassyNodeComposite;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class Project extends ClassyNodeComposite {
 
     private String author, path;
-    protected boolean changed = true;
 
     public Project( String name, ClassyNode parent, String author, String path) {
         super(parent, name);
@@ -22,13 +25,11 @@ public class Project extends ClassyNodeComposite {
 
     public void renameAuthor(String author){
         this.author = author;
-        changed = true;
     }
 
     @Override
     public void setName(String name) {
         super.setName(name);
-        changed = true;
     }
 
     @Override
@@ -36,30 +37,21 @@ public class Project extends ClassyNodeComposite {
         return super.getIndex(children);
     }
 
-    @Override
-    public void deleteChild(ClassyNode child) {
-        if(!(child instanceof ClassyNode))
-            return;
-        super.deleteChild(child);
-        changed = true;
-    }
+
     @Override
     public void addChild(ClassyNode node) {
-        if(node instanceof ClassyNode && node != null){
-            ClassyNode mapa = (ClassyNode) node;
-            if(!this.getChildren().contains(mapa)){
-                this.getChildren().add(mapa);
+        if(node != null && node instanceof Diagram){
+            Diagram diagram = (Diagram) node;
+            if(!this.getChildren().contains(diagram)){
+                this.getChildren().add(diagram);
             }
-            changed = true;
         }
-    }
-    public String getAuthor() {
-        changed = true;
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
+        else if(node != null && node instanceof Package){
+            Package pack = (Package) node;
+            if(!this.getChildren().contains(pack)){
+                this.getChildren().add(pack);
+            }
+        }
     }
 
     public String getPath() {
@@ -68,5 +60,10 @@ public class Project extends ClassyNodeComposite {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    @Override
+    public void notifySubscriber(Object notification, Object typeOfUpdate) {
+
     }
 }

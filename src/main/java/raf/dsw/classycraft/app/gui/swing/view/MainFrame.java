@@ -1,16 +1,25 @@
 package raf.dsw.classycraft.app.gui.swing.view;
 
+import lombok.Getter;
+import lombok.Setter;
+import raf.dsw.classycraft.app.core.ApplicationFramework;
 import raf.dsw.classycraft.app.core.MessageGenerator;
+import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTree;
+import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTreeImplementation;
 import raf.dsw.classycraft.app.messageGenerator.EventType;
 import raf.dsw.classycraft.app.messageGenerator.Message;
 import raf.dsw.classycraft.app.observer.ISubscriber;
+import raf.dsw.classycraft.app.repository.implementation.ProjectExplorer;
 
 import javax.swing.*;
 import java.awt.*;
 
+@Setter
+@Getter
 public class MainFrame extends JFrame implements ISubscriber
 {
     private static MainFrame instance;
+    private ClassyTree classyTree;
     //private MessageGenerator messageGenerator;
 
     //buduca polja za sve komponente view-a na glavnom prozoru
@@ -22,6 +31,7 @@ public class MainFrame extends JFrame implements ISubscriber
 
     private void initialize()
     {
+        classyTree = new ClassyTreeImplementation();
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
         int screenHeight = screenSize.height;
@@ -40,9 +50,11 @@ public class MainFrame extends JFrame implements ISubscriber
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
-        JPanel panel1 = new JPanel();
+
+
+        JTree projectExplorer = classyTree.generateTree(ApplicationFramework.getInstance().getClassyRepository().getProjectExplorer());
         JPanel panel2 = new JPanel();
-        JScrollPane scrollPane = new JScrollPane(panel1);
+        JScrollPane scrollPane = new JScrollPane(projectExplorer);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 

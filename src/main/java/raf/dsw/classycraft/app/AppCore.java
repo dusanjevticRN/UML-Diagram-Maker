@@ -1,8 +1,10 @@
 package raf.dsw.classycraft.app;
 
 import raf.dsw.classycraft.app.core.ApplicationFramework;
+import raf.dsw.classycraft.app.core.Gui;
 import raf.dsw.classycraft.app.core.Logger;
 import raf.dsw.classycraft.app.core.MessageGenerator;
+import raf.dsw.classycraft.app.gui.swing.SwingGui;
 import raf.dsw.classycraft.app.logger.ConsoleLogger;
 import raf.dsw.classycraft.app.logger.LoggerFactory;
 import raf.dsw.classycraft.app.messageGenerator.MessageGeneratorClass;
@@ -14,8 +16,9 @@ public class AppCore
 {
     public static void main(String[] args)
     {
+        ClassyRepository classyRepository = new ClassyRepository();
         ApplicationFramework appCore = ApplicationFramework.getInstance();
-
+        Gui gui = new SwingGui();
         MessageGenerator messageGenerator = new MessageGeneratorClass();
 
         LoggerFactory loggerFactory = new LoggerFactory();
@@ -23,7 +26,8 @@ public class AppCore
         Logger fileLogger = loggerFactory.getLogger("FileLogger", messageGenerator);
 
 
-        ClassyRepository classyRepository = new ClassyRepository();
-        appCore.initialize(classyRepository);
+
+        appCore.initialize(gui, classyRepository);
+        appCore.run();
     }
 }

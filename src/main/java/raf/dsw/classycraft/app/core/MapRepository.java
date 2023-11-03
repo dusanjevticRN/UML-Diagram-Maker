@@ -7,4 +7,5 @@ import raf.dsw.classycraft.app.repository.implementation.ProjectExplorer;
 public interface MapRepository {
     ProjectExplorer getProjectExplorer();
 
+    void addChild(ClassyNodeComposite parent, ClassyNode child);
 }
