@@ -33,7 +33,7 @@ public class AboutUsAction extends AbstractClassyAction
 
         if(url1 != null)
         {
-            JLabel name1 = new JLabel("Nemanja Vujic");
+            JLabel name1 = new JLabel("<html>Autor 2:<br>Nemanja<br>Vujic<br>63/21RN</html>");
             ImageIcon icon1 = new ImageIcon(url1);
             Image image1 = icon1.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
             JLabel labelImage1 = new JLabel(new ImageIcon(image1));
@@ -47,7 +47,7 @@ public class AboutUsAction extends AbstractClassyAction
 
         if(url2 != null)
         {
-            JLabel name2 = new JLabel("Dusan Jevtic");
+            JLabel name2 = new JLabel("<html>Autor 1:<br>Dusan<br>Jevtic<br>92/23RN</html>");
             ImageIcon icon2 = new ImageIcon(url2);
             Image image2 = icon2.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
             JLabel labelImage2 = new JLabel(new ImageIcon(image2));
