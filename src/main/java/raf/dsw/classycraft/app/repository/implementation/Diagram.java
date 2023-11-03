@@ -27,15 +27,15 @@ public class Diagram extends ClassyNodeComposite {
 
     @Override
     public void deleteChild(ClassyNode child) {
-        if(!(child instanceof Element))
+        if(!(child instanceof Package))
             return;
         super.deleteChild(child);
     }
 
     @Override
     public void addChild(ClassyNode node) {
-        if(node instanceof Element && node != null){
-            Element e = (Element) node;
+        if(node instanceof Package && node != null){
+            Package e = (Package) node;
             if(!this.getChildren().contains(e)){
                 this.getChildren().add(e);
             }

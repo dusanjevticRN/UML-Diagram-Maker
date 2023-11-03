@@ -37,6 +37,21 @@ public class MainFrame extends JFrame implements ISubscriber
 
         MyToolBar toolBar = new MyToolBar();
         this.add(toolBar, BorderLayout.NORTH);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+        JScrollPane scrollPane = new JScrollPane(panel1);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+
+        splitPane.setLeftComponent(scrollPane);
+        splitPane.setRightComponent(panel2);
+        splitPane.setDividerLocation(150);
+        this.add(splitPane, BorderLayout.CENTER);
+
+
     }
 
     public static MainFrame getInstance()

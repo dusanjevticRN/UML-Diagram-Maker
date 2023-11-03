@@ -6,6 +6,7 @@ import raf.dsw.classycraft.app.core.MessageGenerator;
 import raf.dsw.classycraft.app.logger.ConsoleLogger;
 import raf.dsw.classycraft.app.logger.LoggerFactory;
 import raf.dsw.classycraft.app.messageGenerator.MessageGeneratorClass;
+import raf.dsw.classycraft.app.repository.ClassyRepository;
 
 //Pitanje za vezbe, da li trebam da posaljem messageGenerator MainFrame-u posto je i on subscriber (pitaj detaljno)
 
@@ -21,6 +22,8 @@ public class AppCore
         Logger consoleLogger = loggerFactory.getLogger("ConsoleLogger", messageGenerator);
         Logger fileLogger = loggerFactory.getLogger("FileLogger", messageGenerator);
 
-        appCore.initialize();
+
+        ClassyRepository classyRepository = new ClassyRepository();
+        appCore.initialize(classyRepository);
     }
 }

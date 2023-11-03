@@ -2,14 +2,14 @@ package raf.dsw.classycraft.app.repository.factory;
 
 import raf.dsw.classycraft.app.repository.composite.ClassyNode;
 import raf.dsw.classycraft.app.repository.composite.ClassyNodeComposite;
-import raf.dsw.classycraft.app.repository.implementation.Element;
+import raf.dsw.classycraft.app.repository.implementation.Package;
 
-public class ElementFactory extends ClassyNodeFactory{
+public class PackageFactory extends ClassyNodeFactory{
 
 
     @Override
     ClassyNode createFactory(ClassyNode node) {
-        return new Element(node, "Element " + ((ClassyNodeComposite)node).getIndex(((ClassyNodeComposite) node).getChildren()));
+        return new Package(node, "Package " + ((ClassyNodeComposite)node).getIndex(((ClassyNodeComposite) node).getChildren()));
 
     }
 }
