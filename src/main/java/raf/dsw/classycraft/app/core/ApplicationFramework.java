@@ -2,36 +2,30 @@ package raf.dsw.classycraft.app.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
-import raf.dsw.classycraft.app.repository.ClassyRepository;
+import raf.dsw.classycraft.app.ClassyRepository.ClassyRepository;
 
 @Getter
 @Setter
-public class ApplicationFramework
+public abstract class ApplicationFramework
 {
     protected Gui gui;
-    protected ClassyRepository classyRepository;
-    private static ApplicationFramework instance;
+    protected MapRepository mapRepository;
+    protected MessageGenerator messageGenerator;
+    protected Logger consoleLogger;
+    protected Logger fileLogger;
 
-    //buduca polja za model celog projekta
+    public abstract void start();
 
-    private ApplicationFramework() {}
-
-    public void initialize(Gui gui,ClassyRepository classyRepository)
+    public void initialise(Gui gui, MapRepository mapRepository, MessageGenerator messageGenerator)
     {
         this.gui = gui;
-        this.classyRepository = classyRepository;
+        this.mapRepository = mapRepository;
+        this.messageGenerator = messageGenerator;
     }
 
-    public static ApplicationFramework getInstance()
+    public void initialiseLogger(Logger consoleLogger, Logger fileLogger)
     {
-        if(instance==null)
-            instance = new ApplicationFramework();
-
-        return instance;
-    }
-
-    public void run() {
-        this.gui.start();
+        this.consoleLogger = consoleLogger;
+        this.fileLogger = fileLogger;
     }
 }

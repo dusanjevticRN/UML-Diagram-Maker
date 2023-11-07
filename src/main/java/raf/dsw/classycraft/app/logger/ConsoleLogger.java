@@ -7,7 +7,6 @@ import raf.dsw.classycraft.app.messageGenerator.MessageGeneratorClass;
 
 public class ConsoleLogger implements Logger
 {
-
     private MessageGenerator messageGenerator;
     public ConsoleLogger(MessageGenerator messageGenerator)
     {
