@@ -1,14 +1,12 @@
 package raf.dsw.classycraft.app.gui.swing.ClassyTree.controller;
 
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
-import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
-import raf.dsw.classycraft.app.observer.IPublisher;
-import raf.dsw.classycraft.app.observer.ISubscriber;
+import raf.dsw.classycraft.app.core.observer.IPublisher;
+import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

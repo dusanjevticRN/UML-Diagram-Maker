@@ -1,17 +1,14 @@
 package raf.dsw.classycraft.app.gui.swing.ClassyTree.controller;
 
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
-import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
-import raf.dsw.classycraft.app.repository.implementation.Diagram;
-import raf.dsw.classycraft.app.repository.implementation.Package;
-import raf.dsw.classycraft.app.repository.implementation.Project;
-import raf.dsw.classycraft.app.repository.implementation.ProjectExplorer;
+import raf.dsw.classycraft.app.ClassyRepository.implementation.Diagram;
+import raf.dsw.classycraft.app.ClassyRepository.implementation.Package;
+import raf.dsw.classycraft.app.ClassyRepository.implementation.Project;
+import raf.dsw.classycraft.app.ClassyRepository.implementation.ProjectExplorer;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class Listener implements TreeSelectionListener {
 
