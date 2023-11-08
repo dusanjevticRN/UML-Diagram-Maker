@@ -1,9 +1,9 @@
-package raf.dsw.classycraft.app.gui.swing.view;
+package raf.dsw.classycraft.app.gui.swing.view.optionBars;
 
 import raf.dsw.classycraft.app.gui.swing.controller.*;
-import raf.dsw.classycraft.app.gui.swing.controller.AddAction.AddDiagramAction;
-import raf.dsw.classycraft.app.gui.swing.controller.AddAction.AddPackageAction;
-import raf.dsw.classycraft.app.gui.swing.controller.AddAction.AddProjectAction;
+import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddDiagramAction;
+import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddPackageAction;
+import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddProjectAction;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;

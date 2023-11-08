@@ -1,4 +1,4 @@
-package raf.dsw.classycraft.app.ClassyRepository.composite;
+package raf.dsw.classycraft.app.classyRepository.composite;
 
 public abstract class ClassyNodeLeaf extends ClassyNode
 {

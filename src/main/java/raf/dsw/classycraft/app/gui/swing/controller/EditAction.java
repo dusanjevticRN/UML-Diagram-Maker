@@ -3,9 +3,9 @@ package raf.dsw.classycraft.app.gui.swing.controller;
 import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNodeComposite;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.Project;
-import raf.dsw.classycraft.app.messageGenerator.EventType;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
+import raf.dsw.classycraft.app.classyRepository.implementation.Project;
+import raf.dsw.classycraft.app.core.eventHandler.EventType;
 
 import javax.swing.*;
 import java.awt.*;

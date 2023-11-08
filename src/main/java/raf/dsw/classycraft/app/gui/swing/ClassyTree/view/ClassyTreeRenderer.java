@@ -1,10 +1,10 @@
 package raf.dsw.classycraft.app.gui.swing.ClassyTree.view;
 
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.Diagram;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.Package;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.Project;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.ProjectExplorer;
+import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
+import raf.dsw.classycraft.app.classyRepository.implementation.Package;
+import raf.dsw.classycraft.app.classyRepository.implementation.Project;
+import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;

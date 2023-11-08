@@ -5,7 +5,7 @@ import raf.dsw.classycraft.app.core.*;
 import raf.dsw.classycraft.app.gui.swing.SwingGui;
 import raf.dsw.classycraft.app.logger.LoggerFactory;
 import raf.dsw.classycraft.app.messageGenerator.MessageGeneratorClass;
-import raf.dsw.classycraft.app.ClassyRepository.ClassyRepository;
+import raf.dsw.classycraft.app.classyRepository.ClassyRepository;
 
 @Getter
 public class AppCore extends ApplicationFramework

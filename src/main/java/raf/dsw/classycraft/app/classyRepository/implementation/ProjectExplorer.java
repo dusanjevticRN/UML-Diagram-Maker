@@ -1,7 +1,7 @@
-package raf.dsw.classycraft.app.ClassyRepository.implementation;
+package raf.dsw.classycraft.app.classyRepository.implementation;
 
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNode;
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNodeComposite;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
 import java.util.List;
@@ -27,6 +27,11 @@ public class ProjectExplorer extends ClassyNodeComposite
                 this.setParent(this);
             }
         }
+    }
+
+    @Override
+    public void removeChild(ClassyNode nodeToRemove) {
+
     }
 
     @Override

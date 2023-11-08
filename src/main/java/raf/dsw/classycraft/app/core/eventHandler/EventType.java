@@ -1,4 +1,4 @@
-package raf.dsw.classycraft.app.messageGenerator;
+package raf.dsw.classycraft.app.core.eventHandler;
 
 public enum EventType
 {
@@ -17,4 +17,8 @@ public enum EventType
     NAME_CANNOT_BE_EMPTY,
     CANT_RENAME_AUTHOR,
     CANT_EMPTY_STRING,
+    ARE_YOU_SURE_YOU_WANT_TO_DELETE,
+    PROJECT_SELECTION,
+    DIAGRAM_SELECTION,
+    DIAGRAM_DELETION
 }

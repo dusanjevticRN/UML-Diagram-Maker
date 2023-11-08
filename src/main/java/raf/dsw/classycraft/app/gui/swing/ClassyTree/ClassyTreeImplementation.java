@@ -1,31 +1,36 @@
 package raf.dsw.classycraft.app.gui.swing.ClassyTree;
 
-import raf.dsw.classycraft.app.gui.swing.controller.AddAction.AddType;
+import raf.dsw.classycraft.app.core.observer.ISubscriber;
+import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddType;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.view.ClassyTreeView;
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNode;
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNodeComposite;
-import raf.dsw.classycraft.app.ClassyRepository.factory.DiagramFactory;
-import raf.dsw.classycraft.app.ClassyRepository.factory.PackageFactory;
-import raf.dsw.classycraft.app.ClassyRepository.factory.ProjectFactory;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.Diagram;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.Package;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.Project;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.ProjectExplorer;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
+import raf.dsw.classycraft.app.classyRepository.factory.DiagramFactory;
+import raf.dsw.classycraft.app.classyRepository.factory.PackageFactory;
+import raf.dsw.classycraft.app.classyRepository.factory.ProjectFactory;
+import raf.dsw.classycraft.app.classyRepository.implementation.Package;
+import raf.dsw.classycraft.app.classyRepository.implementation.Project;
+import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabView;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabbedPane;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ClassyTreeImplementation implements ClassyTree{
+public class ClassyTreeImplementation implements ClassyTree {
 
     private ClassyTreeView classyTreeView;
     private DefaultTreeModel defaultTreeModel;
+    private List<ISubscriber> subscribers = new ArrayList<>();
 
     @Override
-    public ClassyTreeView generateTree(ProjectExplorer projectExplorer) {
+    public ClassyTreeView generateTree(ProjectExplorer projectExplorer, ClassyTabView classyTabView, ClassyTabbedPane classyTabbedPane){
         ClassyTreeItem root = new ClassyTreeItem(projectExplorer);
         defaultTreeModel = new DefaultTreeModel(root);
-        classyTreeView = new ClassyTreeView(defaultTreeModel);
+        classyTreeView = new ClassyTreeView(defaultTreeModel, classyTabView, classyTabbedPane);
         return classyTreeView;
     }
 
@@ -43,6 +48,14 @@ public class ClassyTreeImplementation implements ClassyTree{
         parent.add(new ClassyTreeItem(child));
         ((ClassyNodeComposite) parent.getClassyNode()).addChild(child);
         classyTreeView.expandPath(classyTreeView.getSelectionPath());
+        SwingUtilities.updateComponentTreeUI(classyTreeView);
+    }
+
+    @Override
+    public void removeChild(ClassyTreeItem nodeToRemove) {
+        ClassyNodeComposite parent = (ClassyNodeComposite) nodeToRemove.getClassyNode().getParent();
+        parent.removeChild(nodeToRemove.getClassyNode());
+        defaultTreeModel.removeNodeFromParent(nodeToRemove);
         SwingUtilities.updateComponentTreeUI(classyTreeView);
     }
 
@@ -83,6 +96,8 @@ public class ClassyTreeImplementation implements ClassyTree{
 
         return null;
     }
+
+
 
 
 }

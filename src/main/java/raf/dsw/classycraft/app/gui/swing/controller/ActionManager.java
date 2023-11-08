@@ -1,9 +1,9 @@
 package raf.dsw.classycraft.app.gui.swing.controller;
 
 import lombok.Getter;
-import raf.dsw.classycraft.app.gui.swing.controller.AddAction.AddDiagramAction;
-import raf.dsw.classycraft.app.gui.swing.controller.AddAction.AddPackageAction;
-import raf.dsw.classycraft.app.gui.swing.controller.AddAction.AddProjectAction;
+import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddDiagramAction;
+import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddPackageAction;
+import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddProjectAction;
 
 @Getter
 public class ActionManager

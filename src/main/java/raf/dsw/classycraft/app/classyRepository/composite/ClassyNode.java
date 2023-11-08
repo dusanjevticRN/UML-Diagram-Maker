@@ -1,4 +1,4 @@
-package raf.dsw.classycraft.app.ClassyRepository.composite;
+package raf.dsw.classycraft.app.classyRepository.composite;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -68,5 +68,9 @@ public abstract class ClassyNode implements IPublisher
 
         for(ISubscriber subscriber : subscribers)
             subscriber.update(notification, typeOfUpdate);
+    }
+
+    public String getUniqueId() {
+        return name + "_" + type + "_" + getParent();
     }
 }
