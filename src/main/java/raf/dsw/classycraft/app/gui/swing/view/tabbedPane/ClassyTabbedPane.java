@@ -12,15 +12,19 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassyTabbedPane extends JTabbedPane implements ISubscriber {
+public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber {
 
         EventBus eventBus = EventBus.getInstance();
         List<Diagram> openDiagrams;
+        List<Component> tabs;
         public ClassyTabbedPane() {
             super();
             openDiagrams = new ArrayList<>();
+            tabs = new ArrayList<>();
             eventBus.subscribe(EventType.DIAGRAM_SELECTION, this);
             eventBus.subscribe(EventType.DIAGRAM_DELETION, this);
+            eventBus.subscribe(EventType.DIAGRAM_RENAME, this);
+            eventBus.subscribe(EventType.DIAGRAM_CLOSE, this);
         }
 
     @Override
@@ -64,11 +68,86 @@ public class ClassyTabbedPane extends JTabbedPane implements ISubscriber {
                 for (int i = 0; i < this.getTabCount(); i++) {
                     Component tabComponent = this.getComponentAt(i);
                     if (tabComponent.getName().equals(uniqueId)) {
+                        System.out.println("Deleting" + tabComponent.getName());
                         this.removeTabAt(i);
                         break;
                     }
                 }
             }
         }
+        else if(notification instanceof Component){
+            if(EventType.DIAGRAM_CLOSE.equals(typeOfUpdate)) {
+                JPanel temp = (JPanel) notification;
+                String id = temp.getName();
+                String name = "";
+                for(char c: id.toCharArray()){
+                    if(c == '_')
+                        break;
+                    name = name + c;
+                }
+                name.substring(0, name.length() - 1);
+                for(Diagram d : openDiagrams){
+                    System.out.println(d.getName() + " - " + name);
+                    if(d.getName().equals(name)){
+                        //System.out.println("FOUND");
+                        openDiagrams.remove(d);
+                        for (int i = 0; i < this.getTabCount(); i++) {
+                            Component tabComponent = this.getComponentAt(i);
+                            String tname = "";
+                            for(char c: tabComponent.getName().toCharArray()){
+                                if(c == '_')
+                                    break;
+                                tname = tname + c;
+                            }
+                            tname.substring(0, tname.length() - 1);
+                            //System.out.println(tabComponent.getName() + " - " + name);
+                            if (tname.equals(name)) {
+                                //System.out.println("Deleting" + tabComponent.getName());
+                                this.removeTabAt(i);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(EventType.DIAGRAM_RENAME.equals(typeOfUpdate)){
+            System.out.println("RENAME");
+            System.out.println(notification);
+            String oldName = "";
+            String noti = (String) notification;
+            String split[] = noti.split("/");
+            String newName = split[1];
+            oldName = split[0];
+            oldName.substring(0, oldName.length() - 1);
+            for (int i = 0; i < this.getTabCount(); i++) {
+                Component tabComponent = this.getComponentAt(i);
+                String tname = "";
+                for(char c: tabComponent.getName().toCharArray()){
+                    if(c == '_')
+                        break;
+                    tname = tname + c;
+                }
+                System.out.println(tname);
+                System.out.println(oldName);
+                System.out.println(tname.equals(oldName));
+                if (tname.equals(oldName)) {
+                    System.out.println("Renaming" + tabComponent.getName());
+                    System.out.println(newName);
+                    tabComponent.setName(newName);
+                    this.setTitleAt(i, newName);
+                    Component tempTab = this.getComponentAt(i);
+                    this.remove(i);
+                    this.add(tempTab);
+                    this.revalidate();
+                    this.repaint();
+                    break;
+                }
+            }
+        }
+
+
     }
 }
