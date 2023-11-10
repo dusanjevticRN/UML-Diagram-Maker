@@ -1,9 +1,10 @@
-package raf.dsw.classycraft.app.ClassyRepository.implementation;
+package raf.dsw.classycraft.app.classyRepository.implementation;
 
 import lombok.Getter;
 import lombok.Setter;
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNode;
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNodeComposite;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeLeaf;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
 
@@ -34,6 +35,13 @@ public class Package extends ClassyNodeComposite
             if(!this.getChildren().contains(pack))
                 this.getChildren().add(pack);
 
+        }
+    }
+
+    @Override
+    public void removeChild(ClassyNode nodeToRemove) {
+        if(nodeToRemove instanceof ClassyNodeLeaf){
+            this.getChildren().remove(nodeToRemove);
         }
     }
 

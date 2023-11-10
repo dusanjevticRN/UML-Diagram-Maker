@@ -1,8 +1,8 @@
 package raf.dsw.classycraft.app.core;
 
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNode;
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNodeComposite;
-import raf.dsw.classycraft.app.ClassyRepository.implementation.ProjectExplorer;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
+import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
 
 public interface MapRepository {
     ProjectExplorer getProjectExplorer();

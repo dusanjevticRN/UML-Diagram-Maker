@@ -1,4 +1,6 @@
-package raf.dsw.classycraft.app.gui.swing.view;
+package raf.dsw.classycraft.app.gui.swing.view.optionBars;
+
+import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 
 import javax.swing.*;
 

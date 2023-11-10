@@ -1,4 +1,4 @@
-package raf.dsw.classycraft.app.gui.swing.controller.AddAction;
+package raf.dsw.classycraft.app.gui.swing.controller.addAction;
 
 public enum AddType
 {

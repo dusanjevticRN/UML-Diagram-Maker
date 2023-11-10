@@ -1,4 +1,4 @@
-package raf.dsw.classycraft.app.ClassyRepository.composite;
+package raf.dsw.classycraft.app.classyRepository.composite;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -33,6 +33,8 @@ public abstract class ClassyNodeComposite extends ClassyNode
         }
         return null;
     }
+
+    public abstract void removeChild(ClassyNode nodeToRemove);
 
     public int getIndex(List<ClassyNode> children){
         return children.size() + 1;

@@ -1,10 +1,9 @@
 package raf.dsw.classycraft.app.messageGenerator;
 
 import raf.dsw.classycraft.app.core.MessageGenerator;
+import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

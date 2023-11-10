@@ -3,11 +3,14 @@ package raf.dsw.classycraft.app.gui.swing.view;
 import lombok.Getter;
 import lombok.Setter;
 import raf.dsw.classycraft.app.AppCore;
-import raf.dsw.classycraft.app.core.ApplicationFramework;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTree;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTreeImplementation;
+import raf.dsw.classycraft.app.gui.swing.ClassyTree.view.ClassyTreeView;
 import raf.dsw.classycraft.app.gui.swing.controller.ActionManager;
-import raf.dsw.classycraft.app.messageGenerator.EventType;
+import raf.dsw.classycraft.app.gui.swing.view.optionBars.MyMenyBar;
+import raf.dsw.classycraft.app.gui.swing.view.optionBars.MyToolBar;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabView;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabbedPane;
 import raf.dsw.classycraft.app.messageGenerator.Message;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
@@ -25,9 +28,12 @@ public class MainFrame extends JFrame implements ISubscriber
     private JMenuBar menu;
     private JToolBar toolBar;
     private JSplitPane jSplitPane;
+    private JSplitPane splitTabPane;
+    private ClassyTabView classyTabView;
     private JPanel workingAreaPane;
     private ClassyTree classyTree;
     private List<ISubscriber> subscriberList;
+    private ClassyTabbedPane classyTabbedPane;
 
     private MainFrame() {}
 
@@ -61,14 +67,23 @@ public class MainFrame extends JFrame implements ISubscriber
 
         this.jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
-        JTree projectExplorer = classyTree.generateTree(AppCore.getInstance().getMapRepository().getProjectExplorer());
+
+        classyTabView = new ClassyTabView();
+        classyTabbedPane = new ClassyTabbedPane();
+        JTree projectExplorer = classyTree.generateTree(AppCore.getInstance().getMapRepository().getProjectExplorer(), classyTabView, classyTabbedPane);
         this.workingAreaPane = new JPanel();
         JScrollPane scrollPane = new JScrollPane(projectExplorer);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setMinimumSize(new Dimension(200, 150));
 
+        this.splitTabPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitTabPane.setTopComponent(classyTabView);
+
+        splitTabPane.setBottomComponent(classyTabbedPane);
+        splitTabPane.setResizeWeight(0.08);
+
         jSplitPane.setLeftComponent(scrollPane);
-        jSplitPane.setRightComponent(workingAreaPane);
+        jSplitPane.setRightComponent(splitTabPane);
         jSplitPane.setOneTouchExpandable(true);
         this.add(jSplitPane, BorderLayout.CENTER);
     }

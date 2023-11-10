@@ -2,7 +2,7 @@ package raf.dsw.classycraft.app.gui.swing.ClassyTree.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import raf.dsw.classycraft.app.ClassyRepository.composite.ClassyNode;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 

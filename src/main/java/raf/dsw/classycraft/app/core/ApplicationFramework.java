@@ -2,7 +2,6 @@ package raf.dsw.classycraft.app.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import raf.dsw.classycraft.app.ClassyRepository.ClassyRepository;
 
 @Getter
 @Setter
