@@ -6,7 +6,6 @@ import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 
 public class DiagramFactory extends ClassyNodeFactory
 {
-
     private static int cnt = 1;
     @Override
     public ClassyNode createFactory(ClassyNode node)

@@ -28,14 +28,18 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
         }
 
     @Override
-    public void update(Object notification, Object typeOfUpdate) {
-        if (notification instanceof ClassyTreeItem) {
+    public void update(Object notification, Object typeOfUpdate)
+    {
+        if (notification instanceof ClassyTreeItem)
+        {
             ClassyTreeItem item = (ClassyTreeItem) notification;
 
-            if (EventType.DIAGRAM_SELECTION.equals(typeOfUpdate)) {
+            if (EventType.DIAGRAM_SELECTION.equals(typeOfUpdate))
+            {
                 //System.out.println("SELECT");
 
-                if(this.openDiagrams.contains((Diagram) item.getClassyNode())){
+                if(this.openDiagrams.contains((Diagram) item.getClassyNode()))
+                {
                     this.setSelectedIndex(this.indexOfTab(item.getClassyNode().getName()));
                     return;
                 }
@@ -45,15 +49,20 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
                 this.addTab(title, new JPanel());
                 int index = this.indexOfTab(title);
                 this.getComponentAt(index).setName(item.getClassyNode().getUniqueId());
+            }
 
-            } else if (EventType.DIAGRAM_DELETION.equals(typeOfUpdate)) {
+            else if (EventType.DIAGRAM_DELETION.equals(typeOfUpdate))
+            {
                 //System.out.println("DELETE");
 
                 this.openDiagrams.remove((Diagram) ((ClassyTreeItem) notification).getClassyNode());
                 String uniqueId = item.getClassyNode().getUniqueId();
-                for (int i = 0; i < this.getTabCount(); i++) {
+
+                for (int i = 0; i < this.getTabCount(); i++)
+                {
                     Component tabComponent = this.getComponentAt(i);
-                    if (tabComponent.getName().equals(uniqueId)) {
+                    if (tabComponent.getName().equals(uniqueId))
+                    {
                         this.removeTabAt(i);
                         break;
                     }
