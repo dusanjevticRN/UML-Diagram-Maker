@@ -31,14 +31,17 @@ public class DeleteAction extends AbstractClassyAction
     public void actionPerformed(ActionEvent e)
     {
         ClassyTreeItem selected = MainFrame.getInstance().getClassyTree().getSelectedNode();
-        if(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof Diagram) {
-            MainFrame.getInstance().getClassyTree().removeChild(MainFrame.getInstance().getClassyTree().getSelectedNode());
-            EventBus.getInstance().publish(EventType.DIAGRAM_DELETION, selected);
-        }
-        else if (MainFrame.getInstance().getClassyTree().getSelectedNode() == null)
+
+        if (MainFrame.getInstance().getClassyTree().getSelectedNode() == null)
         {
             AppCore.getInstance().getMessageGenerator().generate(EventType.NO_ITEM_TO_DELETE);
             return;
+        }
+
+        else if(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof Diagram)
+        {
+            MainFrame.getInstance().getClassyTree().removeChild(MainFrame.getInstance().getClassyTree().getSelectedNode());
+            EventBus.getInstance().publish(EventType.DIAGRAM_DELETION, selected);
         }
 
         else if (MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof ProjectExplorer)
@@ -97,6 +100,10 @@ public class DeleteAction extends AbstractClassyAction
                             EventBus.getInstance().publish(EventType.DIAGRAM_DELETION, child);
                             diagramDeleted = true;
                         }
+
+                        //else
+                           // EventBus.getInstance().publish(EventType.DIAGRAM_DELETION, getDiagramFromPackage(child));
+
                         parent.removeChild(child);
                     }
 
@@ -110,11 +117,24 @@ public class DeleteAction extends AbstractClassyAction
             deleteDialog.setVisible(true);
             return;
         }
-        else{
-            MainFrame.getInstance().getClassyTree().removeChild(MainFrame.getInstance().getClassyTree().getSelectedNode());
 
-        }
+        else
+            MainFrame.getInstance().getClassyTree().removeChild(MainFrame.getInstance().getClassyTree().getSelectedNode());
     }
 
+    /*
+    private List<ClassyNode> getDiagramFromPackage(ClassyNode parent)
+    {
+        if(parent instanceof Diagram)
+            return new ArrayList<ClassyNode>().add(parent);
 
+        else
+        {
+            List<ClassyNode> tempList = getDiagramFromPackage(((ClassyNodeComposite)parent).getChildren());
+
+            return tempList;
+        }
+
+    }
+     */
 }
