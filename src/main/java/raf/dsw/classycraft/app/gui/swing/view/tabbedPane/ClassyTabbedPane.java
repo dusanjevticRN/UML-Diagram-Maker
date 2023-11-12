@@ -25,6 +25,7 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
             eventBus.subscribe(EventType.DIAGRAM_DELETION, this);
             eventBus.subscribe(EventType.DIAGRAM_RENAME, this);
             eventBus.subscribe(EventType.DIAGRAM_CLOSE, this);
+            eventBus.subscribe(EventType.DIAGRAM_LIST_DELETION, this);
         }
 
     @Override
@@ -84,6 +85,27 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
                 }
             }
         }
+        else if(EventType.DIAGRAM_LIST_DELETION.equals(typeOfUpdate)){
+            System.out.println("LIST DELETE1");
+            if(notification instanceof List){
+                System.out.println("LIST DELETE2");
+                List<ClassyNode> list = (List<ClassyNode>) notification;
+                for(ClassyNode node : list){
+                    if(node instanceof Diagram){
+                        this.openDiagrams.remove((Diagram) node);
+                        String uniqueId = node.getUniqueId();
+                        for (int i = 0; i < this.getTabCount(); i++) {
+                            Component tabComponent = this.getComponentAt(i);
+                            if (tabComponent.getName().equals(uniqueId)) {
+                                System.out.println("Deleting" + tabComponent.getName());
+                                this.removeTabAt(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         else if(notification instanceof Component){
             if(EventType.DIAGRAM_CLOSE.equals(typeOfUpdate)) {
                 JPanel temp = (JPanel) notification;
@@ -121,6 +143,7 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
                 }
             }
         }
+
 
         if(EventType.DIAGRAM_RENAME.equals(typeOfUpdate)){
             System.out.println("RENAME");
