@@ -100,9 +100,9 @@ public class DeleteAction extends AbstractClassyAction
                             EventBus.getInstance().publish(EventType.DIAGRAM_DELETION, child);
                             diagramDeleted = true;
                         }
-
-                        //else
-                           // EventBus.getInstance().publish(EventType.DIAGRAM_DELETION, getDiagramFromPackage(child));
+                        else {
+                            EventBus.getInstance().publish(EventType.DIAGRAM_LIST_DELETION, getDiagramFromPackage(child));
+                        }
 
                         parent.removeChild(child);
                     }
@@ -122,19 +122,24 @@ public class DeleteAction extends AbstractClassyAction
             MainFrame.getInstance().getClassyTree().removeChild(MainFrame.getInstance().getClassyTree().getSelectedNode());
     }
 
-    /*
+
     private List<ClassyNode> getDiagramFromPackage(ClassyNode parent)
     {
-        if(parent instanceof Diagram)
-            return new ArrayList<ClassyNode>().add(parent);
-
-        else
-        {
-            List<ClassyNode> tempList = getDiagramFromPackage(((ClassyNodeComposite)parent).getChildren());
-
+        List<ClassyNode> tempList = new ArrayList<>();
+        if(parent instanceof Diagram) {
+            tempList.add(parent);
             return tempList;
         }
-
+        ClassyNode temp;
+        for(ClassyNode child : ((ClassyNodeComposite) parent).getChildren())
+        {
+            temp = child;
+            if(temp instanceof Diagram)
+                tempList.add(temp);
+            else
+                tempList.addAll(getDiagramFromPackage(temp));
+        }
+        return tempList;
     }
-     */
+
 }
