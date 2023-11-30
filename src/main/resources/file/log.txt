@@ -131,3 +131,7 @@
 [ Error] [ 2023-11-12 16:11:17.122 ] [ Project explorer is not selected ]
 [ Error] [ 2023-11-12 16:16:51.715 ] [ Packages can only be added within a project ]
 [ Error] [ 2023-11-12 16:17:03.964 ] [ Packages can only be added within a project ]
+[ Error] [ 2023-11-12 16:51:19.138 ] [ Packages can only be added within a project ]
+[ Error] [ 2023-11-12 16:52:21.73 ] [ Adding a project inside another project is not allowed ]
+[ Error] [ 2023-11-30 11:23:07.312 ] [ No item selected for deletion ]
+[ Error] [ 2023-11-30 11:28:36.596 ] [ Packages can only be added within a project ]

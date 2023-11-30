@@ -2,6 +2,7 @@ package raf.dsw.classycraft.app.gui.swing.view.tabbedPane;
 
 import raf.dsw.classycraft.app.classyRepository.implementation.Project;
 import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
+import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
@@ -18,13 +19,15 @@ public class ClassyTabView extends JPanel implements ISubscriber {
     private JTabbedPane tabbedPane;
 
     public ClassyTabView() {
+        EventBus.getInstance().subscribe(EventType.PROJECT_SELECTION, this);
+        EventBus.getInstance().subscribe(EventType.PROJECT_RENAME, this);
+        EventBus.getInstance().subscribe(EventType.AUTHOR_RENAME, this);
         projectNameLabel = new JLabel("Select a project...");
         this.add(projectNameLabel); // Add the label to the panel
         authorNameLabel = new JLabel("");
         this.add(authorNameLabel);
     }
 
-    // Existing methods...
 
     // ISubscriber interface method
     @Override
@@ -49,6 +52,14 @@ public class ClassyTabView extends JPanel implements ISubscriber {
                 projectNameLabel.setText("Project: " + classyNode.getName()); // Update the label with the project name
                 authorNameLabel.setText("Author: " + classyNode.getAuthor()); // Update the label with the author name
             }
+        }
+        else if( notification instanceof String && typeOfUpdate.equals(EventType.PROJECT_RENAME)){
+            notification = (String)((String) notification).split("/")[1];
+            projectNameLabel.setText("Project: " + notification);
+        }
+        else if( notification instanceof String && typeOfUpdate.equals(EventType.AUTHOR_RENAME)){
+            notification = (String)((String) notification).split("/")[1];
+            authorNameLabel.setText("Author: " + notification);
         }
     }
 

@@ -2,6 +2,7 @@ package raf.dsw.classycraft.app.gui.swing.controller;
 
 import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
+import raf.dsw.classycraft.app.classyRepository.implementation.Package;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
@@ -82,7 +83,15 @@ public class EditAction extends AbstractClassyAction {
                 public void actionPerformed(ActionEvent e) {
                     if(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof Diagram)
                     {
-                        EventBus.getInstance().publish(EventType.DIAGRAM_RENAME, MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode().getName() + "/" + nameTextField.getText());
+                        EventBus.getInstance().notifySubscriber(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode().getName() + "/" + nameTextField.getText(), EventType.DIAGRAM_RENAME);
+                    }
+                    else if(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof Project)
+                    {
+                        EventBus.getInstance().notifySubscriber(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode().getName() + "/" + nameTextField.getText(), EventType.PROJECT_RENAME);
+                    }
+                    else if(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof Package)
+                    {
+                        EventBus.getInstance().notifySubscriber(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode().getName() + "/" + nameTextField.getText(), EventType.PACKAGE_RENAME);
                     }
                     String name = nameTextField.getText();
                     selected.setName(name);
@@ -163,6 +172,12 @@ public class EditAction extends AbstractClassyAction {
                 String name = nameTextField.getText();
                 selected.setName(name);
                 String author = authorTextField.getText();
+                if(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof Project)
+                {
+                    System.out.println("PROJECT RENAME");
+                    EventBus.getInstance().notifySubscriber(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode().getName() + "/" + nameTextField.getText(), EventType.PROJECT_RENAME);
+                    EventBus.getInstance().notifySubscriber(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode().getName() + "/" + authorTextField.getText(), EventType.AUTHOR_RENAME);
+                }
                 project.renameAuthor(author);
                 editDialog.dispose();
             }

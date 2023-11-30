@@ -54,15 +54,22 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
 
             else if (EventType.DIAGRAM_DELETION.equals(typeOfUpdate))
             {
-                //System.out.println("DELETE");
+                System.out.println("DELETE in tab");
 
                 this.openDiagrams.remove((Diagram) ((ClassyTreeItem) notification).getClassyNode());
                 String uniqueId = item.getClassyNode().getUniqueId();
-
+                String name = "";
+                for(char c: uniqueId.toCharArray()){
+                    if(c == '_')
+                        break;
+                    name = name + c;
+                }
+                System.out.println(name);
                 for (int i = 0; i < this.getTabCount(); i++)
                 {
                     Component tabComponent = this.getComponentAt(i);
-                    if (tabComponent.getName().equals(uniqueId))
+                    System.out.println(tabComponent.getName());
+                    if (tabComponent.getName().equals(name))
                     {
                         this.removeTabAt(i);
                         break;
