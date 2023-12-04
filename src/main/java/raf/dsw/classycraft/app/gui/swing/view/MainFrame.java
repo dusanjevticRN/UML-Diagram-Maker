@@ -9,6 +9,7 @@ import raf.dsw.classycraft.app.gui.swing.ClassyTree.view.ClassyTreeView;
 import raf.dsw.classycraft.app.gui.swing.controller.ActionManager;
 import raf.dsw.classycraft.app.gui.swing.view.optionBars.MyMenyBar;
 import raf.dsw.classycraft.app.gui.swing.view.optionBars.MyToolBar;
+import raf.dsw.classycraft.app.gui.swing.view.optionBars.UMLDiagramToolBar;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabView;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabbedPane;
 import raf.dsw.classycraft.app.messageGenerator.Message;
@@ -27,6 +28,8 @@ public class MainFrame extends JFrame implements ISubscriber
     private ActionManager actionManager;
     private JMenuBar menu;
     private JToolBar toolBar;
+    private JToolBar UMLToolBar;
+    private JPanel eastPanel;
     private JSplitPane jSplitPane;
     private JSplitPane splitTabPane;
     private ClassyTabView classyTabView;
@@ -54,7 +57,7 @@ public class MainFrame extends JFrame implements ISubscriber
         Dimension screenSize = kit.getScreenSize();
         int screenHeight = screenSize.height;
         int screenWidth = screenSize.width;
-        setSize(screenWidth / 2, screenHeight / 2);
+        setSize(screenWidth / 2, screenHeight / 2 + 15);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("ClassyCrafT");
@@ -65,8 +68,15 @@ public class MainFrame extends JFrame implements ISubscriber
         this.toolBar = new MyToolBar();
         this.add(toolBar, BorderLayout.NORTH);
 
-        this.jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        this.UMLToolBar = new UMLDiagramToolBar();
+        this.add(UMLToolBar, BorderLayout.EAST);
 
+        this.eastPanel = new JPanel(new BorderLayout());
+        this.eastPanel.add(UMLToolBar, BorderLayout.NORTH);
+        this.add(eastPanel, BorderLayout.EAST);
+        this.eastPanel.setVisible(true);
+
+        this.jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
         classyTabView = new ClassyTabView();
         classyTabbedPane = new ClassyTabbedPane();
@@ -101,12 +111,25 @@ public class MainFrame extends JFrame implements ISubscriber
     @Override
     public void update(Object notification, Object typeOfUpdate)
     {
+        if(notification instanceof ClassyTabView) //Ako je doslo do neke promene, obavesteni smo i pozivamo repaint da bi se "crtez" osvezio i primenio promene
+            this.repaint();
+
         Message message = (Message) notification;
+        String messageType = ((Message)notification).getType();
 
-        if(message.getType() == "Information")
-            JOptionPane.showMessageDialog(MainFrame.getInstance(), message.getContent(), message.getType(), JOptionPane.INFORMATION_MESSAGE);
-
-        else
-            JOptionPane.showMessageDialog(MainFrame.getInstance(), message.getContent(), message.getType(), JOptionPane.ERROR_MESSAGE);
+        switch (messageType)
+        {
+            case "Information":
+                JOptionPane.showMessageDialog(MainFrame.getInstance(), message.getContent(), message.getType(), JOptionPane.INFORMATION_MESSAGE);
+                break;
+            case "Warning":
+                JOptionPane.showMessageDialog(MainFrame.getInstance(), message.getContent(), message.getType(), JOptionPane.WARNING_MESSAGE);
+                break;
+            case "Error":
+                JOptionPane.showMessageDialog(MainFrame.getInstance(), message.getContent(), message.getType(), JOptionPane.ERROR_MESSAGE);
+                break;
+            default:
+                return;
+        }
     }
 }
