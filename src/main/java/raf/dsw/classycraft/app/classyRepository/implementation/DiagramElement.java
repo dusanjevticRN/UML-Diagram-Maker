@@ -17,7 +17,7 @@ public abstract class DiagramElement extends ClassyNodeLeaf
     {
         super(parent, name);
         this.stroke = 2; //Defaultna vrednost za stroke
-        this.color = new Color(211,211,211); //Defaultna svetlo siva boja
+        this.color = new Color(193,228,247); //Defaultna svetlo siva boja
         this.type = "DiagramElement";
     }
 

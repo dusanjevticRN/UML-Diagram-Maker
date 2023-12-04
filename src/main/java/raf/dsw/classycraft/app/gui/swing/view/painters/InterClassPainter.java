@@ -15,12 +15,11 @@ public class InterClassPainter extends ElementPainter
         super(diagramElement);
         this.interClassElement = (InterClass) diagramElement;
         this.shape = new Rectangle2D.Float(interClassElement.getPosition().getFirst(), interClassElement.getPosition().getSecond(), interClassElement.getSize().getFirst(), interClassElement.getSize().getSecond());
+
     }
 
-    @Override
-    public void paint(Graphics2D g)
-    {
-        //setFrame postavlja poziciju i velicinu Rectangle-a
+    public void paint(Graphics2D g) {
+        // Set the position and size of the Rectangle
         ((Rectangle2D)shape).setFrame(interClassElement.getPosition().getFirst(), interClassElement.getPosition().getSecond(), interClassElement.getSize().getFirst(), interClassElement.getSize().getSecond());
 
         g.setPaint(Color.BLACK);
@@ -28,11 +27,21 @@ public class InterClassPainter extends ElementPainter
         g.draw(shape);
         g.setPaint(interClassElement.getColor());
         g.fill(shape);
-        g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-        //drawString renderuje tekst na grafickoj povrsini (argumenti su tekst, x koordinata i y koordinata)
-        g.drawString(interClassElement.getName(),
-                ((InterClass)interClassElement).getPosition().getFirst()+((InterClass)interClassElement).getSize().getFirst()/2-interClassElement.getName().length()*3-6,
-                ((InterClass)interClassElement).getPosition().getSecond()+((InterClass)interClassElement).getSize().getSecond()/2+5);
+        g.setFont(new Font(Font.DIALOG, Font.PLAIN, 14));
+        g.setPaint(Color.BLACK);
+
+        // Centering the text at the top of the rectangle
+        FontMetrics fm = g.getFontMetrics();
+        int stringWidth = fm.stringWidth(interClassElement.getName());
+        int x = (int) (interClassElement.getPosition().getFirst() + (interClassElement.getSize().getFirst() - stringWidth) / 2);
+        int y = (int) (interClassElement.getPosition().getSecond() + fm.getAscent());
+        g.drawString(interClassElement.getName(), x, y);
+
+
+
+        // Drawing a bottom border beneath the string
+        int borderY = y + fm.getDescent();
+        g.drawLine((int) interClassElement.getPosition().getFirst(), borderY, (int) (interClassElement.getPosition().getFirst() + interClassElement.getSize().getFirst()), borderY);
     }
 
 }

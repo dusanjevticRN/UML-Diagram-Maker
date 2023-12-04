@@ -15,12 +15,10 @@ import raf.dsw.classycraft.app.classyRepository.implementation.Package;
 import raf.dsw.classycraft.app.classyRepository.implementation.Project;
 import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabView;
-import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabbedPane;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
 
@@ -35,10 +33,10 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
         EventBus.getInstance().subscribe(EventType.PROJECT_RENAME, this);
     }
     @Override
-    public ClassyTreeView generateTree(ProjectExplorer projectExplorer, ClassyTabView classyTabView, ClassyTabbedPane classyTabbedPane){
+    public ClassyTreeView generateTree(ProjectExplorer projectExplorer, ClassyTabView classyTabView, PackageView packageView){
         ClassyTreeItem root = new ClassyTreeItem(projectExplorer);
         defaultTreeModel = new DefaultTreeModel(root);
-        classyTreeView = new ClassyTreeView(defaultTreeModel, classyTabView, classyTabbedPane);
+        classyTreeView = new ClassyTreeView(defaultTreeModel, classyTabView, packageView);
         return classyTreeView;
     }
 

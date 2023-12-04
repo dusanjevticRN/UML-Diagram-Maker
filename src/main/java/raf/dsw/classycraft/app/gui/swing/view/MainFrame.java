@@ -5,13 +5,12 @@ import lombok.Setter;
 import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTree;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTreeImplementation;
-import raf.dsw.classycraft.app.gui.swing.ClassyTree.view.ClassyTreeView;
 import raf.dsw.classycraft.app.gui.swing.controller.ActionManager;
 import raf.dsw.classycraft.app.gui.swing.view.optionBars.MyMenyBar;
 import raf.dsw.classycraft.app.gui.swing.view.optionBars.MyToolBar;
 import raf.dsw.classycraft.app.gui.swing.view.optionBars.UMLDiagramToolBar;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabView;
-import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabbedPane;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 import raf.dsw.classycraft.app.messageGenerator.Message;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
@@ -36,7 +35,7 @@ public class MainFrame extends JFrame implements ISubscriber
     private JPanel workingAreaPane;
     private ClassyTree classyTree;
     private List<ISubscriber> subscriberList;
-    private ClassyTabbedPane classyTabbedPane;
+    private PackageView packageView;
 
     private MainFrame() {}
 
@@ -79,8 +78,8 @@ public class MainFrame extends JFrame implements ISubscriber
         this.jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
         classyTabView = new ClassyTabView();
-        classyTabbedPane = new ClassyTabbedPane();
-        JTree projectExplorer = classyTree.generateTree(AppCore.getInstance().getMapRepository().getProjectExplorer(), classyTabView, classyTabbedPane);
+        packageView = new PackageView();
+        JTree projectExplorer = classyTree.generateTree(AppCore.getInstance().getMapRepository().getProjectExplorer(), classyTabView, packageView);
         this.workingAreaPane = new JPanel();
         JScrollPane scrollPane = new JScrollPane(projectExplorer);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -89,7 +88,7 @@ public class MainFrame extends JFrame implements ISubscriber
         this.splitTabPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitTabPane.setTopComponent(classyTabView);
 
-        splitTabPane.setBottomComponent(classyTabbedPane);
+        splitTabPane.setBottomComponent(packageView);
         splitTabPane.setResizeWeight(0.08);
 
         jSplitPane.setLeftComponent(scrollPane);
