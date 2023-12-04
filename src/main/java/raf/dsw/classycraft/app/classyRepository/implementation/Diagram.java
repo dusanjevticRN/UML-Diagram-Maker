@@ -4,8 +4,11 @@ import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeLeaf;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
+import java.util.List;
+
 public class Diagram extends ClassyNodeLeaf
 {
+    private List<DiagramElement> diagramElements;
     public Diagram(String name, ClassyNode parent, boolean isPattern) {
         super(parent, name + " ");
     }

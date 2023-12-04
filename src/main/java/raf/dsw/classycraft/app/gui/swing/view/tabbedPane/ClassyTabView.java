@@ -1,5 +1,7 @@
 package raf.dsw.classycraft.app.gui.swing.view.tabbedPane;
 
+import lombok.Getter;
+import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.implementation.Project;
 import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
@@ -8,7 +10,8 @@ import raf.dsw.classycraft.app.core.eventHandler.EventType;
 
 import javax.swing.*;
 
-
+@Getter
+@Setter
 public class ClassyTabView extends JPanel implements ISubscriber {
 
     private JLabel projectNameLabel;
@@ -24,27 +27,34 @@ public class ClassyTabView extends JPanel implements ISubscriber {
         this.add(authorNameLabel);
     }
 
-    // Existing methods...
-
-    // ISubscriber interface method
     @Override
-    public void update(Object notification, Object typeOfUpdate) {
-        if (notification instanceof ClassyTreeItem && typeOfUpdate.equals(EventType.PROJECT_SELECTION)) {
+    public void update(Object notification, Object typeOfUpdate)
+    {
+        if (notification instanceof ClassyTreeItem && typeOfUpdate.equals(EventType.PROJECT_SELECTION))
+        {
             ClassyTreeItem item = (ClassyTreeItem) notification;
             Project newItem = null;
-            if(item.getClassyNode() instanceof ProjectExplorer){
+
+            if(item.getClassyNode() instanceof ProjectExplorer)
+            {
                 projectNameLabel.setText("Select a project...");
                 authorNameLabel.setText("");
                 return;
             }
-            else if(!(item.getClassyNode() instanceof Project)){
+
+            else if(!(item.getClassyNode() instanceof Project))
+            {
                 newItem = getProject(item);
-                if(newItem != null) {
+
+                if(newItem != null)
+                {
                     projectNameLabel.setText("Project: " + newItem.getName());
                     authorNameLabel.setText("Author: " + newItem.getAuthor());
                 }
             }
-            else {
+
+            else
+            {
                 Project classyNode = (Project) item.getClassyNode(); // Assuming ClassyNode has a method to get the project name
                 projectNameLabel.setText("Project: " + classyNode.getName()); // Update the label with the project name
                 authorNameLabel.setText("Author: " + classyNode.getAuthor()); // Update the label with the author name
@@ -61,6 +71,7 @@ public class ClassyTabView extends JPanel implements ISubscriber {
             return (Project) item.getParent();
         return getProject((ClassyTreeItem) item.getParent());
     }
+
 }
 
 

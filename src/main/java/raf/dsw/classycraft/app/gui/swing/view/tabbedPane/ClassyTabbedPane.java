@@ -17,7 +17,8 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
         EventBus eventBus = EventBus.getInstance();
         List<Diagram> openDiagrams;
         List<Component> tabs;
-        public ClassyTabbedPane() {
+        public ClassyTabbedPane()
+        {
             super();
             openDiagrams = new ArrayList<>();
             tabs = new ArrayList<>();
@@ -70,14 +71,20 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
                 }
             }
         }
-        else if(notification instanceof ClassyNode){
+        else if(notification instanceof ClassyNode)
+        {
             System.out.println("DELETE");
-            if(EventType.DIAGRAM_DELETION.equals(typeOfUpdate)){
+            if(EventType.DIAGRAM_DELETION.equals(typeOfUpdate))
+            {
                 this.openDiagrams.remove((Diagram) notification);
                 String uniqueId = ((ClassyNode) notification).getUniqueId();
-                for (int i = 0; i < this.getTabCount(); i++) {
+
+                for (int i = 0; i < this.getTabCount(); i++)
+                {
                     Component tabComponent = this.getComponentAt(i);
-                    if (tabComponent.getName().equals(uniqueId)) {
+
+                    if (tabComponent.getName().equals(uniqueId))
+                    {
                         System.out.println("Deleting" + tabComponent.getName());
                         this.removeTabAt(i);
                         break;
@@ -85,18 +92,28 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
                 }
             }
         }
-        else if(EventType.DIAGRAM_LIST_DELETION.equals(typeOfUpdate)){
+        else if(EventType.DIAGRAM_LIST_DELETION.equals(typeOfUpdate))
+        {
             System.out.println("LIST DELETE1");
-            if(notification instanceof List){
+
+            if(notification instanceof List)
+            {
                 System.out.println("LIST DELETE2");
                 List<ClassyNode> list = (List<ClassyNode>) notification;
-                for(ClassyNode node : list){
-                    if(node instanceof Diagram){
+
+                for(ClassyNode node : list)
+                {
+                    if(node instanceof Diagram)
+                    {
                         this.openDiagrams.remove((Diagram) node);
                         String uniqueId = node.getUniqueId();
-                        for (int i = 0; i < this.getTabCount(); i++) {
+
+                        for (int i = 0; i < this.getTabCount(); i++)
+                        {
                             Component tabComponent = this.getComponentAt(i);
-                            if (tabComponent.getName().equals(uniqueId)) {
+
+                            if (tabComponent.getName().equals(uniqueId))
+                            {
                                 System.out.println("Deleting" + tabComponent.getName());
                                 this.removeTabAt(i);
                                 break;
@@ -106,23 +123,31 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
                 }
             }
         }
-        else if(notification instanceof Component){
-            if(EventType.DIAGRAM_CLOSE.equals(typeOfUpdate)) {
+        else if(notification instanceof Component)
+        {
+            if(EventType.DIAGRAM_CLOSE.equals(typeOfUpdate))
+            {
                 JPanel temp = (JPanel) notification;
                 String id = temp.getName();
                 String name = "";
-                for(char c: id.toCharArray()){
+
+                for(char c: id.toCharArray())
+                {
                     if(c == '_')
                         break;
                     name = name + c;
                 }
+
                 name.substring(0, name.length() - 1);
                 for(Diagram d : openDiagrams){
                     System.out.println(d.getName() + " - " + name);
-                    if(d.getName().equals(name)){
+                    if(d.getName().equals(name))
+                    {
                         //System.out.println("FOUND");
                         openDiagrams.remove(d);
-                        for (int i = 0; i < this.getTabCount(); i++) {
+
+                        for (int i = 0; i < this.getTabCount(); i++)
+                        {
                             Component tabComponent = this.getComponentAt(i);
                             String tname = "";
                             for(char c: tabComponent.getName().toCharArray()){
@@ -130,9 +155,11 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
                                     break;
                                 tname = tname + c;
                             }
+
                             tname.substring(0, tname.length() - 1);
                             //System.out.println(tabComponent.getName() + " - " + name);
-                            if (tname.equals(name)) {
+                            if (tname.equals(name))
+                            {
                                 //System.out.println("Deleting" + tabComponent.getName());
                                 this.removeTabAt(i);
                                 break;
@@ -145,7 +172,8 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
         }
 
 
-        if(EventType.DIAGRAM_RENAME.equals(typeOfUpdate)){
+        if(EventType.DIAGRAM_RENAME.equals(typeOfUpdate))
+        {
             System.out.println("RENAME");
             System.out.println(notification);
             String oldName = "";
@@ -154,18 +182,24 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
             String newName = split[1];
             oldName = split[0];
             oldName.substring(0, oldName.length() - 1);
-            for (int i = 0; i < this.getTabCount(); i++) {
+
+            for (int i = 0; i < this.getTabCount(); i++)
+            {
                 Component tabComponent = this.getComponentAt(i);
                 String tname = "";
-                for(char c: tabComponent.getName().toCharArray()){
+                for(char c: tabComponent.getName().toCharArray())
+                {
                     if(c == '_')
                         break;
                     tname = tname + c;
                 }
+
                 System.out.println(tname);
                 System.out.println(oldName);
                 System.out.println(tname.equals(oldName));
-                if (tname.equals(oldName)) {
+
+                if (tname.equals(oldName))
+                {
                     System.out.println("Renaming" + tabComponent.getName());
                     System.out.println(newName);
                     tabComponent.setName(newName);
@@ -182,4 +216,6 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
 
 
     }
+
+
 }
