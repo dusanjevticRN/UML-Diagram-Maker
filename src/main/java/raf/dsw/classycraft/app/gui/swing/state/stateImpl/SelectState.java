@@ -73,6 +73,7 @@ public class SelectState implements State {
 
     @Override
     public void stateMouseReleased(int x, int y, DiagramPanel panel) {
+        System.out.println("Released");
         String start = startX + "/" + startY;
         String end = x + "/" + y;
         String startEnd = start + "-" + end;

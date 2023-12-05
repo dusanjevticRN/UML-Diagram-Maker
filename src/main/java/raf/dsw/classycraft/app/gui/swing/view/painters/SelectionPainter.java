@@ -21,9 +21,12 @@ public class SelectionPainter extends ElementPainter{
         ((Rectangle2D)shape).setFrame(interClassElement.getPosition().getFirst(), interClassElement.getPosition().getSecond(), interClassElement.getSize().getFirst(), interClassElement.getSize().getSecond());
 
         //Boarder
-        g.setPaint(Color.BLACK);
+        Color color = new Color(0, 153, 204, 80);
+        g.setPaint(color);
         g.setStroke(new BasicStroke(interClassElement.getStroke()));
         g.draw(shape);
-
+        color = new Color(51, 204, 255, 40);
+        g.setPaint(color);
+        g.fill(shape);
     }
 }

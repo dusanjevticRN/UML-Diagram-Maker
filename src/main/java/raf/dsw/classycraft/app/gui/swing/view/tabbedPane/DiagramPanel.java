@@ -34,6 +34,7 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     ArrayList<ElementPainter> painters = new ArrayList<>();
     ArrayList<ElementPainter> tempPainters = new ArrayList<>();
     ArrayList<ElementPainter> selectedPainters = new ArrayList<>();
+    private SelectionPainter selectionPainter = null;
     StateManager stateManager = new StateManager();
     Diagram diagram;
     int startDargX;
@@ -134,7 +135,13 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         else if(EventType.START_DRAG.equals(typeOfUpdate)){
             tempPainters.addAll(painters);
         }
-        else if(EventType.DRAG.equals(typeOfUpdate)){
+        if(EventType.DRAG.equals(typeOfUpdate)) {
+            if(selectionPainter == null) {
+                InterClass temp = new Klasa(null, "temp");
+                selectionPainter = new SelectionPainter(temp);
+                painters.add(selectionPainter);
+            }
+
             String startStr[] = notification.toString().split("-");
             String start[] = startStr[0].split("/");
             String end[] = startStr[1].split("/");
@@ -142,21 +149,27 @@ public class DiagramPanel extends JPanel implements ISubscriber {
             int startY = Integer.parseInt(start[1]);
             int endX = Integer.parseInt(end[0]);
             int endY = Integer.parseInt(end[1]);
-            Klasa klasa = new Klasa(null, "selekcija");
-            klasa.setPosition(startX, startY);
-            klasa.setSize(new Pair(endX - startX, endY - startY));
-            SelectionPainter selectionPainter = new SelectionPainter(klasa);
-            painters.add(selectionPainter);
+
+            int rectX = Math.min(startX, endX);
+            int rectY = Math.min(startY, endY);
+            int rectWidth = Math.abs(endX - startX);
+            int rectHeight = Math.abs(endY - startY);
+
+            InterClass interClassElement = (InterClass) selectionPainter.getDiagramElement();
+            interClassElement.getPosition().setFirst(rectX);
+            interClassElement.getPosition().setSecond(rectY);
+            interClassElement.getSize().setFirst(rectWidth);
+            interClassElement.getSize().setSecond(rectHeight);
+
             this.repaint();
         }
-        else if(EventType.CLEAR_DRAG.equals(typeOfUpdate)){
-            System.out.println("CLEAR DRAG");
-            painters.clear();
-            painters = tempPainters;
-            tempPainters.clear();
+        else if(EventType.CLEAR_DRAG.equals(typeOfUpdate)) {
+            painters.remove(selectionPainter);
+            selectionPainter = null;
             this.repaint();
         }
     }
+
 
     @Override
     protected void paintComponent(Graphics g) {
