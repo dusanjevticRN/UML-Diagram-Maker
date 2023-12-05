@@ -3,6 +3,7 @@ package raf.dsw.classycraft.app.core.eventHandler;
 public enum EventType
 {
     NODE_CANNOT_BE_DELETED,
+    NAME_ALREADY_EXISTS,
     NODE_IS_NOT_PROJECT,
     NODE_IS_NOT_PROJECT_OR_PACKAGE,
     CANT_ADD_PROJECT_IN_PROJECT,
@@ -36,5 +37,9 @@ public enum EventType
     DRAG,
     START_DRAG,
     CLEAR_DRAG,
+    MAX_ZOOM,
+    ZOOM_IN,
+    MIN_ZOOM,
+    ZOOM_OUT
 
 }
