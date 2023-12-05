@@ -22,15 +22,16 @@ public class InterClassPainter extends ElementPainter
         // Set the position and size of the Rectangle
         ((Rectangle2D)shape).setFrame(interClassElement.getPosition().getFirst(), interClassElement.getPosition().getSecond(), interClassElement.getSize().getFirst(), interClassElement.getSize().getSecond());
 
+        //Boarder
         g.setPaint(Color.BLACK);
         g.setStroke(new BasicStroke(interClassElement.getStroke()));
         g.draw(shape);
+        //Background
         g.setPaint(interClassElement.getColor());
         g.fill(shape);
+        //Text
         g.setFont(new Font(Font.DIALOG, Font.PLAIN, 14));
         g.setPaint(Color.BLACK);
-
-        // Centering the text at the top of the rectangle
         FontMetrics fm = g.getFontMetrics();
         int stringWidth = fm.stringWidth(interClassElement.getName());
         int x = (int) (interClassElement.getPosition().getFirst() + (interClassElement.getSize().getFirst() - stringWidth) / 2);
@@ -40,6 +41,30 @@ public class InterClassPainter extends ElementPainter
 
 
         // Drawing a bottom border beneath the string
+        int borderY = y + fm.getDescent();
+        g.drawLine((int) interClassElement.getPosition().getFirst(), borderY, (int) (interClassElement.getPosition().getFirst() + interClassElement.getSize().getFirst()), borderY);
+    }
+
+    public void paintSelected(Graphics2D g) {
+        // Set the position and size of the Rectangle
+        ((Rectangle2D) shape).setFrame(interClassElement.getPosition().getFirst(), interClassElement.getPosition().getSecond(), interClassElement.getSize().getFirst(), interClassElement.getSize().getSecond());
+
+        //Boarder
+        g.setPaint(Color.BLUE);
+        g.setStroke(new BasicStroke(interClassElement.getStroke() + 2));
+        g.draw(shape);
+        //Background
+        g.setPaint(interClassElement.getColor());
+        g.fill(shape);
+        //Text
+        g.setFont(new Font(Font.DIALOG, Font.PLAIN, 14));
+        g.setPaint(Color.BLUE);
+        FontMetrics fm = g.getFontMetrics();
+        int stringWidth = fm.stringWidth(interClassElement.getName());
+        int x = (int) (interClassElement.getPosition().getFirst() + (interClassElement.getSize().getFirst() - stringWidth) / 2);
+        int y = (int) (interClassElement.getPosition().getSecond() + fm.getAscent());
+        g.drawString(interClassElement.getName(), x, y);
+
         int borderY = y + fm.getDescent();
         g.drawLine((int) interClassElement.getPosition().getFirst(), borderY, (int) (interClassElement.getPosition().getFirst() + interClassElement.getSize().getFirst()), borderY);
     }

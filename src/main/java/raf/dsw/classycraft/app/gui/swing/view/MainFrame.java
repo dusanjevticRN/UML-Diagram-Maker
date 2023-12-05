@@ -3,6 +3,7 @@ package raf.dsw.classycraft.app.gui.swing.view;
 import lombok.Getter;
 import lombok.Setter;
 import raf.dsw.classycraft.app.AppCore;
+import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTree;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTreeImplementation;
 import raf.dsw.classycraft.app.gui.swing.controller.ActionManager;

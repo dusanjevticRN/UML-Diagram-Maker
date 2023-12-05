@@ -1,5 +1,7 @@
 package raf.dsw.classycraft.app.classyRepository.implementation.subElements;
 
+import lombok.Getter;
+import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.core.observer.IPublisher;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
@@ -7,6 +9,8 @@ import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class UmlSelectionModel implements IPublisher //Klasa sa listom u kojoj se cuvaju selektovani elementi
 {
     private List<ISubscriber> subscribers;

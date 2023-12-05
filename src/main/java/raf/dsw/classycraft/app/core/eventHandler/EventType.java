@@ -31,4 +31,10 @@ public enum EventType
     ADD_CLASS,
     ADD_INTERFACE,
     ADD_ENUM,
+    SELECT_ELEMENT,
+    REFRESH,
+    DRAG,
+    START_DRAG,
+    CLEAR_DRAG,
+
 }
