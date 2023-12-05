@@ -36,5 +36,9 @@ public enum EventType
     DRAG,
     START_DRAG,
     CLEAR_DRAG,
+    ADD_GENERALIZATION,
+    ADD_DEPENDENCY,
+    ADD_AGGREGATION,
+    ADD_COMPOSITION,
 
 }

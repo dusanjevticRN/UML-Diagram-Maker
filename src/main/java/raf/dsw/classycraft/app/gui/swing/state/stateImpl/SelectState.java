@@ -51,10 +51,13 @@ public class SelectState implements State {
         if(hit) {
             System.out.println(hit);
             System.out.println("Hit: " + selectionModel.getSelected().get(0).getName());
+            panel.setSelectedPainters(new ArrayList<>());
+            panel.setSelectionModel(new UmlSelectionModel());
             panel.setSelectionModel(selectionModel);
             EventBus.getInstance().notifySubscriber(this, EventType.REFRESH);
         }
         hit = false;
+        selectionModel.getSelected().clear();
     }
 
     @Override
@@ -64,6 +67,7 @@ public class SelectState implements State {
             startY = y;
             EventBus.getInstance().notifySubscriber(this, EventType.START_DRAG);
         }
+
         String start = startX + "/" + startY;
         String end = x + "/" + y;
         System.out.println(start + "-" + end);
@@ -78,6 +82,38 @@ public class SelectState implements State {
         String end = x + "/" + y;
         String startEnd = start + "-" + end;
 
+        UmlSelectionModel selectionModel = panel.getSelectionModel();
+        List<InterClass> selectableElements = new ArrayList<>();
+        for(DiagramElement elem : panel.getDiagram().getDiagramElements()){
+            if(elem instanceof InterClass){
+                InterClass interClass = (InterClass) elem;
+                selectableElements.add(interClass);
+            }
+        }
+        for(InterClass ic : selectableElements){
+            if(isHitDrag(ic,startX, startY, x, y)){
+                selectionModel.select(ic);
+                hit = true;
+                System.out.println("Hit: " + ic.getName());
+            }
+        }
+        if(!hit){
+            System.out.println(hit);
+            panel.setSelectionModel(new UmlSelectionModel());
+            panel.setSelectedPainters(new ArrayList<>());
+            EventBus.getInstance().notifySubscriber(this, EventType.REFRESH);
+        }
+        if(hit) {
+            System.out.println(hit);
+            System.out.println("Hit: " + selectionModel.getSelected().get(0).getName());
+            panel.setSelectedPainters(new ArrayList<>());
+            panel.setSelectionModel(new UmlSelectionModel());
+            panel.setSelectionModel(selectionModel);
+            EventBus.getInstance().notifySubscriber(this, EventType.REFRESH);
+        }
+        hit = false;
+        selectionModel.getSelected().clear();
+
         EventBus.getInstance().notifySubscriber(startEnd, EventType.CLEAR_DRAG);
         startX = 0;
         startY = 0;
@@ -90,10 +126,32 @@ public class SelectState implements State {
         int endY = startY + interClass.getSize().getSecond();
 
         if(x >= startX && x <= endX && y >= startY && y <= endY){
-            return true;
+        return true;
         }
         return false;
 
+    }
+    private boolean isHitDrag(InterClass interClass, int sX, int sY, int x, int y) {
+        // Uzimamo minimum i max izmedju pocetne i krajnje tacke
+        int rect1TopLeftX = Math.min(sX, x);
+        int rect1TopLeftY = Math.min(sY, y);
+        int rect1BottomRightX = Math.max(sX, x);
+        int rect1BottomRightY = Math.max(sY, y);
+
+        int rect2TopLeftX = interClass.getPosition().getFirst();
+        int rect2TopLeftY = interClass.getPosition().getSecond();
+        int rect2BottomRightX = rect2TopLeftX + interClass.getSize().getFirst();
+        int rect2BottomRightY = rect2TopLeftY + interClass.getSize().getSecond();
+
+        if (rect1TopLeftX > rect2BottomRightX || rect2TopLeftX > rect1BottomRightX) {
+            return false;
+        }
+
+        if (rect1TopLeftY > rect2BottomRightY || rect2TopLeftY > rect1BottomRightY) {
+            return false;
+        }
+
+        return true;
     }
 
 }

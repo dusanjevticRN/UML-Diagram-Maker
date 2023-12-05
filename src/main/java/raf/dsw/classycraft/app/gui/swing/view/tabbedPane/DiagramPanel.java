@@ -5,9 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Agregacija;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Generalizacija;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Kompozicija;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Zavisnost;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Interfejs;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.UmlEnum;
@@ -16,9 +21,7 @@ import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.controller.mouseListener.ClassyMouse;
 import raf.dsw.classycraft.app.gui.swing.state.StateManager;
-import raf.dsw.classycraft.app.gui.swing.view.painters.ElementPainter;
-import raf.dsw.classycraft.app.gui.swing.view.painters.InterClassPainter;
-import raf.dsw.classycraft.app.gui.swing.view.painters.SelectionPainter;
+import raf.dsw.classycraft.app.gui.swing.view.painters.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,9 +62,16 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         EventBus.getInstance().subscribe(EventType.DRAG, this);
         EventBus.getInstance().subscribe(EventType.CLEAR_DRAG, this);
         EventBus.getInstance().subscribe(EventType.START_DRAG, this);
+        EventBus.getInstance().subscribe(EventType.ADD_GENERALIZATION, this);
     }
 
     private void init(Diagram diagram){
+        ArrayList<Connection> connectionList = getConnections(diagram);
+        ArrayList<Connection> flaggedConnections = new ArrayList<>();
+        ArrayList<Connection> doubleCheck = new ArrayList<>();
+        //Provera da li dve klase imaju vise od 1 zajednicke konekcije
+        //TODO: Implementirati logiku za vise od 1 zajednicke konekcije
+        //TODO: FLAGGED ili slicno
         for (DiagramElement element : diagram.getDiagramElements()) {
             if(selectionModel != null && selectionModel.getSelected().contains(element)){
                 if (element instanceof Klasa) {
@@ -94,6 +104,53 @@ public class DiagramPanel extends JPanel implements ISubscriber {
                     Interfejs interfejs = (Interfejs) element;
                     InterClassPainter painter = new InterClassPainter(interfejs);
                     painters.add(painter);
+                } else if (element instanceof Generalizacija && !flaggedConnections.contains(element)) {
+                    Generalizacija gen = (Generalizacija) element;
+                    System.out.println(gen.getFromElement().getName() + " " + gen.getToElement().getName());
+                    Connection con = gen;
+                    Generalizacija generalizacija = (Generalizacija) element;
+                    GeneralizacijaPainter painter = new GeneralizacijaPainter(generalizacija,0);
+                    painters.add(painter);
+                } else if (element instanceof Zavisnost && !flaggedConnections.contains(element)) {
+                    Zavisnost zavisnost = (Zavisnost) element;
+                    ZavisnostPainter painter = new ZavisnostPainter(zavisnost);
+                    painters.add(painter);
+                } else if (element instanceof Agregacija && !flaggedConnections.contains(element)) {
+                    Agregacija agregacija = (Agregacija) element;
+                    AgregacijaPainter painter = new AgregacijaPainter(agregacija);
+                    painters.add(painter);
+                } else if (element instanceof Kompozicija && !flaggedConnections.contains(element)) {
+                    Kompozicija kompozicija = (Kompozicija) element;
+                    KompozicijaPainter painter = new KompozicijaPainter(kompozicija);
+                    painters.add(painter);
+                }
+                else if(element instanceof Connection && flaggedConnections.contains(element)){
+                    if(element instanceof Generalizacija){
+                        System.out.println("FLAGGED");
+                        Generalizacija gen = (Generalizacija) element;
+                        System.out.println(gen.getFromElement().getName() + " " + gen.getToElement().getName());
+                        Connection con = gen;
+                        Generalizacija generalizacija = (Generalizacija) element;
+                        generalizacija.getFromElement().getPosition().setSecond(generalizacija.getFromElement().getPosition().getSecond() + 20);
+                        generalizacija.getToElement().getPosition().setSecond(generalizacija.getToElement().getPosition().getSecond() + 20);
+                        GeneralizacijaPainter painter = new GeneralizacijaPainter(generalizacija, 0);
+                        painters.add(painter);
+                    }
+                    else if(element instanceof Zavisnost){
+                        Zavisnost zavisnost = (Zavisnost) element;
+                        ZavisnostPainter painter = new ZavisnostPainter(zavisnost);
+                        painters.add(painter);
+                    }
+                    else if(element instanceof Agregacija){
+                        Agregacija agregacija = (Agregacija) element;
+                        AgregacijaPainter painter = new AgregacijaPainter(agregacija);
+                        painters.add(painter);
+                    }
+                    else if(element instanceof Kompozicija){
+                        Kompozicija kompozicija = (Kompozicija) element;
+                        KompozicijaPainter painter = new KompozicijaPainter(kompozicija);
+                        painters.add(painter);
+                    }
                 }
             }
         }
@@ -116,6 +173,10 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     {
         this.stateManager.setSelectState();
     }
+    public void startGeneralizationState()
+    {
+        this.stateManager.setGeneralizationState();
+    }
 
     @Override
     public void update(Object notification, Object typeOfUpdate) {
@@ -125,8 +186,11 @@ public class DiagramPanel extends JPanel implements ISubscriber {
             this.startAddInterfaceState();
         else if(EventType.ADD_ENUM.equals(typeOfUpdate))
             this.startAddEnumState();
-        else if(EventType.SELECT_ELEMENT.equals(typeOfUpdate))
+        else if(EventType.ADD_GENERALIZATION.equals(typeOfUpdate))
+            this.startGeneralizationState();
+        else if(EventType.SELECT_ELEMENT.equals(typeOfUpdate)) {
             this.startSelectState();
+        }
         else if(EventType.REFRESH.equals(typeOfUpdate)){
             System.out.println("REFRESH");
             this.init(diagram);
@@ -188,5 +252,19 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         }
     }
 
+    private ArrayList<Connection> getConnections(Diagram diagram) {
+        ArrayList<Connection> connectionList = new ArrayList<>();
+        for (DiagramElement element : diagram.getDiagramElements()) {
+            if (element instanceof Connection) {
+                Connection connection = (Connection) element;
+                connectionList.add(connection);
+            }
+        }
+        return connectionList;
+    }
 
+    public void outsideRefresh(){
+        this.init(diagram);
+        this.repaint();
+    }
 }

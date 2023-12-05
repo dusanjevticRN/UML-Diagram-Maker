@@ -1,10 +1,7 @@
 package raf.dsw.classycraft.app.gui.swing.state;
 
 import lombok.Getter;
-import raf.dsw.classycraft.app.gui.swing.state.stateImpl.AddClassState;
-import raf.dsw.classycraft.app.gui.swing.state.stateImpl.AddEnumState;
-import raf.dsw.classycraft.app.gui.swing.state.stateImpl.AddInterfaceState;
-import raf.dsw.classycraft.app.gui.swing.state.stateImpl.SelectState;
+import raf.dsw.classycraft.app.gui.swing.state.stateImpl.*;
 
 @Getter
 public class StateManager {
@@ -13,6 +10,7 @@ public class StateManager {
     private AddEnumState addEnumState;
     private AddInterfaceState addInterfaceState;
     private SelectState selectState;
+    private AddGeneralizationState generalizationState;
     public StateManager(){
         initialiseStates();
     }
@@ -22,6 +20,7 @@ public class StateManager {
         addEnumState = new AddEnumState();
         addInterfaceState = new AddInterfaceState();
         selectState = new SelectState();
+        generalizationState = new AddGeneralizationState();
         currentState = selectState;
     }
 
@@ -36,5 +35,8 @@ public class StateManager {
     }
     public void setSelectState() {
         this.currentState = selectState;
+    }
+    public void setGeneralizationState() {
+        this.currentState = generalizationState;
     }
 }
