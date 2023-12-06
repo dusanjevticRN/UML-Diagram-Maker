@@ -40,5 +40,12 @@ public enum EventType
     ADD_DEPENDENCY,
     ADD_AGGREGATION,
     ADD_COMPOSITION,
+    ZOOM_IN,
+    ZOOM_OUT,
+    NAME_ALREADY_EXISTS,
+    MAX_ZOOM,
+    MIN_ZOOM,
+    ZOOM_IN_STATE,
+    ZOOM_OUT_STATE
 
 }

@@ -14,20 +14,25 @@ public class StateManager {
     private AddAgregationState agregationState;
     private AddCompositionState compositionState;
     private AddDependancyState dependancyState;
+    private ZoomInState zoomInState;
+    private ZoomOutState zoomOutState;
     public StateManager(){
         initialiseStates();
     }
 
-    private void initialiseStates(){
-        addClassState = new AddClassState();
-        addEnumState = new AddEnumState();
-        addInterfaceState = new AddInterfaceState();
-        selectState = new SelectState();
-        generalizationState = new AddGeneralizationState();
-        agregationState = new AddAgregationState();
-        compositionState = new AddCompositionState();
-        dependancyState = new AddDependancyState();
-        currentState = selectState;
+    private void initialiseStates()
+    {
+        this.addClassState = new AddClassState();
+        this.addEnumState = new AddEnumState();
+        this.addInterfaceState = new AddInterfaceState();
+        this.selectState = new SelectState();
+        this.generalizationState = new AddGeneralizationState();
+        this.agregationState = new AddAgregationState();
+        this.compositionState = new AddCompositionState();
+        this.dependancyState = new AddDependancyState();
+        this.currentState = selectState;
+        this.zoomInState = new ZoomInState();
+        this.zoomOutState = new ZoomOutState();
     }
 
     public void setAddClassState() {
@@ -51,6 +56,8 @@ public class StateManager {
     public void setCompositionState() {
         this.currentState = compositionState;
     }
+    public void setZoomInState() {this.currentState = zoomInState;}
+    public void setZoomOutState() {this.currentState = zoomOutState;}
     public void setAddDependancyState() {
         this.currentState = new AddDependancyState();
     }
