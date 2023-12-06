@@ -20,12 +20,12 @@ public class ActionManager
     private AddInterfaceAction addInterfaceAction;
     private AddEnumAction addEnumAction;
     private AddRelationshipAction addRelationshipAction;
-    private AddContentAction addContentAction;
     private MoveElementAction moveElementAction;
     private SelectElementAction selectElementAction;
     private DeleteElementAction deleteElementAction;
     private ZoomInAction zoomInAction;
     private ZoomOutAction zoomOutAction;
+    private AddContentAction addContentAction;
     public ActionManager()
     {
         initialiseAction();
@@ -44,11 +44,11 @@ public class ActionManager
         this.addInterfaceAction = new AddInterfaceAction();
         this.addEnumAction = new AddEnumAction();
         this.addRelationshipAction = new AddRelationshipAction();
-        this.addContentAction = new AddContentAction();
         this.moveElementAction = new MoveElementAction();
         this.selectElementAction = new SelectElementAction();
         this.deleteElementAction = new DeleteElementAction();
         this.zoomInAction = new ZoomInAction();
         this.zoomOutAction = new ZoomOutAction();
+        this.addContentAction = new AddContentAction();
     }
 }

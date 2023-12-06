@@ -46,6 +46,9 @@ public enum EventType
     MAX_ZOOM,
     MIN_ZOOM,
     ZOOM_IN_STATE,
-    ZOOM_OUT_STATE
+    ZOOM_OUT_STATE,
+    ADD_FIELD,
+    ADD_METHOD,
+    FIELD_ALREADY_EXISTS
 
 }

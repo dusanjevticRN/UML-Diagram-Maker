@@ -65,6 +65,8 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         this.addMouseListener(classyMouse);
         this.addMouseMotionListener(classyMouse);
         EventBus.getInstance().subscribe(EventType.ADD_CLASS, this);
+        EventBus.getInstance().subscribe(EventType.ADD_FIELD, this);
+        EventBus.getInstance().subscribe(EventType.ADD_METHOD, this);
         EventBus.getInstance().subscribe(EventType.ZOOM_IN_STATE, this);
         EventBus.getInstance().subscribe(EventType.ZOOM_IN, this);
         EventBus.getInstance().subscribe(EventType.ZOOM_OUT_STATE, this);
@@ -233,6 +235,7 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     }
     public void startZoomInState() {this.stateManager.setZoomInState();}
     public void startZoomOutState() {this.stateManager.setZoomOutState();}
+    public void startAddFieldState() {this.stateManager.setAddFieldState();}
 
     @Override
     public void update(Object notification, Object typeOfUpdate)
@@ -270,6 +273,9 @@ public class DiagramPanel extends JPanel implements ISubscriber {
 
             this.zoomOut(x, y);
         }
+
+        else if(EventType.ADD_FIELD.equals(typeOfUpdate))
+            this.startAddFieldState();
 
         else if(EventType.ADD_ENUM.equals(typeOfUpdate))
             this.startAddEnumState();

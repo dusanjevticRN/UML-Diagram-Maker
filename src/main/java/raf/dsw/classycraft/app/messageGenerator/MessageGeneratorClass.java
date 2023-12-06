@@ -68,9 +68,11 @@ public class MessageGeneratorClass implements MessageGenerator
         else if(typeOfEvent == EventType.MIN_ZOOM)
             this.notifySubscriber(new Message("Diagram is zoomed out at its maximum", "Error"), typeOfEvent);
 
+        else if(typeOfEvent == EventType.FIELD_ALREADY_EXISTS)
+            this.notifySubscriber(new Message("Field already exists!", "Error"), typeOfEvent);
+
         else if(typeOfEvent == EventType.SELECT_ITEM_TO_EDIT)
             this.notifySubscriber(new Message("Please select item to edit", "Information"), typeOfEvent);
-
 
     }
 
