@@ -11,6 +11,9 @@ public class StateManager {
     private AddInterfaceState addInterfaceState;
     private SelectState selectState;
     private AddGeneralizationState generalizationState;
+    private AddAgregationState agregationState;
+    private AddCompositionState compositionState;
+    private AddDependancyState dependancyState;
     public StateManager(){
         initialiseStates();
     }
@@ -21,6 +24,9 @@ public class StateManager {
         addInterfaceState = new AddInterfaceState();
         selectState = new SelectState();
         generalizationState = new AddGeneralizationState();
+        agregationState = new AddAgregationState();
+        compositionState = new AddCompositionState();
+        dependancyState = new AddDependancyState();
         currentState = selectState;
     }
 
@@ -38,5 +44,14 @@ public class StateManager {
     }
     public void setGeneralizationState() {
         this.currentState = generalizationState;
+    }
+    public void setAgregationState() {
+        this.currentState = agregationState;
+    }
+    public void setCompositionState() {
+        this.currentState = compositionState;
+    }
+    public void setAddDependancyState() {
+        this.currentState = new AddDependancyState();
     }
 }

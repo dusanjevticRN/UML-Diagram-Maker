@@ -63,6 +63,10 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         EventBus.getInstance().subscribe(EventType.CLEAR_DRAG, this);
         EventBus.getInstance().subscribe(EventType.START_DRAG, this);
         EventBus.getInstance().subscribe(EventType.ADD_GENERALIZATION, this);
+        EventBus.getInstance().subscribe(EventType.ADD_AGGREGATION, this);
+        EventBus.getInstance().subscribe(EventType.ADD_COMPOSITION, this);
+        EventBus.getInstance().subscribe(EventType.ADD_DEPENDENCY, this);
+
     }
 
     private void init(Diagram diagram){
@@ -90,6 +94,30 @@ public class DiagramPanel extends JPanel implements ISubscriber {
                     painters.add(painter);
                     selectedPainters.add(painter);
                 }
+                else if(element instanceof Kompozicija){
+                    Kompozicija kompozicija = (Kompozicija) element;
+                    KompozicijaPainter painter = new KompozicijaPainter(kompozicija, 0);
+                    painters.add(painter);
+                    selectedPainters.add(painter);
+                }
+                else if(element instanceof Agregacija){
+                    Agregacija agregacija = (Agregacija) element;
+                    AgregacijaPainter painter = new AgregacijaPainter(agregacija, 0);
+                    painters.add(painter);
+                    selectedPainters.add(painter);
+                }
+                else if(element instanceof Zavisnost){
+                    Zavisnost zavisnost = (Zavisnost) element;
+                    ZavisnostPainter painter = new ZavisnostPainter(zavisnost, 0);
+                    painters.add(painter);
+                    selectedPainters.add(painter);
+                }
+                else if(element instanceof Generalizacija){
+                    Generalizacija generalizacija = (Generalizacija) element;
+                    GeneralizacijaPainter painter = new GeneralizacijaPainter(generalizacija, 0);
+                    painters.add(painter);
+                    selectedPainters.add(painter);
+                }
             }
             else {
                 if (element instanceof Klasa) {
@@ -113,15 +141,15 @@ public class DiagramPanel extends JPanel implements ISubscriber {
                     painters.add(painter);
                 } else if (element instanceof Zavisnost && !flaggedConnections.contains(element)) {
                     Zavisnost zavisnost = (Zavisnost) element;
-                    ZavisnostPainter painter = new ZavisnostPainter(zavisnost);
+                    ZavisnostPainter painter = new ZavisnostPainter(zavisnost, 0);
                     painters.add(painter);
                 } else if (element instanceof Agregacija && !flaggedConnections.contains(element)) {
                     Agregacija agregacija = (Agregacija) element;
-                    AgregacijaPainter painter = new AgregacijaPainter(agregacija);
+                    AgregacijaPainter painter = new AgregacijaPainter(agregacija, 0);
                     painters.add(painter);
                 } else if (element instanceof Kompozicija && !flaggedConnections.contains(element)) {
                     Kompozicija kompozicija = (Kompozicija) element;
-                    KompozicijaPainter painter = new KompozicijaPainter(kompozicija);
+                    KompozicijaPainter painter = new KompozicijaPainter(kompozicija, 0);
                     painters.add(painter);
                 }
                 else if(element instanceof Connection && flaggedConnections.contains(element)){
@@ -138,17 +166,17 @@ public class DiagramPanel extends JPanel implements ISubscriber {
                     }
                     else if(element instanceof Zavisnost){
                         Zavisnost zavisnost = (Zavisnost) element;
-                        ZavisnostPainter painter = new ZavisnostPainter(zavisnost);
+                        ZavisnostPainter painter = new ZavisnostPainter(zavisnost, 0);
                         painters.add(painter);
                     }
                     else if(element instanceof Agregacija){
                         Agregacija agregacija = (Agregacija) element;
-                        AgregacijaPainter painter = new AgregacijaPainter(agregacija);
+                        AgregacijaPainter painter = new AgregacijaPainter(agregacija, 0);
                         painters.add(painter);
                     }
                     else if(element instanceof Kompozicija){
                         Kompozicija kompozicija = (Kompozicija) element;
-                        KompozicijaPainter painter = new KompozicijaPainter(kompozicija);
+                        KompozicijaPainter painter = new KompozicijaPainter(kompozicija, 0);
                         painters.add(painter);
                     }
                 }
@@ -177,6 +205,18 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     {
         this.stateManager.setGeneralizationState();
     }
+    public void startAgregationState()
+    {
+        this.stateManager.setAgregationState();
+    }
+    public void startKompozicijaState()
+    {
+        this.stateManager.setCompositionState();
+    }
+    public void startDependencyState()
+    {
+        this.stateManager.setAddDependancyState();
+    }
 
     @Override
     public void update(Object notification, Object typeOfUpdate) {
@@ -188,6 +228,12 @@ public class DiagramPanel extends JPanel implements ISubscriber {
             this.startAddEnumState();
         else if(EventType.ADD_GENERALIZATION.equals(typeOfUpdate))
             this.startGeneralizationState();
+        else if(EventType.ADD_AGGREGATION.equals(typeOfUpdate))
+            this.startAgregationState();
+        else if(EventType.ADD_COMPOSITION.equals(typeOfUpdate))
+            this.startKompozicijaState();
+        else if(EventType.ADD_DEPENDENCY.equals(typeOfUpdate))
+            this.startDependencyState();
         else if(EventType.SELECT_ELEMENT.equals(typeOfUpdate)) {
             this.startSelectState();
         }
@@ -243,11 +289,45 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         }
         Graphics2D g2d = (Graphics2D) g;
         for (ElementPainter painter : painters) {
-            if(!selectedPainters.contains(painter))
+            if(!selectedPainters.contains(painter)){
+                if(painter instanceof GeneralizacijaPainter)
+                    ((GeneralizacijaPainter) painter).setSelected(false);
+                else if(painter instanceof AgregacijaPainter)
+                    ((AgregacijaPainter) painter).setSelected(false);
+                else if(painter instanceof KompozicijaPainter)
+                    ((KompozicijaPainter) painter).setSelected(false);
+                else if(painter instanceof ZavisnostPainter)
+                    ((ZavisnostPainter) painter).setSelected(false);
                 painter.paint(g2d);
-            else {
+
+            }
+            else if(painter instanceof InterClassPainter){
                 InterClassPainter interClassPainter = (InterClassPainter) painter;
                 interClassPainter.paintSelected(g2d);
+            }
+            else if(painter instanceof GeneralizacijaPainter){
+                //generalizacijaPainter.paintSelected(g2d);
+                ((GeneralizacijaPainter) painter).setSelected(true);
+                if(((GeneralizacijaPainter) painter).getSelected())
+                    painter.paint(g2d);
+            }
+            else if(painter instanceof AgregacijaPainter){
+                //agregacijaPainter.paintSelected(g2d);
+                ((AgregacijaPainter) painter).setSelected(true);
+                if(((AgregacijaPainter) painter).getSelected())
+                    painter.paint(g2d);
+            }
+            else if(painter instanceof KompozicijaPainter){
+                //kompozicijaPainter.paintSelected(g2d);
+                ((KompozicijaPainter) painter).setSelected(true);
+                if(((KompozicijaPainter) painter).getSelected())
+                    painter.paint(g2d);
+            }
+            else if(painter instanceof ZavisnostPainter){
+                //zavisnostPainter.paintSelected(g2d);
+                ((ZavisnostPainter) painter).setSelected(true);
+                if(((ZavisnostPainter) painter).getSelected())
+                    painter.paint(g2d);
             }
         }
     }
@@ -267,4 +347,6 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         this.init(diagram);
         this.repaint();
     }
+
+
 }

@@ -1,6 +1,7 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
@@ -32,6 +33,15 @@ public class SelectState implements State {
             if(elem instanceof InterClass){
                 InterClass interClass = (InterClass) elem;
                 selectableElements.add(interClass);
+            }
+            else if(elem instanceof Connection){
+                Connection connection = (Connection) elem;
+                if(isHitLine(connection, x, y)){
+                    selectionModel.select(connection);
+                    hit = true;
+                    System.out.println("Hit: " + connection.getName());
+                    break;
+                }
             }
         }
         for(InterClass ic : selectableElements){
@@ -89,6 +99,14 @@ public class SelectState implements State {
                 InterClass interClass = (InterClass) elem;
                 selectableElements.add(interClass);
             }
+            else if(elem instanceof Connection){
+                Connection connection = (Connection) elem;
+                if(isHitLineDrag(connection, startX, startY, x, y)){
+                    selectionModel.select(connection);
+                    hit = true;
+                    System.out.println("Hit: " + connection.getName());
+                }
+            }
         }
         for(InterClass ic : selectableElements){
             if(isHitDrag(ic,startX, startY, x, y)){
@@ -142,6 +160,41 @@ public class SelectState implements State {
         int rect2TopLeftY = interClass.getPosition().getSecond();
         int rect2BottomRightX = rect2TopLeftX + interClass.getSize().getFirst();
         int rect2BottomRightY = rect2TopLeftY + interClass.getSize().getSecond();
+
+        if (rect1TopLeftX > rect2BottomRightX || rect2TopLeftX > rect1BottomRightX) {
+            return false;
+        }
+
+        if (rect1TopLeftY > rect2BottomRightY || rect2TopLeftY > rect1BottomRightY) {
+            return false;
+        }
+
+        return true;
+    }
+    private boolean isHitLine(Connection connection, int x, int y){
+        int startX = connection.getStart().getFirst();
+        int startY = connection.getStart().getSecond();
+        int endX = connection.getEnd().getFirst();
+        int endY = connection.getEnd().getSecond();
+
+        if(x >= startX && x <= endX && y >= startY && y <= endY){
+            return true;
+        }
+        return false;
+
+    }
+
+    private boolean isHitLineDrag(Connection connection, int sX, int sY, int x, int y) {
+        // Uzimamo minimum i max izmedju pocetne i krajnje tacke
+        int rect1TopLeftX = Math.min(sX, x);
+        int rect1TopLeftY = Math.min(sY, y);
+        int rect1BottomRightX = Math.max(sX, x);
+        int rect1BottomRightY = Math.max(sY, y);
+
+        int rect2TopLeftX = connection.getStart().getFirst();
+        int rect2TopLeftY = connection.getStart().getSecond();
+        int rect2BottomRightX = connection.getEnd().getFirst();
+        int rect2BottomRightY = connection.getEnd().getSecond();
 
         if (rect1TopLeftX > rect2BottomRightX || rect2TopLeftX > rect1BottomRightX) {
             return false;

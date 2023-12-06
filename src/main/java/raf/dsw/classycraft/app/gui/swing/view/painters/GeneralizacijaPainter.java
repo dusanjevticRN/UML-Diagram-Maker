@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class GeneralizacijaPainter extends ConnectionPainter
 {
     int i= 0;
+    private static boolean selected = false;
     private boolean release = false;
     /*
     0,0 - levo
@@ -96,7 +97,11 @@ public class GeneralizacijaPainter extends ConnectionPainter
             }
         }
 
-        g.setPaint(Color.BLACK);
+        if(!selected)
+            g.setPaint(Color.BLACK);
+        else
+            g.setPaint(Color.BLUE);
+
         g.setStroke(new BasicStroke(connectionElement.getStroke()));
 
         g.draw(shape);
@@ -109,6 +114,28 @@ public class GeneralizacijaPainter extends ConnectionPainter
 
     }
 
+
+    //zastareli draw bleji za svaki slucaj ako zatreba
+    public void drawArrowHead1(Graphics g, int x, int y, int[] arrowDir) {
+        int size = 10;
+        int dx = size, dy = size;
+        g.setColor(Color.BLACK);
+        if (arrowDir[0] == 0 && arrowDir[1] == 0) { //levo
+            g.drawLine(x, y, x + dx, y - dy); //gornja linija strelice
+            g.drawLine(x, y, x + dx, y + dy); //donja
+        } else if (arrowDir[0] == 0 && arrowDir[1] == 1) { // desno
+            g.drawLine(x, y, x - dx, y - dy);
+            g.drawLine(x, y, x - dx, y + dy);
+        } else if (arrowDir[0] == 1 && arrowDir[1] == 0) { //gore
+            g.drawLine(x, y, x - dx, y + dy);
+            g.drawLine(x, y, x + dx, y + dy);
+        } else if (arrowDir[0] == 1 && arrowDir[1] == 1) { // Dole
+            g.drawLine(x, y, x - dx, y - dy);
+            g.drawLine(x, y, x + dx, y - dy);
+        }
+    }
+
+    //preko poligona zbog filla belom bojom
     public void drawArrowHead(Graphics g, int x, int y, int[] arrowDir) {
         int size = 10; //Velicina strelice
         int dx = size, dy = size;
@@ -135,6 +162,14 @@ public class GeneralizacijaPainter extends ConnectionPainter
         }
 
         g.setColor(Color.BLACK);
+        g.drawPolygon(xPoints, yPoints, 3);
+        g.setColor(Color.WHITE);
         g.fillPolygon(xPoints, yPoints, 3);
+    }
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+    public boolean getSelected() {
+        return selected;
     }
 }
