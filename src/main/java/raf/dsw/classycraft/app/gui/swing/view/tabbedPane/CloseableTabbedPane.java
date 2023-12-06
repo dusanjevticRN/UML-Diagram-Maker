@@ -25,7 +25,6 @@ public class CloseableTabbedPane extends JTabbedPane {
         public CloseButtonTab(final Component tab, String title, final JTabbedPane pane) {
             this.tab = tab;
             setOpaque(false);
-            this.tab.setBackground(Color.WHITE);
             FlowLayout flowLayout = new FlowLayout(FlowLayout.CENTER, 3, 3);
             setLayout(flowLayout);
             JLabel titleLabel = new JLabel(title);
@@ -39,7 +38,7 @@ public class CloseableTabbedPane extends JTabbedPane {
                 public void actionPerformed(ActionEvent e) {
                     int index = pane.indexOfComponent(tab);
                     if (index >= 0) {
-                        EventBus.getInstance().publish(EventType.DIAGRAM_CLOSE, tab);
+                        EventBus.getInstance().notifySubscriber(tab, EventType.DIAGRAM_CLOSE);
                     }
                 }
             });

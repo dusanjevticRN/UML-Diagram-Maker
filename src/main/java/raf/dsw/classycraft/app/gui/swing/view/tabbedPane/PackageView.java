@@ -6,18 +6,21 @@ import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
+import raf.dsw.classycraft.app.gui.swing.state.StateManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber {
+public class PackageView extends CloseableTabbedPane implements ISubscriber {
 
         EventBus eventBus = EventBus.getInstance();
+
         List<Diagram> openDiagrams;
         List<Component> tabs;
-        public ClassyTabbedPane()
+        public PackageView()
         {
             super();
             openDiagrams = new ArrayList<>();
@@ -27,43 +30,41 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
             eventBus.subscribe(EventType.DIAGRAM_RENAME, this);
             eventBus.subscribe(EventType.DIAGRAM_CLOSE, this);
             eventBus.subscribe(EventType.DIAGRAM_LIST_DELETION, this);
+            eventBus.subscribe(EventType.CLOSE_TABS, this);
         }
 
     @Override
     public void update(Object notification, Object typeOfUpdate)
     {
+        if(EventType.CLOSE_TABS.equals(typeOfUpdate))
+        {
+            this.closeAllTabs();
+            return;
+        }
         if (notification instanceof ClassyTreeItem)
         {
             ClassyTreeItem item = (ClassyTreeItem) notification;
 
-            if (EventType.DIAGRAM_SELECTION.equals(typeOfUpdate))
+
+
+            if (EventType.DIAGRAM_DELETION.equals(typeOfUpdate))
             {
-                //System.out.println("SELECT");
-
-                if(this.openDiagrams.contains((Diagram) item.getClassyNode()))
-                {
-                    this.setSelectedIndex(this.indexOfTab(item.getClassyNode().getName()));
-                    return;
-                }
-
-                this.openDiagrams.add((Diagram) item.getClassyNode());
-                String title = item.getClassyNode().getName();
-                this.addTab(title, new JPanel());
-                int index = this.indexOfTab(title);
-                this.getComponentAt(index).setName(item.getClassyNode().getUniqueId());
-            }
-
-            else if (EventType.DIAGRAM_DELETION.equals(typeOfUpdate))
-            {
-                //System.out.println("DELETE");
+                System.out.println("DELETE in tab");
 
                 this.openDiagrams.remove((Diagram) ((ClassyTreeItem) notification).getClassyNode());
                 String uniqueId = item.getClassyNode().getUniqueId();
-
+                String name = "";
+                for(char c: uniqueId.toCharArray()){
+                    if(c == '_')
+                        break;
+                    name = name + c;
+                }
+                System.out.println(name);
                 for (int i = 0; i < this.getTabCount(); i++)
                 {
                     Component tabComponent = this.getComponentAt(i);
-                    if (tabComponent.getName().equals(uniqueId))
+                    System.out.println(tabComponent.getName());
+                    if (tabComponent.getName().equals(name))
                     {
                         this.removeTabAt(i);
                         break;
@@ -73,7 +74,6 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
         }
         else if(notification instanceof ClassyNode)
         {
-            System.out.println("DELETE");
             if(EventType.DIAGRAM_DELETION.equals(typeOfUpdate))
             {
                 this.openDiagrams.remove((Diagram) notification);
@@ -90,6 +90,22 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
                         break;
                     }
                 }
+            }
+            else if(EventType.DIAGRAM_SELECTION.equals(typeOfUpdate)){
+                Diagram selectedDiagram = (Diagram) notification;
+                if(this.openDiagrams.contains((Diagram) notification))
+                {
+                    this.setSelectedIndex(this.indexOfTab(((ClassyNode) notification).getName()));
+                    return;
+                }
+
+                this.openDiagrams.add((Diagram) notification);
+                String title = ((ClassyNode) notification).getName();
+                DiagramPanel diagramPanel = new DiagramPanel(selectedDiagram);
+                this.addTab(title, diagramPanel);
+                int index = this.indexOfTab(title);
+                this.getComponentAt(index).setName(((ClassyNode) notification).getUniqueId());
+
             }
         }
         else if(EventType.DIAGRAM_LIST_DELETION.equals(typeOfUpdate))
@@ -216,6 +232,18 @@ public class ClassyTabbedPane extends CloseableTabbedPane implements ISubscriber
 
 
     }
+    private void closeAllTabs() {
+        while (this.getTabCount() > 0) {
+            this.removeTabAt(0);
+        }
+        this.openDiagrams.clear();
+    }
+
+    public DiagramPanel getSelectedDiagramPanel()
+    {
+        return (DiagramPanel) this.getSelectedComponent();
+    }
+
 
 
 }

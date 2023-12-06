@@ -1,5 +1,7 @@
 package raf.dsw.classycraft.app.gui.swing.ClassyTree;
 
+import raf.dsw.classycraft.app.core.eventHandler.EventBus;
+import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddType;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
@@ -13,24 +15,28 @@ import raf.dsw.classycraft.app.classyRepository.implementation.Package;
 import raf.dsw.classycraft.app.classyRepository.implementation.Project;
 import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabView;
-import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabbedPane;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
-import java.util.ArrayList;
-import java.util.List;
 
-public class ClassyTreeImplementation implements ClassyTree {
+public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
 
     private ClassyTreeView classyTreeView;
     private DefaultTreeModel defaultTreeModel;
-    private List<ISubscriber> subscribers = new ArrayList<>();
 
+    public ClassyTreeImplementation() {
+        classyTreeView = null;
+        defaultTreeModel = null;
+        EventBus.getInstance().subscribe(EventType.DIAGRAM_RENAME, this);
+        EventBus.getInstance().subscribe(EventType.PACKAGE_RENAME, this);
+        EventBus.getInstance().subscribe(EventType.PROJECT_RENAME, this);
+    }
     @Override
-    public ClassyTreeView generateTree(ProjectExplorer projectExplorer, ClassyTabView classyTabView, ClassyTabbedPane classyTabbedPane){
+    public ClassyTreeView generateTree(ProjectExplorer projectExplorer, ClassyTabView classyTabView, PackageView packageView){
         ClassyTreeItem root = new ClassyTreeItem(projectExplorer);
         defaultTreeModel = new DefaultTreeModel(root);
-        classyTreeView = new ClassyTreeView(defaultTreeModel, classyTabView, classyTabbedPane);
+        classyTreeView = new ClassyTreeView(defaultTreeModel, classyTabView, packageView);
         return classyTreeView;
     }
 
@@ -98,6 +104,33 @@ public class ClassyTreeImplementation implements ClassyTree {
     }
 
 
-
-
+    @Override
+    public void update(Object notification, Object typeOfUpdate) {
+        if (notification instanceof String){
+            if(typeOfUpdate.equals(EventType.DIAGRAM_RENAME)){
+                notification = ((String) notification).split("/")[1];
+                ClassyTreeItem selected = (ClassyTreeItem) classyTreeView.getLastSelectedPathComponent();
+                selected.getClassyNode().setName((String) notification);
+                classyTreeView.updateUI();
+                System.out.println("UPDATE");
+                SwingUtilities.updateComponentTreeUI(classyTreeView);
+            }
+            else if(typeOfUpdate.equals(EventType.PACKAGE_RENAME)){
+                notification = ((String) notification).split("/")[1];
+                ClassyTreeItem selected = (ClassyTreeItem) classyTreeView.getLastSelectedPathComponent();
+                selected.getClassyNode().setName((String) notification);
+                classyTreeView.updateUI();
+                System.out.println("UPDATE");
+                SwingUtilities.updateComponentTreeUI(classyTreeView);
+            }
+            else if(typeOfUpdate.equals(EventType.PROJECT_RENAME)){
+                notification = ((String) notification).split("/")[1];
+                ClassyTreeItem selected = (ClassyTreeItem) classyTreeView.getLastSelectedPathComponent();
+                selected.getClassyNode().setName((String) notification);
+                classyTreeView.updateUI();
+                System.out.println("UPDATE");
+                SwingUtilities.updateComponentTreeUI(classyTreeView);
+            }
+        }
+    }
 }

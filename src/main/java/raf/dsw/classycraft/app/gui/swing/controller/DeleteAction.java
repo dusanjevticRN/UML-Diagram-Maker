@@ -6,6 +6,7 @@ import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
+import raf.dsw.classycraft.app.core.observer.IPublisher;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
@@ -41,7 +42,9 @@ public class DeleteAction extends AbstractClassyAction
         else if(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof Diagram)
         {
             MainFrame.getInstance().getClassyTree().removeChild(MainFrame.getInstance().getClassyTree().getSelectedNode());
-            EventBus.getInstance().publish(EventType.DIAGRAM_DELETION, selected);
+            EventBus.getInstance().notifySubscriber(selected, EventType.DIAGRAM_DELETION);
+            System.out.println(selected.getClassyNode().getName() + " DELETED");
+            System.out.println("DIAGRAM DELETED");
         }
 
         else if (MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof ProjectExplorer)
@@ -97,11 +100,11 @@ public class DeleteAction extends AbstractClassyAction
                     {
                         if(child instanceof Diagram)
                         {
-                            EventBus.getInstance().publish(EventType.DIAGRAM_DELETION, child);
+                            EventBus.getInstance().notifySubscriber(child, EventType.DIAGRAM_DELETION);
                             diagramDeleted = true;
                         }
                         else {
-                            EventBus.getInstance().publish(EventType.DIAGRAM_LIST_DELETION, getDiagramFromPackage(child));
+                            EventBus.getInstance().notifySubscriber(getDiagramFromPackage(child), EventType.DIAGRAM_LIST_DELETION);
                         }
 
                         parent.removeChild(child);

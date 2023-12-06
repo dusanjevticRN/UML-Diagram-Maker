@@ -6,6 +6,7 @@ import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 
 import java.awt.*;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -42,4 +43,14 @@ public abstract class Connection extends DiagramElement
         this.end = end;
         this.notifySubscriber(this, null);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Connection)) return false;
+        if (!super.equals(o)) return false;
+        Connection that = (Connection) o;
+        return Objects.equals(getFromElement(), that.getFromElement()) && Objects.equals(getToElement(), that.getToElement()) && Objects.equals(getStart(), that.getStart()) && Objects.equals(getEnd(), that.getEnd());
+    }
+
 }
