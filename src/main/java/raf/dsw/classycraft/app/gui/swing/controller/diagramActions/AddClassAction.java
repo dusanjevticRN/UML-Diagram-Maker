@@ -18,6 +18,7 @@ public class AddClassAction extends AbstractClassyAction
     @Override
     public void actionPerformed(ActionEvent e)
     {
+
         EventBus.getInstance().notifySubscriber(this, EventType.ADD_CLASS);
     }
 }

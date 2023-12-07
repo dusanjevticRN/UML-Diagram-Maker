@@ -13,10 +13,10 @@ import java.util.List;
 @Setter
 public class Metod extends ClassContent
 {
-    private Type returnType;
+    private String returnType;
     private List<Parameter> parametars;
 
-    public Metod(String name, Visibility visibility, boolean isStatic, Type returnType, List<Parameter> parametars)
+    public Metod(String name, Visibility visibility, boolean isStatic, String returnType, List<Parameter> parametars)
     {
         super(name, visibility, isStatic);
         this.parametars = new ArrayList<>();

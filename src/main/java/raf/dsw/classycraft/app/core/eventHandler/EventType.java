@@ -47,7 +47,6 @@ public enum EventType
     MIN_ZOOM,
     ZOOM_IN_STATE,
     ZOOM_OUT_STATE,
-    ADD_FIELD,
     ADD_METHOD,
     FIELD_ALREADY_EXISTS,
     ADD_CLASS_TO_TREE,
@@ -57,6 +56,7 @@ public enum EventType
     SET_PANEL,
     MOVE,
     DELETE_KEY,
-    DELETE_ELEMENTS
+    DELETE_ELEMENTS,
+    CONTENT_STATE,
 
 }

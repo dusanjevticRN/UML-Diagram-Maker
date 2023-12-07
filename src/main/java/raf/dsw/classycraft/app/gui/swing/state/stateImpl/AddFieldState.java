@@ -4,16 +4,18 @@ import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Atribut;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.ClassContent;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Interfejs;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.*;
+import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
+import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddType;
 import raf.dsw.classycraft.app.gui.swing.state.State;
+import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,8 @@ public class AddFieldState implements State
     private int startY;
     private Klasa klasa;
     private Interfejs interfejs;
+    private UmlEnum umlEnum;
+    private AddType addType;
     private List<String> classAtributes = new ArrayList<>();
     private boolean hit = false;
 
@@ -70,16 +74,26 @@ public class AddFieldState implements State
                 hit = true;
                 System.out.println("Hit: " + ic.getName());
 
-                if(ic.getType() == "Klasa")
-                {
+                if(ic.getType() == "Klasa") {
                     this.klasa = (Klasa) ic;
                     this.interfejs = null;
+                    this.umlEnum = null;
+                    popup();
+
                 }
 
-                else
-                {
+                else if(ic.getType() == "Interfejs") {
                     this.interfejs = (Interfejs) ic;
                     this.klasa = null;
+                    this.umlEnum = null;
+                    popupReduced();
+
+                }
+                else{
+                    this.umlEnum = (UmlEnum) ic;
+                    this.klasa = null;
+                    this.interfejs = null;
+
                 }
 
                 break;
@@ -90,7 +104,7 @@ public class AddFieldState implements State
             System.out.println(hit);
         }
 
-        if(hit) {
+        if(hit && this.klasa != null && addType == AddType.ATRIBUTE_ADD){
             System.out.println(hit);
 
             SwingUtilities.invokeLater(() -> {
@@ -101,31 +115,28 @@ public class AddFieldState implements State
 
                 JPanel mainPanel = new JPanel(new BorderLayout());
 
-                // Left Panel
                 JPanel leftPanel = new JPanel(new GridBagLayout());
                 leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
                 JLabel fieldNameLabel = new JLabel("Field name:");
                 JTextField textField = new JTextField();
-                textField.setPreferredSize(new Dimension(150, 25)); // Set preferred size
+                textField.setPreferredSize(new Dimension(150, 25));
 
                 JLabel accessLevelLabel = new JLabel("Access Level:");
-                // ChoiceBox for access level
                 String[] accessLevels = {"Private", "Protected", "Public", "Package private"};
                 JComboBox<String> accessLevelChoiceBox = new JComboBox<>(accessLevels);
-                accessLevelChoiceBox.setSelectedIndex(0); // Set the default selection
+                accessLevelChoiceBox.setSelectedIndex(0);
 
                 JLabel dataTypeLabel = new JLabel("Data Type:");
                 // ChoiceBox for data types
                 String[] dataTypes = {"int", "double", "String", "boolean", "char", "float", "long", "short", "byte"};
                 JComboBox<String> dataTypeChoiceBox = new JComboBox<>(dataTypes);
-                dataTypeChoiceBox.setSelectedIndex(0); // Set the default selection
+                dataTypeChoiceBox.setSelectedIndex(0);
 
                 JLabel staticLabel = new JLabel("Static:");
-                // ChoiceBox for static/non-static
                 String[] staticOptions = {"Non-Static", "Static"};
                 JComboBox<String> staticChoiceBox = new JComboBox<>(staticOptions);
-                staticChoiceBox.setSelectedIndex(0); // Set the default selection
+                staticChoiceBox.setSelectedIndex(0);
 
                 JButton addButton = new JButton("Add");
                 JButton cancelButton = new JButton("Cancel");
@@ -135,55 +146,47 @@ public class AddFieldState implements State
                 gbc.gridy = 0;
                 gbc.anchor = GridBagConstraints.WEST;
 
-                // Adding components to the left panel with spacing
                 leftPanel.add(fieldNameLabel, gbc);
                 gbc.gridy++;
                 leftPanel.add(textField, gbc);
 
-                // Add spacing
                 gbc.gridy++;
-                gbc.insets = new Insets(10, 0, 0, 0); // Top spacing
+                gbc.insets = new Insets(10, 0, 0, 0);
                 leftPanel.add(accessLevelLabel, gbc);
                 gbc.gridy++;
                 leftPanel.add(accessLevelChoiceBox, gbc);
 
-                // Add more spacing
                 gbc.gridy++;
-                gbc.insets = new Insets(10, 0, 0, 0); // Top spacing
+                gbc.insets = new Insets(10, 0, 0, 0);
                 leftPanel.add(dataTypeLabel, gbc);
                 gbc.gridy++;
                 leftPanel.add(dataTypeChoiceBox, gbc);
 
-                // Add even more spacing
                 gbc.gridy++;
-                gbc.insets = new Insets(10, 0, 0, 0); // Top spacing
+                gbc.insets = new Insets(10, 0, 0, 0);
                 leftPanel.add(staticLabel, gbc);
                 gbc.gridy++;
                 leftPanel.add(staticChoiceBox, gbc);
 
-                // Add even more spacing
                 gbc.gridy++;
-                gbc.insets = new Insets(20, 0, 0, 0); // Top spacing
+                gbc.insets = new Insets(20, 0, 0, 0);
                 leftPanel.add(addButton, gbc);
-                gbc.gridx = 0; // Reset column
+                gbc.gridx = 0;
                 gbc.gridy++;
                 leftPanel.add(cancelButton, gbc);
 
-                // Right Panel
                 JPanel rightPanel = new JPanel(new BorderLayout());
 
-                // JList for displaying class fields
                 JList<String> classFieldsList = new JList<>();
                 classFieldsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                 classFieldsList.setLayoutOrientation(JList.VERTICAL);
                 classFieldsList.setVisibleRowCount(-1);
 
-                DefaultListModel<String> listModel = new DefaultListModel<>(); //Cuvamo podatke u listi
-                classFieldsList.setModel(listModel); //Povezujemo listu sa modelom
+                DefaultListModel<String> listModel = new DefaultListModel<>();
+                classFieldsList.setModel(listModel);
 
                 rightPanel.add(new JScrollPane(classFieldsList), BorderLayout.CENTER);
 
-                // Edit and Remove buttons
                 JPanel buttonsPanel = new JPanel();
                 JButton updateButton = new JButton("Update");
                 JButton removeButton = new JButton("Remove");
@@ -191,17 +194,13 @@ public class AddFieldState implements State
                 buttonsPanel.add(removeButton);
                 rightPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
-                // Adding the left and right panels to the main panel
                 mainPanel.add(leftPanel, BorderLayout.WEST);
                 mainPanel.add(rightPanel, BorderLayout.CENTER);
 
-                // Adding the main panel to the frame
                 frame.add(mainPanel);
 
-                // Display the frame
                 frame.setVisible(true);
 
-                //Ako lista classContents klase nije prazna, dodajemo sve atribute u listModel
                 if(!this.klasa.getClassContents().isEmpty())
                 {
                     for(ClassContent cc : this.klasa.getClassContents())
@@ -223,7 +222,7 @@ public class AddFieldState implements State
                             else if(atribut.getVisibility() == Visibility.PACKAGE_PRIVATE)
                                 sb.append("~ ");
 
-                            sb.append(atribut.getName() + ": ");
+                            sb.append(atribut.getName() + "(): ");
 
                             if(atribut.isStatic())
                                 sb.append("static ");
@@ -273,7 +272,7 @@ public class AddFieldState implements State
                         visibility = Visibility.PACKAGE_PRIVATE;
                     }
 
-                    sb.append(textField.getText() + ": ");
+                    sb.append(textField.getText() + "(): ");
 
                     if(staticChoiceBox.getSelectedItem().equals("Static"))
                     {
@@ -354,7 +353,10 @@ public class AddFieldState implements State
                         listModel.addElement(sb.toString()); //dodajemo atribut u listu
                         System.out.println("Dodat atribut u listu classContents klase (else)");
                     }
-
+                    panel.setPainters(new ArrayList<>());
+                    panel.setSelectedPainters(new ArrayList<>());
+                    panel.repaint();
+                    panel.outsideRefresh();
                     System.out.println("Dodat novi atribut" + sb.toString());
                 });
 
@@ -368,7 +370,7 @@ public class AddFieldState implements State
                             String selectedData = listModel.getElementAt(selectedIndex);
                             System.out.println(selectedData);
 
-                            String[] parts = selectedData.split(": ");
+                            String[] parts = selectedData.split("(): ");
 
                             if (parts.length == 2)
                             {
@@ -483,7 +485,7 @@ public class AddFieldState implements State
                         //Pravimo novi string koji ce biti ubacen u listu
                         StringBuilder updatedString = new StringBuilder();
                         updatedString.append(newVisibility).append(" ");
-                        updatedString.append(newName).append(": ");
+                        updatedString.append(newName).append("(): ");
 
                         if (newIsStatic)
                             updatedString.append("static ");
@@ -513,8 +515,949 @@ public class AddFieldState implements State
 
 
 
-            hit = false;
         }
+        else if(hit && this.klasa != null && addType.equals(AddType.METHOD_ADD)){
+            SwingUtilities.invokeLater(() -> {
+                JFrame frame = new JFrame("Add Method Dialog");
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.setSize(600, 400);
+                frame.setLocationRelativeTo(null);
+
+                JPanel mainPanel = new JPanel(new BorderLayout());
+
+                JPanel leftPanel = new JPanel(new GridBagLayout());
+                leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+                JLabel fieldNameLabel = new JLabel("Method name:");
+                JTextField textField = new JTextField();
+                textField.setPreferredSize(new Dimension(150, 25));
+
+                JLabel accessLevelLabel = new JLabel("Access Level:");
+                String[] accessLevels = {"Private", "Protected", "Public", "Package private"};
+                JComboBox<String> accessLevelChoiceBox = new JComboBox<>(accessLevels);
+                accessLevelChoiceBox.setSelectedIndex(0);
+
+                JLabel dataTypeLabel = new JLabel("Return Type:");
+                // ChoiceBox for data types
+                String[] dataTypes = {"int", "double", "String", "boolean", "char", "float", "long", "short", "byte"};
+                JComboBox<String> dataTypeChoiceBox = new JComboBox<>(dataTypes);
+                dataTypeChoiceBox.setSelectedIndex(0);
+
+                JLabel staticLabel = new JLabel("Static:");
+                String[] staticOptions = {"Non-Static", "Static"};
+                JComboBox<String> staticChoiceBox = new JComboBox<>(staticOptions);
+                staticChoiceBox.setSelectedIndex(0);
+
+                JButton addButton = new JButton("Add");
+                JButton cancelButton = new JButton("Cancel");
+
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.anchor = GridBagConstraints.WEST;
+
+                leftPanel.add(fieldNameLabel, gbc);
+                gbc.gridy++;
+                leftPanel.add(textField, gbc);
+
+                gbc.gridy++;
+                gbc.insets = new Insets(10, 0, 0, 0);
+                leftPanel.add(accessLevelLabel, gbc);
+                gbc.gridy++;
+                leftPanel.add(accessLevelChoiceBox, gbc);
+
+                gbc.gridy++;
+                gbc.insets = new Insets(10, 0, 0, 0);
+                leftPanel.add(dataTypeLabel, gbc);
+                gbc.gridy++;
+                leftPanel.add(dataTypeChoiceBox, gbc);
+
+                gbc.gridy++;
+                gbc.insets = new Insets(10, 0, 0, 0);
+                leftPanel.add(staticLabel, gbc);
+                gbc.gridy++;
+                leftPanel.add(staticChoiceBox, gbc);
+
+                gbc.gridy++;
+                gbc.insets = new Insets(20, 0, 0, 0);
+                leftPanel.add(addButton, gbc);
+                gbc.gridx = 0;
+                gbc.gridy++;
+                leftPanel.add(cancelButton, gbc);
+
+                JPanel rightPanel = new JPanel(new BorderLayout());
+
+                JList<String> classFieldsList = new JList<>();
+                classFieldsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                classFieldsList.setLayoutOrientation(JList.VERTICAL);
+                classFieldsList.setVisibleRowCount(-1);
+
+                DefaultListModel<String> listModel = new DefaultListModel<>();
+                classFieldsList.setModel(listModel);
+
+                rightPanel.add(new JScrollPane(classFieldsList), BorderLayout.CENTER);
+
+                JPanel buttonsPanel = new JPanel();
+                JButton updateButton = new JButton("Update");
+                JButton removeButton = new JButton("Remove");
+                buttonsPanel.add(updateButton);
+                buttonsPanel.add(removeButton);
+                rightPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+                mainPanel.add(leftPanel, BorderLayout.WEST);
+                mainPanel.add(rightPanel, BorderLayout.CENTER);
+
+                frame.add(mainPanel);
+
+                frame.setVisible(true);
+
+                if(!this.klasa.getClassContents().isEmpty())
+                {
+                    for(ClassContent cc : this.klasa.getClassContents())
+                    {
+                        if(cc instanceof Atribut)
+                        {
+                            Atribut atribut = (Atribut) cc;
+                            StringBuilder sb = new StringBuilder();
+
+                            if(atribut.getVisibility() == Visibility.PRIVATE)
+                                sb.append("- ");
+
+                            else if(atribut.getVisibility() == Visibility.PROTECTED)
+                                sb.append("# ");
+
+                            else if(atribut.getVisibility() == Visibility.PUBLIC)
+                                sb.append("+ ");
+
+                            else if(atribut.getVisibility() == Visibility.PACKAGE_PRIVATE)
+                                sb.append("~ ");
+
+                            sb.append(atribut.getName() + "(): ");
+
+                            if(atribut.isStatic())
+                                sb.append("static ");
+
+                            sb.append(atribut.getDataType());
+
+                            listModel.addElement(sb.toString());
+                        }
+                    }
+                }
+
+                cancelButton.addActionListener(e -> {
+                    System.out.println("Cancel button clicked");
+                    frame.dispose();
+                });
+
+                addButton.addActionListener(e -> {
+                    StringBuilder sb = new StringBuilder(); //string builder za listModel
+
+                    //parametri za konstruktor atributa
+                    String nameOfField = textField.getText();
+                    Visibility visibility = Visibility.PACKAGE_PRIVATE; //defaultna vrednost
+                    Boolean isStatic = false;
+                    String dataType = "int"; //defaultna vrednost
+
+                    if(accessLevelChoiceBox.getSelectedItem().equals("Private"))
+                    {
+                        visibility = Visibility.PRIVATE;
+                        sb.append("- ");
+                    }
+
+                    else if(accessLevelChoiceBox.getSelectedItem().equals("Protected"))
+                    {
+                        sb.append("# ");
+                        visibility = Visibility.PROTECTED;
+                    }
+
+                    else if(accessLevelChoiceBox.getSelectedItem().equals("Public"))
+                    {
+                        sb.append("+ ");
+                        visibility = Visibility.PUBLIC;
+                    }
+
+                    else if(accessLevelChoiceBox.getSelectedItem().equals("Package private"))
+                    {
+                        sb.append("~ ");
+                        visibility = Visibility.PACKAGE_PRIVATE;
+                    }
+
+                    sb.append(textField.getText() + "(): ");
+
+                    if(staticChoiceBox.getSelectedItem().equals("Static"))
+                    {
+                        isStatic = true;
+                        sb.append("static ");
+                    }
+
+                    if(dataTypeChoiceBox.getSelectedItem().equals("int"))
+                    {
+                        dataType = "int";
+                        sb.append("int");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("double"))
+                    {
+                        dataType = "double";
+                        sb.append("double");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("String"))
+                    {
+                        dataType = "String";
+                        sb.append("String");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("boolean"))
+                    {
+                        dataType = "boolean";
+                        sb.append("boolean");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("char"))
+                    {
+                        dataType = "char";
+                        sb.append("char");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("float"))
+                    {
+                        dataType = "float";
+                        sb.append("float");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("long"))
+                    {
+                        dataType = "long";
+                        sb.append("long");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("short"))
+                    {
+                        dataType = "short";
+                        sb.append("short");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("byte"))
+                    {
+                        dataType = "byte";
+                        sb.append("byte");
+                    }
+
+                    ClassContent atribut = new Metod(nameOfField, visibility, isStatic, dataType, null);
+
+                    if(this.klasa.getClassContents().isEmpty())
+                    {
+                        this.klasa.addClassContent(atribut); //selektovanoj klasi dodajemo atribut
+                        listModel.addElement(sb.toString()); //dodajemo atribut u listu
+                        System.out.println("Dodat atribut u listu classContents klase (if)");
+                    }
+
+                    else if(this.klasa.getClassContents().contains(atribut))
+                        AppCore.getInstance().getMessageGenerator().generate(EventType.FIELD_ALREADY_EXISTS);
+
+
+                    else
+                    {
+                        this.klasa.addClassContent(atribut); //selektovanoj klasi dodajemo atribut
+                        listModel.addElement(sb.toString()); //dodajemo atribut u listu
+                        System.out.println("Dodat atribut u listu classContents klase (else)");
+                    }
+                    panel.setPainters(new ArrayList<>());
+                    panel.setSelectedPainters(new ArrayList<>());
+                    panel.repaint();
+                    panel.outsideRefresh();
+                    System.out.println("Dodat novi atribut" + sb.toString());
+                });
+
+                classFieldsList.getSelectionModel().addListSelectionListener(e -> {
+
+                    if (!e.getValueIsAdjusting()) {
+                        int selectedIndex = classFieldsList.getSelectedIndex();
+
+                        if (selectedIndex != -1)
+                        {
+                            String selectedData = listModel.getElementAt(selectedIndex);
+                            System.out.println(selectedData);
+
+                            String[] parts = selectedData.split("(): ");
+
+                            if (parts.length == 2)
+                            {
+                                String[] atributeDetails1 = parts[0].split(" ");
+                                String visibility = atributeDetails1[0];
+                                String nameOfAtribute = atributeDetails1[1];
+
+                                String[] atributeDetails2 = parts[1].split(" ");
+                                String dataType = atributeDetails2[0];
+                                boolean isStatic = false;
+
+                                //atributeDetails2 ce imati duzinu = 2 kada je atribut static
+                                if(atributeDetails2.length == 2)
+                                {
+                                    isStatic = true;
+                                    dataType = atributeDetails2[1]; //ako je static, onda je drugi element u nizu dataType
+                                }
+
+                                //Podesavamo vrednost visibility choice box-a
+                                if(visibility.equals("-"))
+                                    accessLevelChoiceBox.setSelectedItem("Private");
+
+                                else if(visibility.equals("#"))
+                                    accessLevelChoiceBox.setSelectedItem("Protected");
+
+                                else if(visibility.equals("+"))
+                                    accessLevelChoiceBox.setSelectedItem("Public");
+
+                                else if(visibility.equals("~"))
+                                    accessLevelChoiceBox.setSelectedItem("Package private");
+
+                                //Podesavamo vrednost dataType choice box-a
+                                if(dataType.equals("int"))
+                                    dataTypeChoiceBox.setSelectedItem("int");
+
+                                else if(dataType.equals("double"))
+                                    dataTypeChoiceBox.setSelectedItem("double");
+
+                                else if(dataType.equals("String"))
+                                    dataTypeChoiceBox.setSelectedItem("String");
+
+                                else if(dataType.equals("boolean"))
+                                    dataTypeChoiceBox.setSelectedItem("boolean");
+
+                                else if(dataType.equals("char"))
+                                    dataTypeChoiceBox.setSelectedItem("char");
+
+                                else if(dataType.equals("float"))
+                                    dataTypeChoiceBox.setSelectedItem("float");
+
+                                else if(dataType.equals("long"))
+                                    dataTypeChoiceBox.setSelectedItem("long");
+
+                                else if(dataType.equals("short"))
+                                    dataTypeChoiceBox.setSelectedItem("short");
+
+                                else if(dataType.equals("byte"))
+                                    dataTypeChoiceBox.setSelectedItem("byte");
+
+                                //Podesavamo vrednost textField-a
+                                textField.setText(nameOfAtribute);
+
+                                //Podesavamo vrednost static choice box-a
+                                if(isStatic)
+                                    staticChoiceBox.setSelectedItem("Static");
+
+                                else
+                                    staticChoiceBox.setSelectedItem("Non-Static");
+                            }
+                        }
+                    }
+                });
+
+                updateButton.addActionListener(e -> {
+                    int selectedIndex = classFieldsList.getSelectedIndex();
+
+                    if (selectedIndex != -1) {
+                        // Uzmi selektovani element iz liste
+                        String selectedData = listModel.getElementAt(selectedIndex);
+
+                        // Uzmi nove vrednosti iz komponenti
+                        String newName = textField.getText();
+                        String newVisibility = (String) accessLevelChoiceBox.getSelectedItem();
+                        Visibility newVisibility1 = Visibility.PACKAGE_PRIVATE; //visibility koji cu proslediti konstruktoru atributa
+                        String newDataType = (String) dataTypeChoiceBox.getSelectedItem();
+                        boolean newIsStatic = staticChoiceBox.getSelectedItem().equals("Static");
+
+                        if(newVisibility.equals("Private"))
+                        {
+                            newVisibility = "-";
+                            newVisibility1 = Visibility.PRIVATE;
+                        }
+
+                        else if(newVisibility.equals("Protected"))
+                        {
+                            newVisibility = "#";
+                            newVisibility1 = Visibility.PROTECTED;
+                        }
+
+                        else if(newVisibility.equals("Public"))
+                        {
+                            newVisibility = "+";
+                            newVisibility1 = Visibility.PUBLIC;
+                        }
+
+                        else if(newVisibility.equals("Package private"))
+                        {
+                            newVisibility = "~";
+                            newVisibility1 = Visibility.PACKAGE_PRIVATE;
+                        }
+
+                        //Pravimo novi string koji ce biti ubacen u listu
+                        StringBuilder updatedString = new StringBuilder();
+                        updatedString.append(newVisibility).append(" ");
+                        updatedString.append(newName).append("(): ");
+
+                        if (newIsStatic)
+                            updatedString.append("static ");
+
+                        updatedString.append(newDataType);
+
+                        //Updejtujemo listu
+                        listModel.setElementAt(updatedString.toString(), selectedIndex);
+
+                        //Updejtujemo listu classContents klase
+                        this.klasa.updateClassContent(this.klasa.getClassContents().get(selectedIndex), new Metod(newName, newVisibility1, newIsStatic, newDataType, null));
+                    }
+                    System.out.println("Update button clicked");
+                });
+
+                removeButton.addActionListener(e -> {
+
+                    int selectedIndex = classFieldsList.getSelectedIndex();
+
+                    if (selectedIndex != -1)
+                    {
+                        listModel.remove(selectedIndex);
+                        this.klasa.deleteClassContent(this.klasa.getClassContents().get(selectedIndex));
+                    }
+                });
+            });
+
+
+
+        }
+        else if(hit && this.interfejs != null){
+            SwingUtilities.invokeLater(() -> {
+                JFrame frame = new JFrame("Add Method Dialog");
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.setSize(600, 400);
+                frame.setLocationRelativeTo(null);
+
+                JPanel mainPanel = new JPanel(new BorderLayout());
+
+                JPanel leftPanel = new JPanel(new GridBagLayout());
+                leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+                JLabel fieldNameLabel = new JLabel("Method name:");
+                JTextField textField = new JTextField();
+                textField.setPreferredSize(new Dimension(150, 25));
+
+                JLabel accessLevelLabel = new JLabel("Access Level:");
+                String[] accessLevels = {"Private", "Protected", "Public", "Package private"};
+                JComboBox<String> accessLevelChoiceBox = new JComboBox<>(accessLevels);
+                accessLevelChoiceBox.setSelectedIndex(0);
+
+                JLabel dataTypeLabel = new JLabel("Return Type:");
+                // ChoiceBox for data types
+                String[] dataTypes = {"int", "double", "String", "boolean", "char", "float", "long", "short", "byte"};
+                JComboBox<String> dataTypeChoiceBox = new JComboBox<>(dataTypes);
+                dataTypeChoiceBox.setSelectedIndex(0);
+
+                JLabel staticLabel = new JLabel("Static:");
+                String[] staticOptions = {"Non-Static", "Static"};
+                JComboBox<String> staticChoiceBox = new JComboBox<>(staticOptions);
+                staticChoiceBox.setSelectedIndex(0);
+
+                JButton addButton = new JButton("Add");
+                JButton cancelButton = new JButton("Cancel");
+
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.anchor = GridBagConstraints.WEST;
+
+                leftPanel.add(fieldNameLabel, gbc);
+                gbc.gridy++;
+                leftPanel.add(textField, gbc);
+
+                gbc.gridy++;
+                gbc.insets = new Insets(10, 0, 0, 0);
+                leftPanel.add(accessLevelLabel, gbc);
+                gbc.gridy++;
+                leftPanel.add(accessLevelChoiceBox, gbc);
+
+                gbc.gridy++;
+                gbc.insets = new Insets(10, 0, 0, 0);
+                leftPanel.add(dataTypeLabel, gbc);
+                gbc.gridy++;
+                leftPanel.add(dataTypeChoiceBox, gbc);
+
+                gbc.gridy++;
+                gbc.insets = new Insets(10, 0, 0, 0);
+                leftPanel.add(staticLabel, gbc);
+                gbc.gridy++;
+                leftPanel.add(staticChoiceBox, gbc);
+
+                gbc.gridy++;
+                gbc.insets = new Insets(20, 0, 0, 0);
+                leftPanel.add(addButton, gbc);
+                gbc.gridx = 0;
+                gbc.gridy++;
+                leftPanel.add(cancelButton, gbc);
+
+                JPanel rightPanel = new JPanel(new BorderLayout());
+
+                JList<String> classFieldsList = new JList<>();
+                classFieldsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                classFieldsList.setLayoutOrientation(JList.VERTICAL);
+                classFieldsList.setVisibleRowCount(-1);
+
+                DefaultListModel<String> listModel = new DefaultListModel<>();
+                classFieldsList.setModel(listModel);
+
+                rightPanel.add(new JScrollPane(classFieldsList), BorderLayout.CENTER);
+
+                JPanel buttonsPanel = new JPanel();
+                JButton updateButton = new JButton("Update");
+                JButton removeButton = new JButton("Remove");
+                buttonsPanel.add(updateButton);
+                buttonsPanel.add(removeButton);
+                rightPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+                mainPanel.add(leftPanel, BorderLayout.WEST);
+                mainPanel.add(rightPanel, BorderLayout.CENTER);
+
+                frame.add(mainPanel);
+
+                frame.setVisible(true);
+
+                if(!this.interfejs.getMetods().isEmpty())
+                {
+                    for(ClassContent cc : this.interfejs.getMetods())
+                    {
+                        if(cc instanceof Atribut)
+                        {
+                            Atribut atribut = (Atribut) cc;
+                            StringBuilder sb = new StringBuilder();
+
+                            if(atribut.getVisibility() == Visibility.PRIVATE)
+                                sb.append("- ");
+
+                            else if(atribut.getVisibility() == Visibility.PROTECTED)
+                                sb.append("# ");
+
+                            else if(atribut.getVisibility() == Visibility.PUBLIC)
+                                sb.append("+ ");
+
+                            else if(atribut.getVisibility() == Visibility.PACKAGE_PRIVATE)
+                                sb.append("~ ");
+
+                            sb.append(atribut.getName() + "(): ");
+
+                            if(atribut.isStatic())
+                                sb.append("static ");
+
+                            sb.append(atribut.getDataType());
+
+                            listModel.addElement(sb.toString());
+                        }
+                    }
+                }
+
+                cancelButton.addActionListener(e -> {
+                    System.out.println("Cancel button clicked");
+                    frame.dispose();
+                });
+
+                addButton.addActionListener(e -> {
+                    StringBuilder sb = new StringBuilder(); //string builder za listModel
+
+                    //parametri za konstruktor atributa
+                    String nameOfField = textField.getText();
+                    Visibility visibility = Visibility.PACKAGE_PRIVATE; //defaultna vrednost
+                    Boolean isStatic = false;
+                    String dataType = "int"; //defaultna vrednost
+
+                    if(accessLevelChoiceBox.getSelectedItem().equals("Private"))
+                    {
+                        visibility = Visibility.PRIVATE;
+                        sb.append("- ");
+                    }
+
+                    else if(accessLevelChoiceBox.getSelectedItem().equals("Protected"))
+                    {
+                        sb.append("# ");
+                        visibility = Visibility.PROTECTED;
+                    }
+
+                    else if(accessLevelChoiceBox.getSelectedItem().equals("Public"))
+                    {
+                        sb.append("+ ");
+                        visibility = Visibility.PUBLIC;
+                    }
+
+                    else if(accessLevelChoiceBox.getSelectedItem().equals("Package private"))
+                    {
+                        sb.append("~ ");
+                        visibility = Visibility.PACKAGE_PRIVATE;
+                    }
+
+                    sb.append(textField.getText() + "(): ");
+
+                    if(staticChoiceBox.getSelectedItem().equals("Static"))
+                    {
+                        isStatic = true;
+                        sb.append("static ");
+                    }
+
+                    if(dataTypeChoiceBox.getSelectedItem().equals("int"))
+                    {
+                        dataType = "int";
+                        sb.append("int");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("double"))
+                    {
+                        dataType = "double";
+                        sb.append("double");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("String"))
+                    {
+                        dataType = "String";
+                        sb.append("String");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("boolean"))
+                    {
+                        dataType = "boolean";
+                        sb.append("boolean");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("char"))
+                    {
+                        dataType = "char";
+                        sb.append("char");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("float"))
+                    {
+                        dataType = "float";
+                        sb.append("float");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("long"))
+                    {
+                        dataType = "long";
+                        sb.append("long");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("short"))
+                    {
+                        dataType = "short";
+                        sb.append("short");
+                    }
+
+                    else if(dataTypeChoiceBox.getSelectedItem().equals("byte"))
+                    {
+                        dataType = "byte";
+                        sb.append("byte");
+                    }
+
+                    ClassContent atribut = new Metod(nameOfField, visibility, isStatic, dataType, null);
+
+                    if(this.interfejs.getMetods().isEmpty())
+                    {
+                        this.interfejs.addClassContent(atribut); //selektovanoj klasi dodajemo atribut
+                        listModel.addElement(sb.toString()); //dodajemo atribut u listu
+                        System.out.println("Dodat atribut u listu classContents klase (if)");
+                    }
+
+                    else if(this.interfejs.getMetods().contains(atribut))
+                        AppCore.getInstance().getMessageGenerator().generate(EventType.FIELD_ALREADY_EXISTS);
+
+
+                    else
+                    {
+                        this.interfejs.addClassContent(atribut); //selektovanoj klasi dodajemo atribut
+                        listModel.addElement(sb.toString()); //dodajemo atribut u listu
+                        System.out.println("Dodat atribut u listu classContents klase (else)");
+                    }
+                    panel.setPainters(new ArrayList<>());
+                    panel.setSelectedPainters(new ArrayList<>());
+                    panel.repaint();
+                    panel.outsideRefresh();
+                    System.out.println("Dodat novi atribut" + sb.toString());
+                });
+
+                classFieldsList.getSelectionModel().addListSelectionListener(e -> {
+
+                    if (!e.getValueIsAdjusting()) {
+                        int selectedIndex = classFieldsList.getSelectedIndex();
+
+                        if (selectedIndex != -1)
+                        {
+                            String selectedData = listModel.getElementAt(selectedIndex);
+                            System.out.println(selectedData);
+
+                            String[] parts = selectedData.split("(): ");
+
+                            if (parts.length == 2)
+                            {
+                                String[] atributeDetails1 = parts[0].split(" ");
+                                String visibility = atributeDetails1[0];
+                                String nameOfAtribute = atributeDetails1[1];
+
+                                String[] atributeDetails2 = parts[1].split(" ");
+                                String dataType = atributeDetails2[0];
+                                boolean isStatic = false;
+
+                                //atributeDetails2 ce imati duzinu = 2 kada je atribut static
+                                if(atributeDetails2.length == 2)
+                                {
+                                    isStatic = true;
+                                    dataType = atributeDetails2[1]; //ako je static, onda je drugi element u nizu dataType
+                                }
+
+                                //Podesavamo vrednost visibility choice box-a
+                                if(visibility.equals("-"))
+                                    accessLevelChoiceBox.setSelectedItem("Private");
+
+                                else if(visibility.equals("#"))
+                                    accessLevelChoiceBox.setSelectedItem("Protected");
+
+                                else if(visibility.equals("+"))
+                                    accessLevelChoiceBox.setSelectedItem("Public");
+
+                                else if(visibility.equals("~"))
+                                    accessLevelChoiceBox.setSelectedItem("Package private");
+
+                                //Podesavamo vrednost dataType choice box-a
+                                if(dataType.equals("int"))
+                                    dataTypeChoiceBox.setSelectedItem("int");
+
+                                else if(dataType.equals("double"))
+                                    dataTypeChoiceBox.setSelectedItem("double");
+
+                                else if(dataType.equals("String"))
+                                    dataTypeChoiceBox.setSelectedItem("String");
+
+                                else if(dataType.equals("boolean"))
+                                    dataTypeChoiceBox.setSelectedItem("boolean");
+
+                                else if(dataType.equals("char"))
+                                    dataTypeChoiceBox.setSelectedItem("char");
+
+                                else if(dataType.equals("float"))
+                                    dataTypeChoiceBox.setSelectedItem("float");
+
+                                else if(dataType.equals("long"))
+                                    dataTypeChoiceBox.setSelectedItem("long");
+
+                                else if(dataType.equals("short"))
+                                    dataTypeChoiceBox.setSelectedItem("short");
+
+                                else if(dataType.equals("byte"))
+                                    dataTypeChoiceBox.setSelectedItem("byte");
+
+                                //Podesavamo vrednost textField-a
+                                textField.setText(nameOfAtribute);
+
+                                //Podesavamo vrednost static choice box-a
+                                if(isStatic)
+                                    staticChoiceBox.setSelectedItem("Static");
+
+                                else
+                                    staticChoiceBox.setSelectedItem("Non-Static");
+                            }
+                        }
+                    }
+                });
+
+                updateButton.addActionListener(e -> {
+                    int selectedIndex = classFieldsList.getSelectedIndex();
+
+                    if (selectedIndex != -1) {
+                        // Uzmi selektovani element iz liste
+                        String selectedData = listModel.getElementAt(selectedIndex);
+
+                        // Uzmi nove vrednosti iz komponenti
+                        String newName = textField.getText();
+                        String newVisibility = (String) accessLevelChoiceBox.getSelectedItem();
+                        Visibility newVisibility1 = Visibility.PACKAGE_PRIVATE; //visibility koji cu proslediti konstruktoru atributa
+                        String newDataType = (String) dataTypeChoiceBox.getSelectedItem();
+                        boolean newIsStatic = staticChoiceBox.getSelectedItem().equals("Static");
+
+                        if(newVisibility.equals("Private"))
+                        {
+                            newVisibility = "-";
+                            newVisibility1 = Visibility.PRIVATE;
+                        }
+
+                        else if(newVisibility.equals("Protected"))
+                        {
+                            newVisibility = "#";
+                            newVisibility1 = Visibility.PROTECTED;
+                        }
+
+                        else if(newVisibility.equals("Public"))
+                        {
+                            newVisibility = "+";
+                            newVisibility1 = Visibility.PUBLIC;
+                        }
+
+                        else if(newVisibility.equals("Package private"))
+                        {
+                            newVisibility = "~";
+                            newVisibility1 = Visibility.PACKAGE_PRIVATE;
+                        }
+
+                        //Pravimo novi string koji ce biti ubacen u listu
+                        StringBuilder updatedString = new StringBuilder();
+                        updatedString.append(newVisibility).append(" ");
+                        updatedString.append(newName).append("(): ");
+
+                        if (newIsStatic)
+                            updatedString.append("static ");
+
+                        updatedString.append(newDataType);
+
+                        //Updejtujemo listu
+                        listModel.setElementAt(updatedString.toString(), selectedIndex);
+
+                        //Updejtujemo listu classContents klase
+                        this.interfejs.updateClassContent(this.interfejs.getMetods().get(selectedIndex), new Metod(newName, newVisibility1, newIsStatic, newDataType, null));
+                    }
+                    System.out.println("Update button clicked");
+                });
+
+                removeButton.addActionListener(e -> {
+
+                    int selectedIndex = classFieldsList.getSelectedIndex();
+
+                    if (selectedIndex != -1)
+                    {
+                        listModel.remove(selectedIndex);
+                        this.interfejs.deleteClassContent(this.interfejs.getMetods().get(selectedIndex));
+                    }
+                });
+            });
+        }
+        else if(hit && this.umlEnum != null){
+            SwingUtilities.invokeLater(() -> {
+                JFrame frame = new JFrame("Add Constant Dialog");
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.setSize(600, 400);
+                frame.setLocationRelativeTo(null);
+
+                JPanel mainPanel = new JPanel(new BorderLayout());
+
+                JPanel leftPanel = new JPanel(new GridBagLayout());
+                leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+                JLabel fieldNameLabel = new JLabel("Enum type:");
+                JTextField textField = new JTextField();
+                textField.setPreferredSize(new Dimension(150, 25));
+
+                JButton addButton = new JButton("Add");
+                JButton cancelButton = new JButton("Cancel");
+
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.anchor = GridBagConstraints.WEST;
+
+                leftPanel.add(fieldNameLabel, gbc);
+                gbc.gridy++;
+                leftPanel.add(textField, gbc);
+
+                gbc.gridy++;
+                gbc.insets = new Insets(20, 0, 0, 0);
+                leftPanel.add(addButton, gbc);
+                gbc.gridx = 0;
+                gbc.gridy++;
+                leftPanel.add(cancelButton, gbc);
+
+                JPanel rightPanel = new JPanel(new BorderLayout());
+
+                JList<String> classFieldsList = new JList<>();
+                classFieldsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                classFieldsList.setLayoutOrientation(JList.VERTICAL);
+                classFieldsList.setVisibleRowCount(-1);
+
+                DefaultListModel<String> listModel = new DefaultListModel<>();
+                classFieldsList.setModel(listModel);
+
+                rightPanel.add(new JScrollPane(classFieldsList), BorderLayout.CENTER);
+
+                JPanel buttonsPanel = new JPanel();
+                JButton removeButton = new JButton("Remove");
+                buttonsPanel.add(removeButton);
+                rightPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+                mainPanel.add(leftPanel, BorderLayout.WEST);
+                mainPanel.add(rightPanel, BorderLayout.CENTER);
+
+                frame.add(mainPanel);
+
+                frame.setVisible(true);
+
+
+                cancelButton.addActionListener(e -> {
+                    System.out.println("Cancel button clicked");
+                    frame.dispose();
+                });
+
+                addButton.addActionListener(e -> {
+                    StringBuilder sb = new StringBuilder(); //string builder za listModel
+
+                    sb.append(textField.getText());
+
+                    if(this.umlEnum.getConstants().isEmpty())
+                    {
+                        this.umlEnum.getConstants().add(textField.getText()); //selektovanoj klasi dodajemo atribut
+                        listModel.addElement(sb.toString()); //dodajemo atribut u listu
+                        System.out.println("Dodat atribut u listu classContents klase (if)");
+                    }
+
+                    else if(this.umlEnum.getConstants().contains(textField.getText()))
+                        AppCore.getInstance().getMessageGenerator().generate(EventType.FIELD_ALREADY_EXISTS);
+                    else {
+                        this.umlEnum.getConstants().add(textField.getText()); //selektovanoj klasi dodajemo atribut
+                        listModel.addElement(sb.toString()); //dodajemo atribut u listu
+                        System.out.println("Dodat atribut u listu classContents klase (else)");
+                    }
+
+                    panel.setPainters(new ArrayList<>());
+                    panel.setSelectedPainters(new ArrayList<>());
+                    panel.repaint();
+                    panel.outsideRefresh();
+                    System.out.println("Dodat novi atribut" + sb.toString());
+                });
+
+                classFieldsList.getSelectionModel().addListSelectionListener(e -> {
+
+                    if (!e.getValueIsAdjusting()) {
+                        int selectedIndex = classFieldsList.getSelectedIndex();
+
+                        if (selectedIndex != -1)
+                        {
+                            String selectedData = listModel.getElementAt(selectedIndex);
+                            System.out.println(selectedData);
+
+
+                            }
+                    }
+
+                });
+
+                removeButton.addActionListener(e -> {
+
+                    int selectedIndex = classFieldsList.getSelectedIndex();
+
+                    if (selectedIndex != -1)
+                    {
+                        listModel.remove(selectedIndex);
+                        this.umlEnum.getConstants().remove(this.umlEnum.getConstants().get(selectedIndex));
+                    }
+                });
+            });
+        }
+        else{
+            System.out.println("MISS");
+        }
+        hit = false;
+
     }
 
     @Override
@@ -541,4 +1484,67 @@ public class AddFieldState implements State
     public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
 
     }
+
+    public void popup(){
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+
+        JButton btnAddField = new JButton("Add Field");
+        JButton btnAddMethod = new JButton("Add Method");
+
+        btnAddField.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                addType = AddType.ATRIBUTE_ADD;
+                System.out.println("Add Field button pressed");
+            }
+        });
+
+        btnAddMethod.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+
+                addType = AddType.METHOD_ADD;
+                System.out.println("Add Method button pressed");
+            }
+        });
+
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(btnAddField);
+        toolBar.addSeparator();
+        toolBar.add(btnAddMethod);
+        toolBar.add(Box.createHorizontalGlue());
+
+        JOptionPane.showMessageDialog(MainFrame.getInstance(), toolBar, "Add Content", JOptionPane.PLAIN_MESSAGE);
+    }
+    public void popupReduced(){
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+
+        JButton btnAddMethod = new JButton("Add Method");
+
+        btnAddMethod.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+
+                System.out.println("Add Method button pressed");
+                addType = AddType.METHOD_ADD;
+            }
+        });
+
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.addSeparator();
+        toolBar.add(btnAddMethod);
+        toolBar.add(Box.createHorizontalGlue());
+
+        JOptionPane.showMessageDialog(MainFrame.getInstance(), toolBar, "Add Content", JOptionPane.PLAIN_MESSAGE);
+    }
+
+
 }
