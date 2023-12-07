@@ -162,8 +162,8 @@ public class AddFieldState implements State
                 classFieldsList.setLayoutOrientation(JList.VERTICAL);
                 classFieldsList.setVisibleRowCount(-1);
 
-                DefaultListModel<String> listModel = new DefaultListModel<>();
-                classFieldsList.setModel(listModel);
+                DefaultListModel<String> listModel = new DefaultListModel<>(); //Cuvamo podatke u listi
+                classFieldsList.setModel(listModel); //Povezujemo listu sa modelom
 
                 rightPanel.add(new JScrollPane(classFieldsList), BorderLayout.CENTER);
 
@@ -184,6 +184,40 @@ public class AddFieldState implements State
 
                 // Display the frame
                 frame.setVisible(true);
+
+                //Ako lista classContents klase nije prazna, dodajemo sve atribute u listModel
+                if(!this.klasa.getClassContents().isEmpty())
+                {
+                    for(ClassContent cc : this.klasa.getClassContents())
+                    {
+                        if(cc instanceof Atribut)
+                        {
+                            Atribut atribut = (Atribut) cc;
+                            StringBuilder sb = new StringBuilder();
+
+                            if(atribut.getVisibility() == Visibility.PRIVATE)
+                                sb.append("- ");
+
+                            else if(atribut.getVisibility() == Visibility.PROTECTED)
+                                sb.append("# ");
+
+                            else if(atribut.getVisibility() == Visibility.PUBLIC)
+                                sb.append("+ ");
+
+                            else if(atribut.getVisibility() == Visibility.PACKAGE_PRIVATE)
+                                sb.append("~ ");
+
+                            sb.append(atribut.getName() + ": ");
+
+                            if(atribut.isStatic())
+                                sb.append("static ");
+
+                            sb.append(atribut.getDataType());
+
+                            listModel.addElement(sb.toString());
+                        }
+                    }
+                }
 
                 cancelButton.addActionListener(e -> {
                     System.out.println("Cancel button clicked");
@@ -305,6 +339,7 @@ public class AddFieldState implements State
                         System.out.println("Dodat atribut u listu classContents klase (else)");
                     }
 
+                    System.out.println("Dodat novi atribut" + sb.toString());
                 });
 
                 classFieldsList.getSelectionModel().addListSelectionListener(e -> {
@@ -449,9 +484,14 @@ public class AddFieldState implements State
                 });
 
                 removeButton.addActionListener(e -> {
-                    // Handle edit button click event
-                    // Add your logic here
-                    System.out.println("Remove button clicked");
+
+                    int selectedIndex = classFieldsList.getSelectedIndex();
+
+                    if (selectedIndex != -1)
+                    {
+                        listModel.remove(selectedIndex);
+                        this.klasa.deleteClassContent(this.klasa.getClassContents().get(selectedIndex));
+                    }
                 });
             });
 
