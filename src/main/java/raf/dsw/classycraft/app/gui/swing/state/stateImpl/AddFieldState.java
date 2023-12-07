@@ -27,7 +27,25 @@ public class AddFieldState implements State
     private boolean hit = false;
 
     @Override
-    public void execute(int x, int y, DiagramPanel panel)
+    public void execute(int x, int y, DiagramPanel panel) {
+        panel.setCursor(Cursor.getDefaultCursor());
+    }
+
+    private boolean isHit(InterClass interClass, int x, int y) {
+        int startX = interClass.getPosition().getFirst(); //Gornja leva x koordinata
+        int startY = interClass.getPosition().getSecond(); //Gornja leva y koordinata
+        int endX = startX + interClass.getSize().getFirst(); //Donja desna x koordinata
+        int endY = startY + interClass.getSize().getSecond(); //Donja desna y koordinata
+
+        if(x >= startX && x <= endX && y >= startY && y <= endY){
+            return true;
+        }
+        return false;
+
+    }
+
+    @Override
+    public void stateMousePressed(int x, int y, DiagramPanel panel)
     {
         System.out.println("Add Field state");
         this.startX = x;
@@ -68,13 +86,11 @@ public class AddFieldState implements State
             }
         }
 
-        if(!hit)
-        {
+        if(!hit) {
             System.out.println(hit);
         }
 
-        if(hit)
-        {
+        if(hit) {
             System.out.println(hit);
 
             SwingUtilities.invokeLater(() -> {
@@ -497,28 +513,8 @@ public class AddFieldState implements State
 
 
 
-        hit = false;
+            hit = false;
         }
-    }
-
-    private boolean isHit(InterClass interClass, int x, int y)
-    {
-        int startX = interClass.getPosition().getFirst(); //Gornja leva x koordinata
-        int startY = interClass.getPosition().getSecond(); //Gornja leva y koordinata
-        int endX = startX + interClass.getSize().getFirst(); //Donja desna x koordinata
-        int endY = startY + interClass.getSize().getSecond(); //Donja desna y koordinata
-
-        if(x >= startX && x <= endX && y >= startY && y <= endY){
-            return true;
-        }
-        return false;
-
-    }
-
-    @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel)
-    {
-
     }
 
     @Override
@@ -528,6 +524,21 @@ public class AddFieldState implements State
 
     @Override
     public void stateMouseReleased(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
 
     }
 }

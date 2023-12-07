@@ -5,16 +5,23 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.UmlEnum;
+import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.painters.InterClassPainter;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class AddEnumState implements State {
     @Override
     public void execute(int x, int y, DiagramPanel panel) {
+        panel.setCursor(Cursor.getDefaultCursor());
+    }
+
+    @Override
+    public void stateMousePressed(int x, int y, DiagramPanel panel) {
         DiagramPanel diagramPanel = panel;
         System.out.println("TEST");
         String name = JOptionPane.showInputDialog("Enter enum name:");
@@ -41,10 +48,8 @@ public class AddEnumState implements State {
         panel.getPainters().add(painter);
         panel.repaint();
         panel.getDiagram().addDiagramElement(new Pair(x, y),enm);
-    }
-
-    @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
+        EventBus.getInstance().notifySubscriber(panel.getDiagram(), EventType.SET_PANEL);
+        EventBus.getInstance().notifySubscriber(enm, EventType.ADD_ENUM_TO_TREE);
 
     }
 
@@ -55,6 +60,21 @@ public class AddEnumState implements State {
 
     @Override
     public void stateMouseReleased(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
 
     }
 }

@@ -5,11 +5,14 @@ import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 public class ClassyTreeItem extends DefaultMutableTreeNode {
     private ClassyNode classyNode;
+    private List<ClassyTreeItem> children = new ArrayList<>();
 
     public ClassyTreeItem(ClassyNode classyNode) {
         this.classyNode = classyNode;
@@ -23,4 +26,5 @@ public class ClassyTreeItem extends DefaultMutableTreeNode {
     public void setName(String name) {
         this.classyNode.setName(name);
     }
+
 }

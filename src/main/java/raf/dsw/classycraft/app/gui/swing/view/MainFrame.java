@@ -38,6 +38,7 @@ public class MainFrame extends JFrame implements ISubscriber
     private List<ISubscriber> subscriberList;
     private PackageView packageView;
 
+
     private MainFrame() {}
 
     private void initialise()

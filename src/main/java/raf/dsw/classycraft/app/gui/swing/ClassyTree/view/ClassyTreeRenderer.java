@@ -1,5 +1,8 @@
 package raf.dsw.classycraft.app.gui.swing.ClassyTree.view;
 
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Interfejs;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.UmlEnum;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.Package;
@@ -32,6 +35,15 @@ public class ClassyTreeRenderer extends DefaultTreeCellRenderer
 
         else if (treeItemSelected.getClassyNode() instanceof Package)
             imageURL = getClass().getResource("/images/Package.png");
+        else if (treeItemSelected.getClassyNode() instanceof Klasa){
+            imageURL = getClass().getResource("/images/Class.png");
+        }
+        else if (treeItemSelected.getClassyNode() instanceof Interfejs){
+            imageURL = getClass().getResource("/images/Interface.png");
+        }
+        else if (treeItemSelected.getClassyNode() instanceof UmlEnum){
+            imageURL = getClass().getResource("/images/Enum.png");
+        }
 
 
         ImageIcon icon = null;

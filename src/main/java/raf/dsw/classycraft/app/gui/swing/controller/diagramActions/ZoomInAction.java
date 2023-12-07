@@ -19,6 +19,7 @@ public class ZoomInAction extends AbstractClassyAction
     @Override
     public void actionPerformed(ActionEvent e)
     {
+        MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().execute(0, 0, MainFrame.getInstance().getPackageView().getSelectedDiagramPanel());
         EventBus.getInstance().notifySubscriber(this, EventType.ZOOM_IN);
     }
 }

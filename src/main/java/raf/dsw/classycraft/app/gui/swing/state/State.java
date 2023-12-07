@@ -10,5 +10,8 @@ public interface State {
     void stateMousePressed(int x, int y, DiagramPanel panel);
     void stateMouseDragged(int x, int y, DiagramPanel panel);
     void stateMouseReleased(int x, int y, DiagramPanel panel);
+    void stateRightMouseDragged(int x, int y, DiagramPanel panel);
+    void stateRightMousePressed(int x, int y, DiagramPanel panel);
+    void stateRightMouseReleased(int x, int y, DiagramPanel panel);
 
 }

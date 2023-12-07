@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class EventBus implements IPublisher{
+    public static Object EventType;
     private static EventBus instance = null;
     private final Map<EventType, List<ISubscriber>> subscribers = new HashMap<>();
 

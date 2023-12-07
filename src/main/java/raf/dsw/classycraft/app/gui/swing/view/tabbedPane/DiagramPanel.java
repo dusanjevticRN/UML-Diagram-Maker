@@ -1,15 +1,11 @@
 package raf.dsw.classycraft.app.gui.swing.view.tabbedPane;
 
-import jdk.jshell.Diag;
 import lombok.Getter;
 import lombok.Setter;
 import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.*;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Agregacija;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Generalizacija;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Kompozicija;
@@ -20,7 +16,7 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.inter
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
-import raf.dsw.classycraft.app.gui.swing.controller.mouseListener.ClassyMouse;
+import raf.dsw.classycraft.app.gui.swing.controller.listner.ClassyMouse;
 import raf.dsw.classycraft.app.gui.swing.state.StateManager;
 import raf.dsw.classycraft.app.gui.swing.view.painters.*;
 
@@ -29,19 +25,20 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Map;
 
 @Getter
 @Setter
 public class DiagramPanel extends JPanel implements ISubscriber {
 
-    ArrayList<ElementPainter> painters = new ArrayList<>();
-    ArrayList<ElementPainter> tempPainters = new ArrayList<>();
-    ArrayList<ElementPainter> selectedPainters = new ArrayList<>();
+    private ArrayList<ElementPainter> painters = new ArrayList<>();
+    private ArrayList<ElementPainter> tempPainters = new ArrayList<>();
+    private ArrayList<ElementPainter> selectedPainters = new ArrayList<>();
+    private ArrayList<DiagramElement> selectedElements = new ArrayList<>();
     private SelectionPainter selectionPainter = null;
-    StateManager stateManager = new StateManager();
-    Diagram diagram;
+    private StateManager stateManager = new StateManager();
+    private Diagram diagram;
     int startDargX;
     int startDragY;
     private UmlSelectionModel selectionModel;
@@ -57,6 +54,7 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         this.diagram = diagram;
         init(diagram);
         selectionModel = new UmlSelectionModel();
+        this.setFocusable(true);
         this.setScale = true;
         this.step = 5;
         this.affineTransform = new AffineTransform();
@@ -64,6 +62,7 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         this.setBackground(Color.WHITE);
         this.addMouseListener(classyMouse);
         this.addMouseMotionListener(classyMouse);
+        setupDeleteKeyBinding();
         EventBus.getInstance().subscribe(EventType.ADD_CLASS, this);
         EventBus.getInstance().subscribe(EventType.ADD_FIELD, this);
         EventBus.getInstance().subscribe(EventType.ADD_METHOD, this);
@@ -82,7 +81,8 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         EventBus.getInstance().subscribe(EventType.ADD_AGGREGATION, this);
         EventBus.getInstance().subscribe(EventType.ADD_COMPOSITION, this);
         EventBus.getInstance().subscribe(EventType.ADD_DEPENDENCY, this);
-
+        EventBus.getInstance().subscribe(EventType.MOVE, this);
+        EventBus.getInstance().subscribe(EventType.DELETE_ELEMENTS, this);
     }
 
     private void init(Diagram diagram){
@@ -238,11 +238,28 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     public void startAddFieldState() {this.stateManager.setAddFieldState();}
 
     @Override
-    public void update(Object notification, Object typeOfUpdate)
-    {
-        if(EventType.ADD_CLASS.equals(typeOfUpdate))
+    public void update(Object notification, Object typeOfUpdate) {
+        if(EventType.MOVE.equals(typeOfUpdate)){
+            if (notification instanceof Triple<?, ?, ?>) {
+                Triple<DiagramPanel, Integer, Integer> data = (Triple<DiagramPanel, Integer, Integer>) notification;
+                if (data.getFirst() == this) {
+                    Pair<Integer, Integer> displacement = new Pair<>(data.getSecond(), data.getThird());
+                    int deltaX = displacement.getFirst();
+                    int deltaY = displacement.getSecond();
+                    for (DiagramElement elem : diagram.getDiagramElements()) {
+                        if (elem instanceof InterClass) {
+                            ((InterClass) elem).getPosition().setFirst(((InterClass) elem).getPosition().getFirst() + deltaX);
+                            ((InterClass) elem).getPosition().setSecond(((InterClass) elem).getPosition().getSecond() + deltaY);
+                        }
+                    }
+                    painters.clear();
+                    this.init(diagram);
+                    this.repaint();
+                }
+            }
+        }
+        else if(EventType.ADD_CLASS.equals(typeOfUpdate))
             this.startAddClassState();
-
         else if(EventType.ADD_INTERFACE.equals(typeOfUpdate))
             this.startAddInterfaceState();
 
@@ -279,36 +296,45 @@ public class DiagramPanel extends JPanel implements ISubscriber {
 
         else if(EventType.ADD_ENUM.equals(typeOfUpdate))
             this.startAddEnumState();
-
         else if(EventType.ADD_GENERALIZATION.equals(typeOfUpdate))
             this.startGeneralizationState();
-
         else if(EventType.ADD_AGGREGATION.equals(typeOfUpdate))
             this.startAgregationState();
-
         else if(EventType.ADD_COMPOSITION.equals(typeOfUpdate))
             this.startKompozicijaState();
-
         else if(EventType.ADD_DEPENDENCY.equals(typeOfUpdate))
             this.startDependencyState();
 
         else if(EventType.SELECT_ELEMENT.equals(typeOfUpdate))
             this.startSelectState();
-
-        else if(EventType.REFRESH.equals(typeOfUpdate))
-        {
+        else if(EventType.DELETE_ELEMENTS.equals(typeOfUpdate)){
+            Pair notif = (Pair) notification;
+            if(notif.getFirst() == this) {
+                ArrayList<DiagramElement> elementsForDeleting = (ArrayList<DiagramElement>) ((Pair<?, ?>) notification).getSecond();
+                for (DiagramElement element : elementsForDeleting) {
+                    System.out.println(element.getName());
+                }
+                this.init(diagram);
+                this.repaint();
+                for (DiagramElement element : elementsForDeleting) {
+                    diagram.getDiagramElements().remove(element);
+                }
+                this.painters.clear();
+                this.selectedPainters.clear();
+                this.init(diagram);
+                this.repaint();
+            }
+        }
+        else if(EventType.REFRESH.equals(typeOfUpdate)){
             System.out.println("REFRESH");
             this.init(diagram);
             this.repaint();
         }
-
-        else if(EventType.START_DRAG.equals(typeOfUpdate))
+        else if(EventType.START_DRAG.equals(typeOfUpdate)){
             tempPainters.addAll(painters);
-
-        if(EventType.DRAG.equals(typeOfUpdate))
-        {
-            if(selectionPainter == null)
-            {
+        }
+        if(EventType.DRAG.equals(typeOfUpdate)) {
+            if(selectionPainter == null) {
                 InterClass temp = new Klasa(null, "temp");
                 selectionPainter = new SelectionPainter(temp);
                 painters.add(selectionPainter);
@@ -335,24 +361,22 @@ public class DiagramPanel extends JPanel implements ISubscriber {
 
             this.repaint();
         }
-
-        else if(EventType.CLEAR_DRAG.equals(typeOfUpdate))
-        {
+        else if(EventType.CLEAR_DRAG.equals(typeOfUpdate)) {
             painters.remove(selectionPainter);
             selectionPainter = null;
             this.repaint();
         }
+
     }
 
 
     @Override
-    protected void paintComponent(Graphics g)
-    {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        for(ElementPainter p : selectedPainters)
+        for(ElementPainter p : selectedPainters){
             System.out.println("Selected: " + p);
-
+            selectedElements.add(p.getDiagramElement());
+        }
         Graphics2D g2d = (Graphics2D) g;
 
         if (setScale)
@@ -371,51 +395,38 @@ public class DiagramPanel extends JPanel implements ISubscriber {
             {
                 if(painter instanceof GeneralizacijaPainter)
                     ((GeneralizacijaPainter) painter).setSelected(false);
-
                 else if(painter instanceof AgregacijaPainter)
                     ((AgregacijaPainter) painter).setSelected(false);
-
                 else if(painter instanceof KompozicijaPainter)
                     ((KompozicijaPainter) painter).setSelected(false);
-
                 else if(painter instanceof ZavisnostPainter)
                     ((ZavisnostPainter) painter).setSelected(false);
-
                 painter.paint(g2d);
-            }
 
-            else if(painter instanceof InterClassPainter)
-            {
+            }
+            else if(painter instanceof InterClassPainter){
                 InterClassPainter interClassPainter = (InterClassPainter) painter;
                 interClassPainter.paintSelected(g2d);
             }
-
-            else if(painter instanceof GeneralizacijaPainter)
-            {
+            else if(painter instanceof GeneralizacijaPainter){
                 //generalizacijaPainter.paintSelected(g2d);
                 ((GeneralizacijaPainter) painter).setSelected(true);
                 if(((GeneralizacijaPainter) painter).getSelected())
                     painter.paint(g2d);
             }
-
-            else if(painter instanceof AgregacijaPainter)
-            {
+            else if(painter instanceof AgregacijaPainter){
                 //agregacijaPainter.paintSelected(g2d);
                 ((AgregacijaPainter) painter).setSelected(true);
                 if(((AgregacijaPainter) painter).getSelected())
                     painter.paint(g2d);
             }
-
-            else if(painter instanceof KompozicijaPainter)
-            {
+            else if(painter instanceof KompozicijaPainter){
                 //kompozicijaPainter.paintSelected(g2d);
                 ((KompozicijaPainter) painter).setSelected(true);
                 if(((KompozicijaPainter) painter).getSelected())
                     painter.paint(g2d);
             }
-
-            else if(painter instanceof ZavisnostPainter)
-            {
+            else if(painter instanceof ZavisnostPainter){
                 //zavisnostPainter.paintSelected(g2d);
                 ((ZavisnostPainter) painter).setSelected(true);
                 if(((ZavisnostPainter) painter).getSelected())
@@ -475,10 +486,8 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     private ArrayList<Connection> getConnections(Diagram diagram)
     {
         ArrayList<Connection> connectionList = new ArrayList<>();
-        for (DiagramElement element : diagram.getDiagramElements())
-        {
-            if (element instanceof Connection)
-            {
+        for (DiagramElement element : diagram.getDiagramElements()) {
+            if (element instanceof Connection) {
                 Connection connection = (Connection) element;
                 connectionList.add(connection);
             }
@@ -486,11 +495,29 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         return connectionList;
     }
 
-    public void outsideRefresh()
-    {
+    public void outsideRefresh(){
         this.init(diagram);
         this.repaint();
     }
 
 
+
+    private void setupDeleteKeyBinding() {
+        Action deleteAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onDeleteKeyPressed();
+            }
+        };
+
+        String keyStrokeAndActionKey = "DELETE";
+        KeyStroke deleteKeyStroke = KeyStroke.getKeyStroke("DELETE");
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(deleteKeyStroke, keyStrokeAndActionKey);
+        this.getActionMap().put(keyStrokeAndActionKey, deleteAction);
+    }
+
+    private void onDeleteKeyPressed() {
+        System.out.println("DELETE PRESSED");
+        EventBus.getInstance().notifySubscriber(this, EventType.DELETE_KEY);
+    }
 }

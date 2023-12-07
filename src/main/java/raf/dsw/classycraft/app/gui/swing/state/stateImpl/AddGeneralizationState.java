@@ -26,7 +26,7 @@ public class AddGeneralizationState implements State {
     private int startY= 0;
     @Override
     public void execute(int x, int y, DiagramPanel panel) {
-
+        panel.setCursor(Cursor.getDefaultCursor());
     }
 
     @Override
@@ -111,6 +111,21 @@ public class AddGeneralizationState implements State {
 
         con = null;
         generalization = null;
+
+    }
+
+    @Override
+    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
 
     }
 

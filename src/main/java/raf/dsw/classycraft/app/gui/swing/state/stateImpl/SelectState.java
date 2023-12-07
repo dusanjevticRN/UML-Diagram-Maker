@@ -1,25 +1,32 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.*;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
+import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectState implements State {
+public class SelectState implements State, ISubscriber {
+    private int startXRight;
+    private int startYRight;
     private int startX;
     private int startY;
     private boolean hit = false;
+    private List<DiagramElement> selecteElements = new ArrayList<>();
+
+    public SelectState() {
+        EventBus.getInstance().subscribe(EventType.DELETE_KEY, this);
+    }
 
     @Override
     public void execute(int x, int y, DiagramPanel panel) {
-
+        panel.setCursor(Cursor.getDefaultCursor());
     }
 
     @Override
@@ -33,12 +40,14 @@ public class SelectState implements State {
             if(elem instanceof InterClass){
                 InterClass interClass = (InterClass) elem;
                 selectableElements.add(interClass);
+                selecteElements.add(interClass);
             }
             else if(elem instanceof Connection){
                 Connection connection = (Connection) elem;
                 if(isHitLine(connection, x, y)){
                     selectionModel.select(connection);
                     hit = true;
+                    selecteElements.add(connection);
                     System.out.println("Hit: " + connection.getName());
                     break;
                 }
@@ -98,12 +107,14 @@ public class SelectState implements State {
             if(elem instanceof InterClass){
                 InterClass interClass = (InterClass) elem;
                 selectableElements.add(interClass);
+                selecteElements.add(interClass);
             }
             else if(elem instanceof Connection){
                 Connection connection = (Connection) elem;
                 if(isHitLineDrag(connection, startX, startY, x, y)){
                     selectionModel.select(connection);
                     hit = true;
+                    selecteElements.add(connection);
                     System.out.println("Hit: " + connection.getName());
                 }
             }
@@ -133,8 +144,34 @@ public class SelectState implements State {
         selectionModel.getSelected().clear();
 
         EventBus.getInstance().notifySubscriber(startEnd, EventType.CLEAR_DRAG);
-        startX = 0;
-        startY = 0;
+        startXRight = 0;
+        startYRight = 0;
+    }
+
+    @Override
+    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+        int movementX = x - startXRight;
+        int movementY = y - startYRight;
+
+        EventBus.getInstance().notifySubscriber(new Triple<>(panel, movementX,movementY), EventType.MOVE);
+
+        startXRight = x;
+        startYRight = y;
+    }
+
+    @Override
+    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+        startXRight = x;
+        startYRight = y;
+        panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+    }
+
+    @Override
+    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+        startXRight = 0;
+        startYRight = 0;
+        panel.setCursor(Cursor.getDefaultCursor());
     }
 
     private boolean isHit(InterClass interClass, int x, int y){
@@ -207,4 +244,17 @@ public class SelectState implements State {
         return true;
     }
 
+    @Override
+    public void update(Object notification, Object typeOfUpdate) {
+
+        System.out.println("DELETE PRESSED");
+        List<DiagramElement> elementsForDeleting;
+        for(DiagramElement element : selecteElements){
+            System.out.println(element.getName());
+        }
+        if(EventType.DELETE_KEY.equals(typeOfUpdate)){
+            elementsForDeleting = new ArrayList<>(selecteElements);
+            EventBus.getInstance().notifySubscriber(new Pair<>(notification, elementsForDeleting), EventType.DELETE_ELEMENTS);
+        }
+    }
 }
