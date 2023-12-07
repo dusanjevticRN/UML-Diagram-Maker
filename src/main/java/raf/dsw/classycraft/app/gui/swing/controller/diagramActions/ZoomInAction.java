@@ -1,6 +1,9 @@
 package raf.dsw.classycraft.app.gui.swing.controller.diagramActions;
 
+import raf.dsw.classycraft.app.core.eventHandler.EventBus;
+import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.controller.AbstractClassyAction;
+import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 
 import java.awt.event.ActionEvent;
 
@@ -16,6 +19,6 @@ public class ZoomInAction extends AbstractClassyAction
     @Override
     public void actionPerformed(ActionEvent e)
     {
-
+        EventBus.getInstance().notifySubscriber(this, EventType.ZOOM_IN);
     }
 }

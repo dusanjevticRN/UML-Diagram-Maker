@@ -1,5 +1,6 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
+import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Interfejs;
@@ -14,19 +15,22 @@ import javax.swing.*;
 
 public class AddInterfaceState implements State {
     @Override
-    public void execute(int x, int y, DiagramPanel panel) {
+    public void execute(int x, int y, DiagramPanel panel)
+    {
         DiagramPanel diagramPanel = panel;
         System.out.println("TEST");
         String name = JOptionPane.showInputDialog("Enter interface name:");
         if(name == null) return;
-        else if(name.isEmpty()){
-            //ERROR
-            System.out.println("Name cannot be empty");
+
+        else if(name.isEmpty())
+        {
+            AppCore.getInstance().getMessageGenerator().generate(EventType.NAME_CANNOT_BE_EMPTY);
             return;
         }
-        else if(!diagramPanel.getDiagram().checkName(name)){
-            //ERROR
-            System.out.println("Name already exists");
+
+        else if(!diagramPanel.getDiagram().checkName(name))
+        {
+            AppCore.getInstance().getMessageGenerator().generate(EventType.NAME_ALREADY_EXISTS);
             return;
         }
 

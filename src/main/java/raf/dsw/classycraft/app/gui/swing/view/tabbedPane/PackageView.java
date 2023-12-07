@@ -1,12 +1,13 @@
 package raf.dsw.classycraft.app.gui.swing.view.tabbedPane;
 
+import lombok.Getter;
+import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
-import raf.dsw.classycraft.app.gui.swing.state.StateManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Getter
+@Setter
 public class PackageView extends CloseableTabbedPane implements ISubscriber {
 
         EventBus eventBus = EventBus.getInstance();
@@ -44,8 +47,6 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
         if (notification instanceof ClassyTreeItem)
         {
             ClassyTreeItem item = (ClassyTreeItem) notification;
-
-
 
             if (EventType.DIAGRAM_DELETION.equals(typeOfUpdate))
             {
@@ -239,10 +240,10 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
         this.openDiagrams.clear();
     }
 
-    public DiagramPanel getSelectedDiagramPanel()
-    {
+   public DiagramPanel getSelectedDiagramPanel()
+   {
         return (DiagramPanel) this.getSelectedComponent();
-    }
+   }
 
 
 

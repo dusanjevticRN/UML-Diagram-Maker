@@ -15,8 +15,8 @@ public class UMLDiagramToolBar extends JToolBar
         this.add(MainFrame.getInstance().getActionManager().getAddInterfaceAction());
         this.add(MainFrame.getInstance().getActionManager().getAddEnumAction());
         this.add(MainFrame.getInstance().getActionManager().getAddRelationshipAction());
-        this.add(MainFrame.getInstance().getActionManager().getAddContentAction());
         this.add(MainFrame.getInstance().getActionManager().getMoveElementAction());
+        this.add(MainFrame.getInstance().getActionManager().getAddContentAction());
         this.add(MainFrame.getInstance().getActionManager().getSelectElementAction());
         this.add(MainFrame.getInstance().getActionManager().getDeleteElementAction());
         this.add(MainFrame.getInstance().getActionManager().getZoomInAction());
