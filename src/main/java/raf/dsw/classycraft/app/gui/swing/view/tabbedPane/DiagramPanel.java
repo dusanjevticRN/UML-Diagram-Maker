@@ -64,7 +64,6 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         this.addMouseMotionListener(classyMouse);
         setupDeleteKeyBinding();
         EventBus.getInstance().subscribe(EventType.ADD_CLASS, this);
-        EventBus.getInstance().subscribe(EventType.ADD_FIELD, this);
         EventBus.getInstance().subscribe(EventType.ADD_METHOD, this);
         EventBus.getInstance().subscribe(EventType.ZOOM_IN_STATE, this);
         EventBus.getInstance().subscribe(EventType.ZOOM_IN, this);
@@ -83,6 +82,7 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         EventBus.getInstance().subscribe(EventType.ADD_DEPENDENCY, this);
         EventBus.getInstance().subscribe(EventType.MOVE, this);
         EventBus.getInstance().subscribe(EventType.DELETE_ELEMENTS, this);
+        EventBus.getInstance().subscribe(EventType.CONTENT_STATE, this);
     }
 
     private void init(Diagram diagram){
@@ -291,7 +291,7 @@ public class DiagramPanel extends JPanel implements ISubscriber {
             this.zoomOut(x, y);
         }
 
-        else if(EventType.ADD_FIELD.equals(typeOfUpdate))
+        else if(EventType.CONTENT_STATE.equals(typeOfUpdate))
             this.startAddFieldState();
 
         else if(EventType.ADD_ENUM.equals(typeOfUpdate))

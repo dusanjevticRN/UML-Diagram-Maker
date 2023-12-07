@@ -1,5 +1,6 @@
 package raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements;
 
+import lombok.Getter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
@@ -8,6 +9,7 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.inter
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class Interfejs extends InterClass
 {
     private List<Metod> metods;
@@ -25,10 +27,16 @@ public class Interfejs extends InterClass
         this.type = "Interfejs";
     }
 
-    public void addMetod(Metod metod)
+    public void addClassContent(ClassContent classContent)
     {
-        this.metods.add(metod);
+        this.metods.add((Metod) classContent);
     }
 
-    public void deleteMetod(Metod metod) {this.metods.remove(metod);}
+    public void deleteClassContent(ClassContent classContent) {this.metods.remove(classContent);}
+
+    public void updateClassContent(ClassContent classContent, ClassContent newClassContent)
+    {
+        int index = this.metods.indexOf(classContent);
+        this.metods.set(index, (Metod) newClassContent);
+    }
 }
