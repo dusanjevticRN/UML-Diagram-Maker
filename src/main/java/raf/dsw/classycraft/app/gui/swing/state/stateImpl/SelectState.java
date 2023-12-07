@@ -26,7 +26,7 @@ public class SelectState implements State, ISubscriber {
 
     @Override
     public void execute(int x, int y, DiagramPanel panel) {
-
+        panel.setCursor(Cursor.getDefaultCursor());
     }
 
     @Override

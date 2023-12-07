@@ -307,7 +307,6 @@ public class DiagramPanel extends JPanel implements ISubscriber {
 
         else if(EventType.SELECT_ELEMENT.equals(typeOfUpdate))
             this.startSelectState();
-        }
         else if(EventType.DELETE_ELEMENTS.equals(typeOfUpdate)){
             Pair notif = (Pair) notification;
             if(notif.getFirst() == this) {
@@ -367,6 +366,7 @@ public class DiagramPanel extends JPanel implements ISubscriber {
             selectionPainter = null;
             this.repaint();
         }
+
     }
 
 

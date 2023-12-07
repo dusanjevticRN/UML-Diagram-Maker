@@ -14,11 +14,17 @@ import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class AddClassState implements State {
 
     @Override
     public void execute(int x, int y, DiagramPanel panel) {
+        panel.setCursor(Cursor.getDefaultCursor());
+    }
+
+    @Override
+    public void stateMousePressed(int x, int y, DiagramPanel panel) {
         DiagramPanel diagramPanel = panel;
         System.out.println("TEST");
         String name = JOptionPane.showInputDialog("Enter class name:");
@@ -48,11 +54,6 @@ public class AddClassState implements State {
         panel.getDiagram().addDiagramElement(new Pair(x, y),klas);
         EventBus.getInstance().notifySubscriber(panel.getDiagram(), EventType.SET_PANEL);
         EventBus.getInstance().notifySubscriber(klas, EventType.ADD_CLASS_TO_TREE);
-
-    }
-
-    @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
 
     }
 

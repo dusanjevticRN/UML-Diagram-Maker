@@ -12,11 +12,16 @@ import raf.dsw.classycraft.app.gui.swing.view.painters.InterClassPainter;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class AddInterfaceState implements State {
     @Override
-    public void execute(int x, int y, DiagramPanel panel)
-    {
+    public void execute(int x, int y, DiagramPanel panel) {
+        panel.setCursor(Cursor.getDefaultCursor());
+    }
+
+    @Override
+    public void stateMousePressed(int x, int y, DiagramPanel panel) {
         DiagramPanel diagramPanel = panel;
         System.out.println("TEST");
         String name = JOptionPane.showInputDialog("Enter interface name:");
@@ -45,11 +50,6 @@ public class AddInterfaceState implements State {
         panel.getDiagram().addDiagramElement(new Pair(x, y),inter);
         EventBus.getInstance().notifySubscriber(panel.getDiagram(), EventType.SET_PANEL);
         EventBus.getInstance().notifySubscriber(inter, EventType.ADD_INTERFACE_TO_TREE);
-
-    }
-
-    @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
 
     }
 

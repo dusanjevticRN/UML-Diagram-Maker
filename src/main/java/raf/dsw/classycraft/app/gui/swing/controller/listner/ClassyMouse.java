@@ -18,8 +18,7 @@ public class ClassyMouse implements MouseListener, MouseMotionListener{
     @Override
     public void mouseClicked(MouseEvent e) {
         System.out.println("Cordinates: " + e.getX() + " " + e.getY());
-        MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().execute(e.getX(), e.getY(), currentPanel);
-        MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().stateMousePressed(e.getX(), e.getY(), currentPanel);
+        //MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().stateMousePressed(e.getX(), e.getY(), currentPanel);
     }
 
     @Override

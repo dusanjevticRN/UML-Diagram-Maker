@@ -28,7 +28,7 @@ public class AddAgregationState implements State {
     private int startY= 0;
     @Override
     public void execute(int x, int y, DiagramPanel panel) {
-
+        panel.setCursor(Cursor.getDefaultCursor());
     }
 
     @Override
