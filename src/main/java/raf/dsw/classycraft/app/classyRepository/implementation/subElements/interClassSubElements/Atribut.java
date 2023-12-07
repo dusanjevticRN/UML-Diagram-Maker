@@ -11,11 +11,11 @@ import java.lang.reflect.Type;
 @Setter
 public class Atribut extends ClassContent
 {
-    private Type type;
+    private String dataType;
 
-    public Atribut(String name, Visibility visibility, boolean isStatic, Type type)
+    public Atribut(String name, Visibility visibility, boolean isStatic, String dataType)
     {
         super(name, visibility, isStatic);
-        this.type = type;
+        this.dataType = dataType;
     }
 }

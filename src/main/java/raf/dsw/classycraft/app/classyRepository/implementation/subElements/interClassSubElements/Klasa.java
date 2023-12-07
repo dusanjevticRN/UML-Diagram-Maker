@@ -1,5 +1,7 @@
 package raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements;
 
+import lombok.Getter;
+import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
@@ -7,6 +9,8 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visib
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class Klasa extends InterClass
 {
     private List<ClassContent> classContents;
@@ -30,4 +34,10 @@ public class Klasa extends InterClass
     }
 
     public void deleteClassContent(ClassContent classContent) {this.classContents.remove(classContent);}
+
+    public void updateClassContent(ClassContent classContent, ClassContent newClassContent)
+    {
+        int index = this.classContents.indexOf(classContent);
+        this.classContents.set(index, newClassContent);
+    }
 }

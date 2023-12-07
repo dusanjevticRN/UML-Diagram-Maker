@@ -3,6 +3,7 @@ package raf.dsw.classycraft.app.gui.swing.view.tabbedPane;
 import jdk.jshell.Diag;
 import lombok.Getter;
 import lombok.Setter;
+import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
@@ -27,6 +28,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -43,6 +45,11 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     int startDargX;
     int startDragY;
     private UmlSelectionModel selectionModel;
+    private double scaleFactor;
+    private double scale;
+    private AffineTransform affineTransform;
+    private boolean setScale;
+    private int step;
     public DiagramPanel(Diagram diagram){
 
         super();
@@ -50,11 +57,20 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         this.diagram = diagram;
         init(diagram);
         selectionModel = new UmlSelectionModel();
+        this.setScale = true;
+        this.step = 5;
+        this.affineTransform = new AffineTransform();
 
         this.setBackground(Color.WHITE);
         this.addMouseListener(classyMouse);
         this.addMouseMotionListener(classyMouse);
         EventBus.getInstance().subscribe(EventType.ADD_CLASS, this);
+        EventBus.getInstance().subscribe(EventType.ADD_FIELD, this);
+        EventBus.getInstance().subscribe(EventType.ADD_METHOD, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_IN_STATE, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_IN, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_OUT_STATE, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_OUT, this);
         EventBus.getInstance().subscribe(EventType.ADD_INTERFACE, this);
         EventBus.getInstance().subscribe(EventType.ADD_ENUM, this);
         EventBus.getInstance().subscribe(EventType.SELECT_ELEMENT, this);
@@ -217,36 +233,82 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     {
         this.stateManager.setAddDependancyState();
     }
+    public void startZoomInState() {this.stateManager.setZoomInState();}
+    public void startZoomOutState() {this.stateManager.setZoomOutState();}
+    public void startAddFieldState() {this.stateManager.setAddFieldState();}
 
     @Override
-    public void update(Object notification, Object typeOfUpdate) {
+    public void update(Object notification, Object typeOfUpdate)
+    {
         if(EventType.ADD_CLASS.equals(typeOfUpdate))
             this.startAddClassState();
+
         else if(EventType.ADD_INTERFACE.equals(typeOfUpdate))
             this.startAddInterfaceState();
+
+        else if(EventType.ZOOM_IN.equals(typeOfUpdate))
+            this.startZoomInState();
+
+        else if(EventType.ZOOM_OUT.equals(typeOfUpdate))
+            this.startZoomOutState();
+
+        else if(EventType.ZOOM_IN_STATE.equals(typeOfUpdate))
+        {
+            String stringX = notification.toString().split("/")[0];
+            String stringY = notification.toString().split("/")[1];
+
+            int x = Integer.parseInt(stringX);
+            int y = Integer.parseInt(stringY);
+
+            this.zoomIn(x, y);
+        }
+
+        else if(EventType.ZOOM_OUT_STATE.equals(typeOfUpdate))
+        {
+            String stringX = notification.toString().split("/")[0];
+            String stringY = notification.toString().split("/")[1];
+
+            int x = Integer.parseInt(stringX);
+            int y = Integer.parseInt(stringY);
+
+            this.zoomOut(x, y);
+        }
+
+        else if(EventType.ADD_FIELD.equals(typeOfUpdate))
+            this.startAddFieldState();
+
         else if(EventType.ADD_ENUM.equals(typeOfUpdate))
             this.startAddEnumState();
+
         else if(EventType.ADD_GENERALIZATION.equals(typeOfUpdate))
             this.startGeneralizationState();
+
         else if(EventType.ADD_AGGREGATION.equals(typeOfUpdate))
             this.startAgregationState();
+
         else if(EventType.ADD_COMPOSITION.equals(typeOfUpdate))
             this.startKompozicijaState();
+
         else if(EventType.ADD_DEPENDENCY.equals(typeOfUpdate))
             this.startDependencyState();
-        else if(EventType.SELECT_ELEMENT.equals(typeOfUpdate)) {
+
+        else if(EventType.SELECT_ELEMENT.equals(typeOfUpdate))
             this.startSelectState();
-        }
-        else if(EventType.REFRESH.equals(typeOfUpdate)){
+
+        else if(EventType.REFRESH.equals(typeOfUpdate))
+        {
             System.out.println("REFRESH");
             this.init(diagram);
             this.repaint();
         }
-        else if(EventType.START_DRAG.equals(typeOfUpdate)){
+
+        else if(EventType.START_DRAG.equals(typeOfUpdate))
             tempPainters.addAll(painters);
-        }
-        if(EventType.DRAG.equals(typeOfUpdate)) {
-            if(selectionPainter == null) {
+
+        if(EventType.DRAG.equals(typeOfUpdate))
+        {
+            if(selectionPainter == null)
+            {
                 InterClass temp = new Klasa(null, "temp");
                 selectionPainter = new SelectionPainter(temp);
                 painters.add(selectionPainter);
@@ -273,7 +335,9 @@ public class DiagramPanel extends JPanel implements ISubscriber {
 
             this.repaint();
         }
-        else if(EventType.CLEAR_DRAG.equals(typeOfUpdate)) {
+
+        else if(EventType.CLEAR_DRAG.equals(typeOfUpdate))
+        {
             painters.remove(selectionPainter);
             selectionPainter = null;
             this.repaint();
@@ -282,48 +346,76 @@ public class DiagramPanel extends JPanel implements ISubscriber {
 
 
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g)
+    {
         super.paintComponent(g);
-        for(ElementPainter p : selectedPainters){
+
+        for(ElementPainter p : selectedPainters)
             System.out.println("Selected: " + p);
-        }
+
         Graphics2D g2d = (Graphics2D) g;
-        for (ElementPainter painter : painters) {
-            if(!selectedPainters.contains(painter)){
+
+        if (setScale)
+        {
+            affineTransform = g2d.getTransform();
+            System.out.println(affineTransform.getScaleX());
+            scale = affineTransform.getScaleX();
+            step /= scale;
+            setScale = false;
+        }
+        g2d.setTransform(affineTransform);
+
+        for (ElementPainter painter : painters)
+        {
+            if(!selectedPainters.contains(painter))
+            {
                 if(painter instanceof GeneralizacijaPainter)
                     ((GeneralizacijaPainter) painter).setSelected(false);
+
                 else if(painter instanceof AgregacijaPainter)
                     ((AgregacijaPainter) painter).setSelected(false);
+
                 else if(painter instanceof KompozicijaPainter)
                     ((KompozicijaPainter) painter).setSelected(false);
+
                 else if(painter instanceof ZavisnostPainter)
                     ((ZavisnostPainter) painter).setSelected(false);
-                painter.paint(g2d);
 
+                painter.paint(g2d);
             }
-            else if(painter instanceof InterClassPainter){
+
+            else if(painter instanceof InterClassPainter)
+            {
                 InterClassPainter interClassPainter = (InterClassPainter) painter;
                 interClassPainter.paintSelected(g2d);
             }
-            else if(painter instanceof GeneralizacijaPainter){
+
+            else if(painter instanceof GeneralizacijaPainter)
+            {
                 //generalizacijaPainter.paintSelected(g2d);
                 ((GeneralizacijaPainter) painter).setSelected(true);
                 if(((GeneralizacijaPainter) painter).getSelected())
                     painter.paint(g2d);
             }
-            else if(painter instanceof AgregacijaPainter){
+
+            else if(painter instanceof AgregacijaPainter)
+            {
                 //agregacijaPainter.paintSelected(g2d);
                 ((AgregacijaPainter) painter).setSelected(true);
                 if(((AgregacijaPainter) painter).getSelected())
                     painter.paint(g2d);
             }
-            else if(painter instanceof KompozicijaPainter){
+
+            else if(painter instanceof KompozicijaPainter)
+            {
                 //kompozicijaPainter.paintSelected(g2d);
                 ((KompozicijaPainter) painter).setSelected(true);
                 if(((KompozicijaPainter) painter).getSelected())
                     painter.paint(g2d);
             }
-            else if(painter instanceof ZavisnostPainter){
+
+            else if(painter instanceof ZavisnostPainter)
+            {
                 //zavisnostPainter.paintSelected(g2d);
                 ((ZavisnostPainter) painter).setSelected(true);
                 if(((ZavisnostPainter) painter).getSelected())
@@ -332,10 +424,61 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         }
     }
 
-    private ArrayList<Connection> getConnections(Diagram diagram) {
+    private void setUpZoomTransformation(int mouseX, int mouseY)
+    {
+        // Translate graphics context to position the mouse coordinates at the origin
+        double translateX = affineTransform.getTranslateX();
+        double translateY = affineTransform.getTranslateY();
+        affineTransform.translate(
+                (mouseX - translateX) * (1 - scaleFactor),
+                (mouseY - translateY) * (1 - scaleFactor)
+        );
+
+        // Apply scale transformation
+        this.affineTransform.scale(scaleFactor, scaleFactor);
+
+        if(Math.abs(affineTransform.getScaleX() - scale) < 0.01) {
+            AffineTransform newTransform = new AffineTransform();
+            newTransform.translate(affineTransform.getTranslateX(), affineTransform.getTranslateY());
+            newTransform.scale(scale, scale);
+            this.affineTransform.setTransform(newTransform);
+        }
+
+        this.revalidate();
+        this.repaint();
+    }
+
+    public void zoomIn(int mouseX, int mouseY)
+    {
+        this.scaleFactor = 1.09;
+
+        if (affineTransform.getScaleX() >= 1.9)
+        {
+            AppCore.getInstance().getMessageGenerator().generate(EventType.MAX_ZOOM);
+            return;
+        }
+        setUpZoomTransformation(mouseX, mouseY);
+    }
+
+    public void zoomOut(int mouseX, int mouseY)
+    {
+        scaleFactor = 1/ 1.09; //reciprocna vrednost zoomIna
+
+        if (affineTransform.getScaleX() <= 0.4 * scale)
+        {
+            AppCore.getInstance().getMessageGenerator().generate(EventType.MIN_ZOOM);
+            return;
+        }
+        setUpZoomTransformation(mouseX, mouseY);
+    }
+
+    private ArrayList<Connection> getConnections(Diagram diagram)
+    {
         ArrayList<Connection> connectionList = new ArrayList<>();
-        for (DiagramElement element : diagram.getDiagramElements()) {
-            if (element instanceof Connection) {
+        for (DiagramElement element : diagram.getDiagramElements())
+        {
+            if (element instanceof Connection)
+            {
                 Connection connection = (Connection) element;
                 connectionList.add(connection);
             }
@@ -343,7 +486,8 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         return connectionList;
     }
 
-    public void outsideRefresh(){
+    public void outsideRefresh()
+    {
         this.init(diagram);
         this.repaint();
     }

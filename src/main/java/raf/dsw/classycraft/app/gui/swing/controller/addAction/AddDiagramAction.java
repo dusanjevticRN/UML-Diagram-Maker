@@ -40,6 +40,7 @@ public class AddDiagramAction extends AbstractClassyAction
             AppCore.getInstance().getMessageGenerator().generate(EventType.CANT_ADD_DIAGRAM_IN_DIARGAM);
             return;
         }
+
         else if(MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode() instanceof Project)
         {
             AppCore.getInstance().getMessageGenerator().generate(EventType.CANT_ADD_DIAGRAM_IN_PROJECT);

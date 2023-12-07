@@ -138,10 +138,10 @@ public class SelectState implements State {
     }
 
     private boolean isHit(InterClass interClass, int x, int y){
-        int startX = interClass.getPosition().getFirst();
-        int startY = interClass.getPosition().getSecond();
-        int endX = startX + interClass.getSize().getFirst();
-        int endY = startY + interClass.getSize().getSecond();
+        int startX = interClass.getPosition().getFirst(); //Gornja leva x koordinata
+        int startY = interClass.getPosition().getSecond(); //Gornja leva y koordinata
+        int endX = startX + interClass.getSize().getFirst(); //Donja desna x koordinata
+        int endY = startY + interClass.getSize().getSecond(); //Donja desna y koordinata
 
         if(x >= startX && x <= endX && y >= startY && y <= endY){
         return true;

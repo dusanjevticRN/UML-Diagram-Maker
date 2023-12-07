@@ -20,6 +20,9 @@ public class MessageGeneratorClass implements MessageGenerator
         else if(typeOfEvent == EventType.NAME_CANNOT_BE_EMPTY)
             this.notifySubscriber(new Message("Name cannot be empty", "Error"), typeOfEvent);
 
+        else if(typeOfEvent == EventType.NAME_ALREADY_EXISTS)
+            this.notifySubscriber(new Message("Name already exists", "Error"), typeOfEvent);
+
         else if(typeOfEvent == EventType.CANNOT_EDIT_PROJECT_EXPLORER)
             this.notifySubscriber(new Message("Editing the project explorer is not allowed", "Error"), typeOfEvent);
 
@@ -30,7 +33,10 @@ public class MessageGeneratorClass implements MessageGenerator
             this.notifySubscriber(new Message("Adding a project inside another project is not allowed", "Error"), typeOfEvent);
 
         else if(typeOfEvent == EventType.CANT_ADD_DIAGRAM_IN_DIARGAM)
-            this.notifySubscriber(new Message("Adding a diagram inside another diagram is not allower", "Error"), typeOfEvent);
+            this.notifySubscriber(new Message("Adding a diagram inside another diagram is not allowed", "Error"), typeOfEvent);
+
+        else if(typeOfEvent == EventType.CANT_ADD_DIAGRAM_IN_PROJECT)
+            this.notifySubscriber(new Message("Adding a diagram inside project is not allowed", "Error"), typeOfEvent);
 
         else if(typeOfEvent == EventType.CANT_ADD_PROJECT_IN_PACKAGE)
             this.notifySubscriber(new Message("Projects can only be added within project explorer", "Error"), typeOfEvent);
@@ -55,6 +61,15 @@ public class MessageGeneratorClass implements MessageGenerator
 
         else if(typeOfEvent == EventType.CANT_EMPTY_STRING)
             this.notifySubscriber(new Message("String cannot be empty", "Error"), typeOfEvent);
+
+        else if(typeOfEvent == EventType.MAX_ZOOM)
+            this.notifySubscriber(new Message("Diagram is zoomed in at its maximum", "Error"), typeOfEvent);
+
+        else if(typeOfEvent == EventType.MIN_ZOOM)
+            this.notifySubscriber(new Message("Diagram is zoomed out at its maximum", "Error"), typeOfEvent);
+
+        else if(typeOfEvent == EventType.FIELD_ALREADY_EXISTS)
+            this.notifySubscriber(new Message("Field already exists!", "Error"), typeOfEvent);
 
         else if(typeOfEvent == EventType.SELECT_ITEM_TO_EDIT)
             this.notifySubscriber(new Message("Please select item to edit", "Information"), typeOfEvent);
