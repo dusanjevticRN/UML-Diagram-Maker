@@ -1,5 +1,7 @@
 package raf.dsw.classycraft.app.gui.swing.ClassyTree;
 
+import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
@@ -15,22 +17,31 @@ import raf.dsw.classycraft.app.classyRepository.implementation.Package;
 import raf.dsw.classycraft.app.classyRepository.implementation.Project;
 import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabView;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
 
     private ClassyTreeView classyTreeView;
     private DefaultTreeModel defaultTreeModel;
-
+    private Diagram currentDiagram;
     public ClassyTreeImplementation() {
         classyTreeView = null;
         defaultTreeModel = null;
         EventBus.getInstance().subscribe(EventType.DIAGRAM_RENAME, this);
         EventBus.getInstance().subscribe(EventType.PACKAGE_RENAME, this);
         EventBus.getInstance().subscribe(EventType.PROJECT_RENAME, this);
+        EventBus.getInstance().subscribe(EventType.ADD_CLASS_TO_TREE, this);
+        EventBus.getInstance().subscribe(EventType.ADD_INTERFACE_TO_TREE, this);
+        EventBus.getInstance().subscribe(EventType.ADD_ENUM_TO_TREE, this);
+        EventBus.getInstance().subscribe(EventType.SET_PANEL, this);
     }
     @Override
     public ClassyTreeView generateTree(ProjectExplorer projectExplorer, ClassyTabView classyTabView, PackageView packageView){
@@ -51,7 +62,12 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
         ClassyNode child =  createChild(parent.getClassyNode(), addType);
         if(child == null)
             return;
+        ClassyTreeItem toAdd = new ClassyTreeItem(child);
+        toAdd.setParent(parent);
+        parent.getChildren().add(toAdd);
         parent.add(new ClassyTreeItem(child));
+        parent.getChildren().add(new ClassyTreeItem(child));
+        child.setParent(parent.getClassyNode());
         ((ClassyNodeComposite) parent.getClassyNode()).addChild(child);
         classyTreeView.expandPath(classyTreeView.getSelectionPath());
         SwingUtilities.updateComponentTreeUI(classyTreeView);
@@ -106,6 +122,9 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
 
     @Override
     public void update(Object notification, Object typeOfUpdate) {
+        if(typeOfUpdate.equals(EventType.SET_PANEL)){
+            currentDiagram = (Diagram) notification;
+        }
         if (notification instanceof String){
             if(typeOfUpdate.equals(EventType.DIAGRAM_RENAME)){
                 notification = ((String) notification).split("/")[1];
@@ -132,5 +151,91 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
                 SwingUtilities.updateComponentTreeUI(classyTreeView);
             }
         }
+        else if(typeOfUpdate.equals(EventType.ADD_CLASS_TO_TREE)){
+            System.out.println("ADD CLASS TO TREE");
+            ClassyNode classToAdd = (ClassyNode) notification;
+
+            ClassyTreeItem root = (ClassyTreeItem) classyTreeView.getModel().getRoot();
+
+            ClassyTreeItem targetParent = findNodeWithClassyNode(root, currentDiagram);
+
+            if (targetParent != null) {
+                ClassyTreeItem newItem = new ClassyTreeItem(classToAdd);
+                targetParent.add(newItem);
+
+                ((DefaultTreeModel) classyTreeView.getModel()).reload(targetParent);
+            } else {
+                System.out.println("Nema ga");
+            }
+        }
+
+        else if(typeOfUpdate.equals(EventType.ADD_INTERFACE_TO_TREE)){
+            ClassyNode interfaceToAdd = (ClassyNode) notification;
+
+            ClassyTreeItem root = (ClassyTreeItem) classyTreeView.getModel().getRoot();
+
+            ClassyTreeItem targetParent = findNodeWithClassyNode(root, currentDiagram);
+
+            if (targetParent != null) {
+                ClassyTreeItem newItem = new ClassyTreeItem(interfaceToAdd);
+                targetParent.add(newItem);
+
+                ((DefaultTreeModel) classyTreeView.getModel()).reload(targetParent);
+            } else {
+                System.out.println("Nema ga");
+            }
+        }
+        else if(typeOfUpdate.equals(EventType.ADD_ENUM_TO_TREE)){
+            ClassyNode enumToAdd = (ClassyNode) notification;
+
+            ClassyTreeItem root = (ClassyTreeItem) classyTreeView.getModel().getRoot();
+
+            ClassyTreeItem targetParent = findNodeWithClassyNode(root, currentDiagram);
+
+            if (targetParent != null) {
+                ClassyTreeItem newItem = new ClassyTreeItem(enumToAdd);
+                targetParent.add(newItem);
+
+                ((DefaultTreeModel) classyTreeView.getModel()).reload(targetParent);
+            } else {
+                System.out.println("Nema ga");
+            }
+        }
+        else if(typeOfUpdate.equals(EventType.DELETE_ELEMENTS)){
+            Pair pair = (Pair) notification;
+            ClassyTreeItem root = (ClassyTreeItem) classyTreeView.getModel().getRoot();
+            DiagramPanel pnl = (DiagramPanel) pair.getFirst();
+            ClassyTreeItem targetParent = findNodeWithClassyNode(root, pnl.getDiagram());
+            if (targetParent != null) {
+                List<ClassyTreeItem> toRemove = new ArrayList<>();
+                for (int i = 0; i < targetParent.getChildCount(); i++) {
+                    ClassyTreeItem child = (ClassyTreeItem) targetParent.getChildAt(i);
+                    if(child.getClassyNode() instanceof Diagram){
+                        toRemove.add(child);
+                    }
+                }
+                for(ClassyTreeItem item: toRemove){
+                    targetParent.remove(item);
+                }
+                ((DefaultTreeModel) classyTreeView.getModel()).reload(targetParent);
+            } else {
+                System.out.println("Nema ga");
+            }
+        }
     }
+
+
+    private ClassyTreeItem findNodeWithClassyNode(ClassyTreeItem node, ClassyNode classyNode) {
+        if (node.getClassyNode().equals(classyNode)) {
+            return node;
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            ClassyTreeItem foundNode = findNodeWithClassyNode((ClassyTreeItem) node.getChildAt(i), classyNode);
+            if (foundNode != null) {
+                return foundNode;
+            }
+        }
+        return null;
+    }
+
 }

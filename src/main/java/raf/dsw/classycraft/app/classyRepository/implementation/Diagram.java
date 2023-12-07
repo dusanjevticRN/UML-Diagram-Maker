@@ -3,9 +3,12 @@ package raf.dsw.classycraft.app.classyRepository.implementation;
 import lombok.Getter;
 import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeLeaf;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
+import raf.dsw.classycraft.app.core.eventHandler.EventBus;
+import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
 import java.awt.*;
@@ -16,38 +19,27 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class Diagram extends ClassyNodeLeaf
+public class Diagram extends ClassyNodeComposite implements ISubscriber
 {
-    private List<String> classes = new ArrayList<>();
+    private List<ClassyNode> children = new ArrayList<>();
     private List<DiagramElement> diagramElements = new ArrayList<>();
     private Map<Pair, DiagramElement> mapaElemenata = new HashMap<>();
     public Diagram(String name, ClassyNode parent, boolean isPattern) {
         super(parent, name + " ");
+        EventBus.getInstance().subscribe(EventType.ADD_CLASS_TO_TREE, this);
+        EventBus.getInstance().subscribe(EventType.ADD_ENUM_TO_TREE, this);
+        EventBus.getInstance().subscribe(EventType.ADD_INTERFACE_TO_TREE, this);
     }
 
-    @Override
-    public void setName(String name) {
-        super.setName(name);
-    }
 
-
-    @Override
-    public void notifySubscriber(Object notification, Object typeOfUpdate) {
-
-    }
-
-    @Override
-    public void removeSubscriber(ISubscriber subscriber) {
-
-    }
-
-    public void addClass(String name)
-    {
-        classes.add(name);
-    }
     public boolean checkName(String name)
     {
-        for(String s : classes)
+        List<String> names = new ArrayList<>();
+        for(DiagramElement diagramElement : diagramElements)
+        {
+            names.add(diagramElement.getName());
+        }
+        for(String s : names)
         {
             if(s.equals(name))
                 return false;
@@ -59,5 +51,31 @@ public class Diagram extends ClassyNodeLeaf
     {
         diagramElements.add(diagramElement);
         mapaElemenata.put(pair, diagramElement);
+    }
+
+    @Override
+    public void update(Object notification, Object typeOfUpdate) {
+        if(EventType.ADD_CLASS.equals(typeOfUpdate))
+        {
+            this.addChild((ClassyNode) notification);
+        }
+        else if(EventType.ADD_ENUM.equals(typeOfUpdate))
+        {
+            this.addChild((ClassyNode) notification);
+        }
+        else if(EventType.ADD_INTERFACE.equals(typeOfUpdate))
+        {
+            this.addChild((ClassyNode) notification);
+        }
+    }
+
+    @Override
+    public void addChild(ClassyNode nodeToAdd) {
+        this.children.add(nodeToAdd);
+    }
+
+    @Override
+    public void removeChild(ClassyNode nodeToRemove) {
+        this.children.remove(nodeToRemove);
     }
 }

@@ -114,6 +114,21 @@ public class AddGeneralizationState implements State {
 
     }
 
+    @Override
+    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+
+    }
+
+    @Override
+    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+
+    }
+
     private boolean isHit(InterClass interClass, int x, int y){
         int startX = interClass.getPosition().getFirst();
         int startY = interClass.getPosition().getSecond();

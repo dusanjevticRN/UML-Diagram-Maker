@@ -179,3 +179,8 @@
 [ Error] [ 2023-12-05 21:02:50.005 ] [ Projects can only be added within project explorer ]
 [ Error] [ 2023-12-05 21:07:56.542 ] [ Adding a project inside another project is not allowed ]
 [ Error] [ 2023-12-06 11:19:25.67 ] [ Adding a project inside another project is not allowed ]
+[ Error] [ 2023-12-07 11:52:08.323 ] [ Packages can only be added within a project ]
+[ Error] [ 2023-12-07 12:18:04.254 ] [ Packages can only be added within a project ]
+[ Error] [ 2023-12-07 12:18:25.049 ] [ Adding a project inside another project is not allowed ]
+[ Error] [ 2023-12-07 12:30:53.214 ] [ Adding a project inside another project is not allowed ]
+[ Error] [ 2023-12-07 13:31:36.572 ] [ Adding a project inside another project is not allowed ]

@@ -1,14 +1,10 @@
 package raf.dsw.classycraft.app.gui.swing.view.tabbedPane;
 
-import jdk.jshell.Diag;
 import lombok.Getter;
 import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.*;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Agregacija;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Generalizacija;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Kompozicija;
@@ -19,27 +15,26 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.inter
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
-import raf.dsw.classycraft.app.gui.swing.controller.mouseListener.ClassyMouse;
+import raf.dsw.classycraft.app.gui.swing.controller.listner.ClassyMouse;
 import raf.dsw.classycraft.app.gui.swing.state.StateManager;
 import raf.dsw.classycraft.app.gui.swing.view.painters.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Map;
 
 @Getter
 @Setter
 public class DiagramPanel extends JPanel implements ISubscriber {
 
-    ArrayList<ElementPainter> painters = new ArrayList<>();
-    ArrayList<ElementPainter> tempPainters = new ArrayList<>();
-    ArrayList<ElementPainter> selectedPainters = new ArrayList<>();
+    private ArrayList<ElementPainter> painters = new ArrayList<>();
+    private ArrayList<ElementPainter> tempPainters = new ArrayList<>();
+    private ArrayList<ElementPainter> selectedPainters = new ArrayList<>();
+    private ArrayList<DiagramElement> selectedElements = new ArrayList<>();
     private SelectionPainter selectionPainter = null;
-    StateManager stateManager = new StateManager();
-    Diagram diagram;
+    private StateManager stateManager = new StateManager();
+    private Diagram diagram;
     int startDargX;
     int startDragY;
     private UmlSelectionModel selectionModel;
@@ -50,10 +45,11 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         this.diagram = diagram;
         init(diagram);
         selectionModel = new UmlSelectionModel();
-
+        this.setFocusable(true);
         this.setBackground(Color.WHITE);
         this.addMouseListener(classyMouse);
         this.addMouseMotionListener(classyMouse);
+        setupDeleteKeyBinding();
         EventBus.getInstance().subscribe(EventType.ADD_CLASS, this);
         EventBus.getInstance().subscribe(EventType.ADD_INTERFACE, this);
         EventBus.getInstance().subscribe(EventType.ADD_ENUM, this);
@@ -66,7 +62,8 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         EventBus.getInstance().subscribe(EventType.ADD_AGGREGATION, this);
         EventBus.getInstance().subscribe(EventType.ADD_COMPOSITION, this);
         EventBus.getInstance().subscribe(EventType.ADD_DEPENDENCY, this);
-
+        EventBus.getInstance().subscribe(EventType.MOVE, this);
+        EventBus.getInstance().subscribe(EventType.DELETE_ELEMENTS, this);
     }
 
     private void init(Diagram diagram){
@@ -220,7 +217,26 @@ public class DiagramPanel extends JPanel implements ISubscriber {
 
     @Override
     public void update(Object notification, Object typeOfUpdate) {
-        if(EventType.ADD_CLASS.equals(typeOfUpdate))
+        if(EventType.MOVE.equals(typeOfUpdate)){
+            if (notification instanceof Triple<?, ?, ?>) {
+                Triple<DiagramPanel, Integer, Integer> data = (Triple<DiagramPanel, Integer, Integer>) notification;
+                if (data.getFirst() == this) {
+                    Pair<Integer, Integer> displacement = new Pair<>(data.getSecond(), data.getThird());
+                    int deltaX = displacement.getFirst();
+                    int deltaY = displacement.getSecond();
+                    for (DiagramElement elem : diagram.getDiagramElements()) {
+                        if (elem instanceof InterClass) {
+                            ((InterClass) elem).getPosition().setFirst(((InterClass) elem).getPosition().getFirst() + deltaX);
+                            ((InterClass) elem).getPosition().setSecond(((InterClass) elem).getPosition().getSecond() + deltaY);
+                        }
+                    }
+                    painters.clear();
+                    this.init(diagram);
+                    this.repaint();
+                }
+            }
+        }
+        else if(EventType.ADD_CLASS.equals(typeOfUpdate))
             this.startAddClassState();
         else if(EventType.ADD_INTERFACE.equals(typeOfUpdate))
             this.startAddInterfaceState();
@@ -236,6 +252,24 @@ public class DiagramPanel extends JPanel implements ISubscriber {
             this.startDependencyState();
         else if(EventType.SELECT_ELEMENT.equals(typeOfUpdate)) {
             this.startSelectState();
+        }
+        else if(EventType.DELETE_ELEMENTS.equals(typeOfUpdate)){
+            Pair notif = (Pair) notification;
+            if(notif.getFirst() == this) {
+                ArrayList<DiagramElement> elementsForDeleting = (ArrayList<DiagramElement>) ((Pair<?, ?>) notification).getSecond();
+                for (DiagramElement element : elementsForDeleting) {
+                    System.out.println(element.getName());
+                }
+                this.init(diagram);
+                this.repaint();
+                for (DiagramElement element : elementsForDeleting) {
+                    diagram.getDiagramElements().remove(element);
+                }
+                this.painters.clear();
+                this.selectedPainters.clear();
+                this.init(diagram);
+                this.repaint();
+            }
         }
         else if(EventType.REFRESH.equals(typeOfUpdate)){
             System.out.println("REFRESH");
@@ -286,6 +320,7 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         super.paintComponent(g);
         for(ElementPainter p : selectedPainters){
             System.out.println("Selected: " + p);
+            selectedElements.add(p.getDiagramElement());
         }
         Graphics2D g2d = (Graphics2D) g;
         for (ElementPainter painter : painters) {
@@ -349,4 +384,23 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     }
 
 
+
+    private void setupDeleteKeyBinding() {
+        Action deleteAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onDeleteKeyPressed();
+            }
+        };
+
+        String keyStrokeAndActionKey = "DELETE";
+        KeyStroke deleteKeyStroke = KeyStroke.getKeyStroke("DELETE");
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(deleteKeyStroke, keyStrokeAndActionKey);
+        this.getActionMap().put(keyStrokeAndActionKey, deleteAction);
+    }
+
+    private void onDeleteKeyPressed() {
+        System.out.println("DELETE PRESSED");
+        EventBus.getInstance().notifySubscriber(this, EventType.DELETE_KEY);
+    }
 }
