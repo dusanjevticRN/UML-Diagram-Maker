@@ -4,8 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.*;
+import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -27,7 +30,7 @@ public abstract class InterClass extends DiagramElement
         super(parent, name);
         this.visibility = visibility;
         this.position = new Pair(x, y);
-        this.size = new Pair(this.getName().length()*8+120, 170); //Ciljana velicina je negde oko x = 150 i y = 200 u zavisnosti od velicine imena
+        this.size = new Pair(this.maxContentW().length()*8+120, maxContentL()*10 + 50); //Ciljana velicina je negde oko x = 150 i y = 200 u zavisnosti od velicine imena
         //this.type = "InterClass";
     }
 
@@ -42,22 +45,72 @@ public abstract class InterClass extends DiagramElement
         this.notifySubscriber(this, null);
     }
 
-    public void setPosition(Pair<Integer, Integer> position)
-    {
-        this.size = position;
-        this.notifySubscriber(this, null); //Za typeOfUpdate prosledjujemo null jer cemo u notify odredjivati na osnovu instanceof
-    }
-
-    public void setSize(Integer width, Integer height)
-    {
-        this.size.setFirst(width);
-        this.size.setSecond(height);
-        this.notifySubscriber(this, null); //Za typeOfUpdate prosledjujemo null jer cemo u notify odredjivati na osnovu instanceof
-    }
-
     public void setSize(Pair<Integer, Integer> size)
     {
         this.size = size;
         this.notifySubscriber(this, null); //Za typeOfUpdate prosledjujemo null jer cemo u notify odredjivati na osnovu instanceof
     }
+
+    public String maxContentW(){
+        ArrayList<String> maxContent = new ArrayList<>();
+        maxContent.add(this.name);
+        if(this instanceof Klasa){
+            Klasa klasa = (Klasa) this;
+            if(klasa.getClassContents() != null)
+                for(ClassContent classContent : klasa.getClassContents()){
+                    maxContent.add(classContent.getName());
+                }
+        }
+        else if(this instanceof Interfejs){
+            Interfejs interfejs = (Interfejs) this;
+            if(interfejs.getMetods() != null)
+                for(Metod metod : interfejs.getMetods()){
+                    maxContent.add(metod.getName());
+                }
+        }
+        else if(this instanceof UmlEnum){
+            UmlEnum umlEnum = (UmlEnum) this;
+            if(umlEnum.getConstants() != null)
+                for(String constant : umlEnum.getConstants()){
+                    maxContent.add(constant);
+                }
+        }
+        String max = "";
+        for(String content : maxContent){
+            if(content.length() > max.length()){
+                max = content;
+            }
+        }
+        return max;
+    }
+    public int maxContentL(){
+        int counter = 0;
+        ArrayList<String> content = new ArrayList<>();
+        if(this instanceof Klasa){
+            Klasa klasa = (Klasa) this;
+            if(klasa.getClassContents() != null)
+                for(ClassContent classContent : klasa.getClassContents()){
+                    content.add(classContent.getName());
+                }
+        }
+        else if(this instanceof Interfejs){
+            Interfejs interfejs = (Interfejs) this;
+            if(interfejs.getMetods() != null)
+                for(Metod metod : interfejs.getMetods()){
+                    content.add(metod.getName());
+                }
+        }
+        else if(this instanceof UmlEnum){
+            UmlEnum umlEnum = (UmlEnum) this;
+            if(umlEnum.getConstants() != null)
+                for(String constant : umlEnum.getConstants()){
+                    content.add(constant);
+                }
+        }
+        for(String s : content){
+            counter++;
+        }
+        return counter;
+    }
+
 }

@@ -222,7 +222,7 @@ public class AddFieldState implements State
                             else if(atribut.getVisibility() == Visibility.PACKAGE_PRIVATE)
                                 sb.append("~ ");
 
-                            sb.append(atribut.getName() + "(): ");
+                            sb.append(atribut.getName() + ": ");
 
                             if(atribut.isStatic())
                                 sb.append("static ");
@@ -615,29 +615,29 @@ public class AddFieldState implements State
                 {
                     for(ClassContent cc : this.klasa.getClassContents())
                     {
-                        if(cc instanceof Atribut)
+                        if(cc instanceof Metod)
                         {
-                            Atribut atribut = (Atribut) cc;
+                            Metod metod = (Metod) cc;
                             StringBuilder sb = new StringBuilder();
 
-                            if(atribut.getVisibility() == Visibility.PRIVATE)
+                            if(metod.getVisibility() == Visibility.PRIVATE)
                                 sb.append("- ");
 
-                            else if(atribut.getVisibility() == Visibility.PROTECTED)
+                            else if(metod.getVisibility() == Visibility.PROTECTED)
                                 sb.append("# ");
 
-                            else if(atribut.getVisibility() == Visibility.PUBLIC)
+                            else if(metod.getVisibility() == Visibility.PUBLIC)
                                 sb.append("+ ");
 
-                            else if(atribut.getVisibility() == Visibility.PACKAGE_PRIVATE)
+                            else if(metod.getVisibility() == Visibility.PACKAGE_PRIVATE)
                                 sb.append("~ ");
 
-                            sb.append(atribut.getName() + "(): ");
+                            sb.append(metod.getName() + "(): ");
 
-                            if(atribut.isStatic())
+                            if(metod.isStatic())
                                 sb.append("static ");
 
-                            sb.append(atribut.getDataType());
+                            sb.append(metod.getReturnType());
 
                             listModel.addElement(sb.toString());
                         }
