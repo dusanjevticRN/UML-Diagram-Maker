@@ -60,5 +60,9 @@ public enum EventType
     CONTENT_STATE,
     ZOOM_TO_FIT,
     ZOOM_TO_FIT_STATE,
+    CLEAR_DRAG_DEL,
+    START_DRAG_DEL,
+    DRAG_DEL,
+    DELETE,
 
 }

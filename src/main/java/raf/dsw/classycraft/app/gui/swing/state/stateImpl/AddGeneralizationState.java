@@ -6,6 +6,7 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Conne
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Generalizacija;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Interfejs;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
@@ -14,6 +15,7 @@ import raf.dsw.classycraft.app.gui.swing.view.painters.ConnectionPainter;
 import raf.dsw.classycraft.app.gui.swing.view.painters.ElementPainter;
 import raf.dsw.classycraft.app.gui.swing.view.painters.GeneralizacijaPainter;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,17 +27,17 @@ public class AddGeneralizationState implements State {
     private int startX= 0;
     private int startY= 0;
     @Override
-    public void execute(int x, int y, DiagramPanel panel) {
-        panel.setCursor(Cursor.getDefaultCursor());
+    public void execute(int x, int y, PackageView packageView) {
+        packageView.setPanelCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateMouseDragged(int x, int y, PackageView packageView) {
 
 
         if(startX == 0 && startY == 0) {
@@ -49,8 +51,8 @@ public class AddGeneralizationState implements State {
             con.setEnd(new Pair<>(x, y));
             generalization = (Generalizacija) con;
             if (generalization.getToElement() == null) {
-                for (DiagramElement diagramElement : panel.getDiagram().getDiagramElements()) {
-                    if (diagramElement instanceof InterClass) {
+                for (DiagramElement diagramElement : packageView.currentDiagramElements()) {
+                    if (diagramElement instanceof Klasa || diagramElement instanceof Interfejs) {
                         if (isHit((InterClass) diagramElement, x, y)) {
                             generalization.setFromElement(((InterClass) diagramElement));
                             break;
@@ -59,52 +61,52 @@ public class AddGeneralizationState implements State {
                 }
             }
             if (generalization.getToElement() == null) {
-                generalization.setToElement(new Klasa(panel.getDiagram(), "Klasa", null, x, y));
+                generalization.setToElement(new Klasa(packageView.getDiagram(), "Klasa", null, x, y));
             }
             generalizacijaPainter = new GeneralizacijaPainter(generalization,1);
             generalizacijaPainter.setConnectionElement(generalization);
             generalizacijaPainter.setColor(Color.BLACK);
-            panel.getPainters().add(generalizacijaPainter);
+            packageView.addPainter(generalizacijaPainter);
         }
 
-        panel.getPainters().remove(generalizacijaPainter);
+        packageView.removePainter(generalizacijaPainter);
         System.out.println("PAINT");
         con.setEnd(new Pair<>(x, y));
-        generalization.setToElement(new Klasa(panel.getDiagram(), "Klasa", null, x, y));
+        generalization.setToElement(new Klasa(packageView.getDiagram(), "Klasa", null, x, y));
         generalizacijaPainter = new GeneralizacijaPainter(generalization,1);
-        panel.getPainters().add(generalizacijaPainter);
+        packageView.addPainter(generalizacijaPainter);
 
-        panel.repaint();
+        packageView.panelRepaint();
 
     }
 
     @Override
-    public void stateMouseReleased(int x, int y, DiagramPanel panel) {
-        panel.setPainters(new ArrayList<>());
-        panel.repaint();
-        panel.outsideRefresh();
+    public void stateMouseReleased(int x, int y, PackageView packageView) {
+        packageView.setPanelPainters(new ArrayList<>());
+        packageView.panelRepaint();
+        packageView.panelOutsideRefresh();
         startX = 0;
         startY = 0;
-        for(DiagramElement diagramElement : panel.getDiagram().getDiagramElements()){
-            if(diagramElement instanceof InterClass){
+        for(DiagramElement diagramElement : packageView.currentDiagramElements()){
+            if((diagramElement instanceof Interfejs || (diagramElement instanceof Klasa && generalization.getFromElement() instanceof Klasa)) && diagramElement != generalization.getFromElement()){
                 if(isHit((InterClass) diagramElement, x, y)){
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     generalization.setToElement(((InterClass) diagramElement));
                     setEnd(generalization, (InterClass) diagramElement);
                     generalizacijaPainter.setConnectionElement(generalization);
                     generalizacijaPainter = new GeneralizacijaPainter(generalization, 0);
-                    panel.getDiagram().addDiagramElement(new Pair<>(x, y), generalization);
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.addDiagramElement(new Pair<>(x, y), generalization);
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     break;
                 }
                 else {
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                 }
             }
         }
@@ -115,17 +117,17 @@ public class AddGeneralizationState implements State {
     }
 
     @Override
-    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateRightMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseReleased(int x, int y, PackageView packageView) {
 
     }
 

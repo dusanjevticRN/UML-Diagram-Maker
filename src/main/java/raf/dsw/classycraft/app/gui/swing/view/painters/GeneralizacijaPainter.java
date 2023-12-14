@@ -88,12 +88,7 @@ public class GeneralizacijaPainter extends ConnectionPainter
                 arrowDir[1] = 1;
             } else {
                 System.out.println("OUT OF BOUNDS");
-                connectionElement.getStart().setFirst(connectionElement.getFromElement().getPosition().getFirst() + connectionElement.getFromElement().getSize().getFirst()/2);
-                connectionElement.getStart().setSecond(connectionElement.getFromElement().getSize().getSecond());
-                connectionElement.getEnd().setFirst(connectionElement.getToElement().getPosition().getFirst() + connectionElement.getToElement().getSize().getFirst()/2);
-                connectionElement.getEnd().setSecond(connectionElement.getToElement().getPosition().getSecond());
-                arrowDir[0] = 1;
-                arrowDir[1] = 1;
+
             }
         }
 

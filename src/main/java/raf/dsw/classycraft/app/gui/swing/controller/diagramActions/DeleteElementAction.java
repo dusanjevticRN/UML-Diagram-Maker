@@ -1,5 +1,6 @@
 package raf.dsw.classycraft.app.gui.swing.controller.diagramActions;
 
+import com.sun.tools.javac.Main;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.controller.AbstractClassyAction;
@@ -19,6 +20,6 @@ public class DeleteElementAction extends AbstractClassyAction
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        EventBus.getInstance().notifySubscriber(MainFrame.getInstance().getPackageView().getSelectedDiagramPanel(), EventType.DELETE_KEY);
+        MainFrame.getInstance().getPackageView().startDeleteElementState();
     }
 }

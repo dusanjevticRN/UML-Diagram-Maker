@@ -4,13 +4,21 @@ import lombok.Getter;
 import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
+import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
+import raf.dsw.classycraft.app.gui.swing.controller.listner.ClassyMouse;
+import raf.dsw.classycraft.app.gui.swing.state.StateManager;
+import raf.dsw.classycraft.app.gui.swing.view.painters.ElementPainter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +27,8 @@ import java.util.List;
 @Setter
 public class PackageView extends CloseableTabbedPane implements ISubscriber {
 
-        EventBus eventBus = EventBus.getInstance();
 
+        private StateManager stateManager = new StateManager();
         List<Diagram> openDiagrams;
         List<Component> tabs;
         public PackageView()
@@ -28,17 +36,80 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             super();
             openDiagrams = new ArrayList<>();
             tabs = new ArrayList<>();
-            eventBus.subscribe(EventType.DIAGRAM_SELECTION, this);
-            eventBus.subscribe(EventType.DIAGRAM_DELETION, this);
-            eventBus.subscribe(EventType.DIAGRAM_RENAME, this);
-            eventBus.subscribe(EventType.DIAGRAM_CLOSE, this);
-            eventBus.subscribe(EventType.DIAGRAM_LIST_DELETION, this);
-            eventBus.subscribe(EventType.CLOSE_TABS, this);
+            ClassyMouse classyMouse;
+            if(getCurrentDiagramPanel() != null) {
+                classyMouse = new ClassyMouse(getAffineTransform());
+            }
+            else {
+                classyMouse = new ClassyMouse(new AffineTransform());
+            }
+            this.addMouseListener(classyMouse);
+            this.addMouseMotionListener(classyMouse);
+            EventBus.getInstance().subscribe(EventType.DIAGRAM_SELECTION, this);
+            EventBus.getInstance().subscribe(EventType.DIAGRAM_DELETION, this);
+            EventBus.getInstance().subscribe(EventType.DIAGRAM_RENAME, this);
+            EventBus.getInstance().subscribe(EventType.DIAGRAM_CLOSE, this);
+            EventBus.getInstance().subscribe(EventType.DIAGRAM_LIST_DELETION, this);
+            EventBus.getInstance().subscribe(EventType.CLOSE_TABS, this);
+            EventBus.getInstance().subscribe(EventType.ADD_CLASS, this);
+            EventBus.getInstance().subscribe(EventType.ADD_INTERFACE, this);
+            EventBus.getInstance().subscribe(EventType.ADD_ENUM, this);
+            EventBus.getInstance().subscribe(EventType.ADD_METHOD, this);
+            EventBus.getInstance().subscribe(EventType.ZOOM_IN, this);
+            EventBus.getInstance().subscribe(EventType.ZOOM_OUT, this);
+            EventBus.getInstance().subscribe(EventType.ADD_GENERALIZATION, this);
+            EventBus.getInstance().subscribe(EventType.ADD_AGGREGATION, this);
+            EventBus.getInstance().subscribe(EventType.ADD_COMPOSITION, this);
+            EventBus.getInstance().subscribe(EventType.ADD_DEPENDENCY, this);
+            EventBus.getInstance().subscribe(EventType.CONTENT_STATE, this);
+            EventBus.getInstance().subscribe(EventType.SELECT_ELEMENT, this);
+            EventBus.getInstance().subscribe(EventType.ZOOM_IN_STATE, this);
+            EventBus.getInstance().subscribe(EventType.ZOOM_OUT_STATE, this);
+            EventBus.getInstance().subscribe(EventType.REFRESH, this);
+            EventBus.getInstance().subscribe(EventType.DRAG, this);
+            EventBus.getInstance().subscribe(EventType.CLEAR_DRAG, this);
+            EventBus.getInstance().subscribe(EventType.START_DRAG, this);
+            EventBus.getInstance().subscribe(EventType.DRAG_DEL, this);
+            EventBus.getInstance().subscribe(EventType.CLEAR_DRAG_DEL, this);
+            EventBus.getInstance().subscribe(EventType.START_DRAG_DEL, this);
+            EventBus.getInstance().subscribe(EventType.MOVE, this);
+            EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT_STATE, this);
+            EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT, this);
+            EventBus.getInstance().subscribe(EventType.DELETE, this);
         }
 
     @Override
     public void update(Object notification, Object typeOfUpdate)
     {
+        if(EventType.CONTENT_STATE.equals(typeOfUpdate))
+            this.startAddFieldState();
+        else if(EventType.ADD_ENUM.equals(typeOfUpdate))
+            this.startAddEnumState();
+        else if(EventType.ADD_GENERALIZATION.equals(typeOfUpdate))
+            this.startGeneralizationState();
+        else if(EventType.ADD_AGGREGATION.equals(typeOfUpdate))
+            this.startAgregationState();
+        else if(EventType.ADD_COMPOSITION.equals(typeOfUpdate))
+            this.startKompozicijaState();
+        else if(EventType.ADD_DEPENDENCY.equals(typeOfUpdate))
+            this.startDependencyState();
+        else if(EventType.SELECT_ELEMENT.equals(typeOfUpdate))
+            this.startSelectState();
+        else if(EventType.ADD_CLASS.equals(typeOfUpdate))
+            this.startAddClassState();
+        else if(EventType.ADD_INTERFACE.equals(typeOfUpdate))
+            this.startAddInterfaceState();
+        else if(EventType.ZOOM_IN.equals(typeOfUpdate))
+            this.startZoomInState();
+        else if(EventType.ZOOM_OUT.equals(typeOfUpdate))
+            this.startZoomOutState();
+        else if(EventType.ZOOM_TO_FIT.equals(typeOfUpdate))
+            this.startZoomToFitState();
+        else if(EventType.ZOOM_TO_FIT_STATE.equals(typeOfUpdate)){
+            this.getCurrentDiagramPanel().zoomToFit();
+        }
+
+
         if(EventType.CLOSE_TABS.equals(typeOfUpdate))
         {
             this.closeAllTabs();
@@ -187,8 +258,6 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
                 }
             }
         }
-
-
         if(EventType.DIAGRAM_RENAME.equals(typeOfUpdate))
         {
             System.out.println("RENAME");
@@ -230,7 +299,52 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
                 }
             }
         }
-
+        if(EventType.MOVE.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.treverse(notification);
+        }
+        else if(EventType.ZOOM_IN_STATE.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.zoomInS(notification);
+        }
+        else if(EventType.ZOOM_OUT_STATE.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.zoomOutS(notification);
+        }
+        else if(EventType.REFRESH.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.refresh(notification);
+        }
+        else if(EventType.DRAG.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.drag(notification);
+        }
+        else if(EventType.CLEAR_DRAG.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.clearDrag(notification);
+        }
+        else if(EventType.START_DRAG.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.startDrag(notification);
+        }
+        else if(EventType.START_DRAG_DEL.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.startDragD(notification);
+        }
+        else if(EventType.DRAG_DEL.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.dragD(notification);
+        }
+        else if(EventType.CLEAR_DRAG_DEL.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.clearDragD(notification);
+        }
+        else if(EventType.DELETE.equals(typeOfUpdate)){
+            Pair pair = new Pair(null, null);
+            pair.setFirst(getCurrentDiagramPanel());
+            pair.setSecond(notification);
+            EventBus.getInstance().notifySubscriber(pair, EventType.DELETE_ELEMENTS);
+        }
 
     }
     private void closeAllTabs() {
@@ -240,11 +354,219 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
         this.openDiagrams.clear();
     }
 
+    public void handleMousePressed(MouseEvent e, boolean rightMouseButtonPressed)
+    {
+        if(rightMouseButtonPressed)
+        {
+            this.stateManager.getCurrentState().stateRightMousePressed(e.getX(), e.getY(), this);
+        }
+        else
+        {
+            this.stateManager.getCurrentState().stateMousePressed(e.getX(), e.getY(), this);
+        }
+    }
+    public void handleMouseReleased(MouseEvent e, boolean rightMouseButtonPressed)
+    {
+        if(rightMouseButtonPressed)
+        {
+            this.stateManager.getCurrentState().stateRightMouseReleased(e.getX(), e.getY(), this);
+        }
+        else
+        {
+            this.stateManager.getCurrentState().stateMouseReleased(e.getX(), e.getY(), this);
+        }
+    }
+
+    public void handleMouseDragged(MouseEvent e, boolean rightButtonPressed) {
+        DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+        if (rightButtonPressed) {
+            System.out.println("Right drag cords: " + e.getX() + " " + e.getY());
+            this.stateManager.getCurrentState().stateRightMouseDragged(e.getX(), e.getY(), this);
+        } else {
+            this.stateManager.getCurrentState().stateMouseDragged(e.getX(), e.getY(), this);
+        }
+    }
+
    public DiagramPanel getSelectedDiagramPanel()
    {
         return (DiagramPanel) this.getSelectedComponent();
    }
+   public DiagramPanel getCurrentDiagramPanel(){
+            if(this.getSelectedIndex() == -1)
+                return null;
+        return (DiagramPanel) this.getComponentAt(this.getSelectedIndex());
+   }
+
+    public void startAddClassState()
+    {
+        this.stateManager.setAddClassState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void startAddInterfaceState()
+    {
+        this.stateManager.setAddInterfaceState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void startAddEnumState()
+    {
+        this.stateManager.setAddEnumState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void startSelectState()
+    {
+        this.stateManager.setSelectState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void startGeneralizationState()
+    {
+        this.stateManager.setGeneralizationState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void startAgregationState()
+    {
+        this.stateManager.setAgregationState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void startKompozicijaState()
+    {
+        this.stateManager.setCompositionState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void startDependencyState()
+    {
+        this.stateManager.setAddDependancyState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void startZoomInState() {this.stateManager.setZoomInState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();}
+    public void startZoomOutState() {this.stateManager.setZoomOutState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();}
+    public void startAddFieldState() {this.stateManager.setAddContentState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();}
+    public void startMoveElementState() {
+            this.stateManager.setMoveElementState();
+
+        }
+    public void startZoomToFitState() {
+            this.stateManager.setZoomToFitState();
+            this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+            this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+            this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+            this.getCurrentDiagramPanel().repaint();
+        }
+    public void startDeleteElementState() {
+            this.stateManager.setDeleteState();
+            this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+            this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+            this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+            this.getCurrentDiagramPanel().repaint();
+        }
 
 
+    //Metode za kontrolisanje komunikacije sa dijagramom
+    public void setPanelPainters(ArrayList<ElementPainter> painters)
+    {
+        this.getCurrentDiagramPanel().setPainters(painters);
+    }
+    public void panelRepaint()
+    {
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void panelOutsideRefresh()
+    {
+        this.getCurrentDiagramPanel().outsideRefresh();
+    }
+    public void addDiagramElement(Pair pair, DiagramElement diagram)
+    {
+        this.getCurrentDiagramPanel().getDiagram().addDiagramElement(pair, diagram);
+    }
+    public void setPanelCursor(Cursor cursor)
+    {
+        this.getCurrentDiagramPanel().setCursor(cursor);
+    }
+    public List<DiagramElement> currentDiagramElements()
+    {
+        return this.getCurrentDiagramPanel().getDiagram().getDiagramElements();
+    }
+    public Diagram getDiagram()
+    {
+        return this.getCurrentDiagramPanel().getDiagram();
+    }
+    public void addPainter(ElementPainter painter)
+    {
+        this.getCurrentDiagramPanel().getPainters().add(painter);
+    }
+    public void removePainter(ElementPainter painter)
+    {
+        this.getCurrentDiagramPanel().getPainters().remove(painter);
+    }
+    public void setPanelSelectionPainters(ArrayList<ElementPainter> painters)
+    {
+        this.getCurrentDiagramPanel().setSelectedPainters(painters);
+    }
+    public UmlSelectionModel getSelectionModel()
+    {
+        return this.getCurrentDiagramPanel().getSelectionModel();
+    }
+    public void setSelectionModel(UmlSelectionModel selectionModel)
+    {
+        this.getCurrentDiagramPanel().setSelectionModel(selectionModel);
+    }
+    public void deleteElements(ArrayList<DiagramElement> elements)
+    {
+        this.getCurrentDiagramPanel().getDiagram().getDiagramElements().removeAll(elements);
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void clearSelectedElements(){
 
+            this.getCurrentDiagramPanel().getSelectedElements().clear();
+    }
+    public ArrayList<DiagramElement> getSelectedElementsDel(){
+            return this.getCurrentDiagramPanel().getSelectedElementsD();
+    }
+    public void clearSelectedAll (){
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public AffineTransform getAffineTransform(){
+        return this.getCurrentDiagramPanel().getAffineTransform();
+    }
 }

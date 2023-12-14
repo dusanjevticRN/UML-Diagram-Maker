@@ -10,6 +10,7 @@ import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.painters.KompozicijaPainter;
 import raf.dsw.classycraft.app.gui.swing.view.painters.ConnectionPainter;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,17 +22,17 @@ public class AddCompositionState implements State {
     private int startX= 0;
     private int startY= 0;
     @Override
-    public void execute(int x, int y, DiagramPanel panel) {
-        panel.setCursor(Cursor.getDefaultCursor());
+    public void execute(int x, int y, PackageView packageView) {
+        packageView.setPanelCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateMouseDragged(int x, int y, PackageView packageView) {
 
 
         if(startX == 0 && startY == 0) {
@@ -45,8 +46,8 @@ public class AddCompositionState implements State {
             comp.setEnd(new Pair<>(x, y));
             composition = (Kompozicija) comp;
             if (composition.getToElement() == null) {
-                for (DiagramElement diagramElement : panel.getDiagram().getDiagramElements()) {
-                    if (diagramElement instanceof InterClass) {
+                for (DiagramElement diagramElement : packageView.currentDiagramElements()) {
+                    if (diagramElement instanceof Klasa) {
                         if (isHit((InterClass) diagramElement, x, y)) {
                             composition.setFromElement(((InterClass) diagramElement));
                             break;
@@ -55,52 +56,52 @@ public class AddCompositionState implements State {
                 }
             }
             if (composition.getToElement() == null) {
-                composition.setToElement(new Klasa(panel.getDiagram(), "Klasa", null, x, y));
+                composition.setToElement(new Klasa(packageView.getDiagram(), "Klasa", null, x, y));
             }
             compositionPainter = new KompozicijaPainter(composition,1);
             compositionPainter.setConnectionElement(composition);
             compositionPainter.setColor(Color.BLACK);
-            panel.getPainters().add(compositionPainter);
+            packageView.addPainter(compositionPainter);
         }
 
-        panel.getPainters().remove(compositionPainter);
+        packageView.removePainter(compositionPainter);
         System.out.println("PAINT");
         comp.setEnd(new Pair<>(x, y));
-        composition.setToElement(new Klasa(panel.getDiagram(), "Klasa", null, x, y));
+        composition.setToElement(new Klasa(packageView.getDiagram(), "Klasa", null, x, y));
         compositionPainter = new KompozicijaPainter(composition,1);
-        panel.getPainters().add(compositionPainter);
+        packageView.addPainter(compositionPainter);
 
-        panel.repaint();
+        packageView.panelRepaint();
 
     }
 
     @Override
-    public void stateMouseReleased(int x, int y, DiagramPanel panel) {
-        panel.setPainters(new ArrayList<>());
-        panel.repaint();
-        panel.outsideRefresh();
+    public void stateMouseReleased(int x, int y, PackageView packageView) {
+        packageView.setPanelPainters(new ArrayList<>());
+        packageView.panelRepaint();
+        packageView.panelOutsideRefresh();
         startX = 0;
         startY = 0;
-        for(DiagramElement diagramElement : panel.getDiagram().getDiagramElements()){
-            if(diagramElement instanceof InterClass){
+        for(DiagramElement diagramElement : packageView.currentDiagramElements()){
+            if(diagramElement instanceof Klasa && diagramElement != composition.getFromElement()){
                 if(isHit((InterClass) diagramElement, x, y)){
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     composition.setToElement(((InterClass) diagramElement));
                     setEnd(composition, (InterClass) diagramElement);
                     compositionPainter.setConnectionElement(composition);
                     compositionPainter = new KompozicijaPainter(composition, 0);
-                    panel.getDiagram().addDiagramElement(new Pair<>(x, y), composition);
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.addDiagramElement(new Pair<>(x, y), composition);
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     break;
                 }
                 else {
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                 }
             }
         }
@@ -111,17 +112,17 @@ public class AddCompositionState implements State {
     }
 
     @Override
-    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateRightMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseReleased(int x, int y, PackageView packageView) {
 
     }
 

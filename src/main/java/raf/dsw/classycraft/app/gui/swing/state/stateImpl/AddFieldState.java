@@ -11,6 +11,7 @@ import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddType;
 import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,8 +32,9 @@ public class AddFieldState implements State
     private boolean hit = false;
 
     @Override
-    public void execute(int x, int y, DiagramPanel panel) {
-        panel.setCursor(Cursor.getDefaultCursor());
+    public void execute(int x, int y, PackageView packageView) {
+
+        packageView.setPanelCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     private boolean isHit(InterClass interClass, int x, int y) {
@@ -49,7 +51,7 @@ public class AddFieldState implements State
     }
 
     @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel)
+    public void stateMousePressed(int x, int y, PackageView packageView)
     {
         System.out.println("Add Field state");
         this.startX = x;
@@ -58,7 +60,7 @@ public class AddFieldState implements State
 
         List<InterClass> selectableElements = new ArrayList<>();
 
-        for (DiagramElement elem : panel.getDiagram().getDiagramElements())
+        for (DiagramElement elem : packageView.currentDiagramElements())
         {
             if (elem instanceof InterClass)
             {
@@ -353,10 +355,10 @@ public class AddFieldState implements State
                         listModel.addElement(sb.toString()); //dodajemo atribut u listu
                         System.out.println("Dodat atribut u listu classContents klase (else)");
                     }
-                    panel.setPainters(new ArrayList<>());
-                    panel.setSelectedPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.setPanelSelectionPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     System.out.println("Dodat novi atribut" + sb.toString());
                 });
 
@@ -763,10 +765,10 @@ public class AddFieldState implements State
                         listModel.addElement(sb.toString()); //dodajemo atribut u listu
                         System.out.println("Dodat atribut u listu classContents klase (else)");
                     }
-                    panel.setPainters(new ArrayList<>());
-                    panel.setSelectedPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.setPanelSelectionPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     System.out.println("Dodat novi atribut" + sb.toString());
                 });
 
@@ -1173,10 +1175,10 @@ public class AddFieldState implements State
                         listModel.addElement(sb.toString()); //dodajemo atribut u listu
                         System.out.println("Dodat atribut u listu classContents klase (else)");
                     }
-                    panel.setPainters(new ArrayList<>());
-                    panel.setSelectedPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.setPanelSelectionPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     System.out.println("Dodat novi atribut" + sb.toString());
                 });
 
@@ -1418,10 +1420,10 @@ public class AddFieldState implements State
                         System.out.println("Dodat atribut u listu classContents klase (else)");
                     }
 
-                    panel.setPainters(new ArrayList<>());
-                    panel.setSelectedPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.setPanelSelectionPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     System.out.println("Dodat novi atribut" + sb.toString());
                 });
 
@@ -1461,27 +1463,27 @@ public class AddFieldState implements State
     }
 
     @Override
-    public void stateMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateMouseReleased(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateRightMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseReleased(int x, int y, PackageView packageView) {
 
     }
 
