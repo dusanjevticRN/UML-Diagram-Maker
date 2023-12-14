@@ -13,6 +13,6 @@ Informacije u vezi programa:
 
 - Moguće veze između elemenata:
   - Generalizacija: Class to Class, Class to Interface, Interface to Interface.
-  - Zavisnot: Class to Class, Class to Interface, Interface to Class, Interface to Interface, Enum to Class/Interface.
+  - Zavisnost: Class to Class, Class to Interface, Interface to Class, Interface to Interface, Enum to Class/Interface.
   - Agregacija: Class to Class.
   - Kompozicija: Class to Class.
