@@ -54,7 +54,7 @@ public class AddAgregationState implements State {
             agregation = (Agregacija) agr;
             if (agregation.getToElement() == null) {
                 for (DiagramElement diagramElement : packageView.currentDiagramElements()) {
-                    if (diagramElement instanceof InterClass) {
+                    if (diagramElement instanceof Klasa) {
                         if (isHit((InterClass) diagramElement, x, y)) {
                             agregation.setFromElement(((InterClass) diagramElement));
                             break;
@@ -90,7 +90,7 @@ public class AddAgregationState implements State {
         startX = 0;
         startY = 0;
         for(DiagramElement diagramElement : packageView.currentDiagramElements()){
-            if(diagramElement instanceof InterClass){
+            if(diagramElement instanceof Klasa && diagramElement != agregation.getFromElement()){
                 if(isHit((InterClass) diagramElement, x, y)){
                     packageView.setPanelPainters(new ArrayList<>());
                     packageView.panelRepaint();

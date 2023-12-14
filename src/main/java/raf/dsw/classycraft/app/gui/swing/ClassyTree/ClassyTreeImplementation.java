@@ -1,6 +1,7 @@
 package raf.dsw.classycraft.app.gui.swing.ClassyTree;
 
-import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
+import raf.dsw.classycraft.app.classyRepository.implementation.*;
+import raf.dsw.classycraft.app.classyRepository.implementation.Package;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
@@ -13,9 +14,6 @@ import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
 import raf.dsw.classycraft.app.classyRepository.factory.DiagramFactory;
 import raf.dsw.classycraft.app.classyRepository.factory.PackageFactory;
 import raf.dsw.classycraft.app.classyRepository.factory.ProjectFactory;
-import raf.dsw.classycraft.app.classyRepository.implementation.Package;
-import raf.dsw.classycraft.app.classyRepository.implementation.Project;
-import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabView;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
@@ -42,6 +40,7 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
         EventBus.getInstance().subscribe(EventType.ADD_INTERFACE_TO_TREE, this);
         EventBus.getInstance().subscribe(EventType.ADD_ENUM_TO_TREE, this);
         EventBus.getInstance().subscribe(EventType.SET_PANEL, this);
+        EventBus.getInstance().subscribe(EventType.DELETE_ELEMENTS, this);
     }
     @Override
     public ClassyTreeView generateTree(ProjectExplorer projectExplorer, ClassyTabView classyTabView, PackageView packageView){
@@ -123,9 +122,11 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
     @Override
     public void update(Object notification, Object typeOfUpdate) {
         if(typeOfUpdate.equals(EventType.SET_PANEL)){
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
             currentDiagram = (Diagram) notification;
         }
         if (notification instanceof String){
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
             if(typeOfUpdate.equals(EventType.DIAGRAM_RENAME)){
                 notification = ((String) notification).split("/")[1];
                 ClassyTreeItem selected = (ClassyTreeItem) classyTreeView.getLastSelectedPathComponent();
@@ -152,6 +153,7 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
             }
         }
         else if(typeOfUpdate.equals(EventType.ADD_CLASS_TO_TREE)){
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
             System.out.println("ADD CLASS TO TREE");
             ClassyNode classToAdd = (ClassyNode) notification;
 
@@ -167,9 +169,11 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
             } else {
                 System.out.println("Nema ga");
             }
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
         }
 
         else if(typeOfUpdate.equals(EventType.ADD_INTERFACE_TO_TREE)){
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
             ClassyNode interfaceToAdd = (ClassyNode) notification;
 
             ClassyTreeItem root = (ClassyTreeItem) classyTreeView.getModel().getRoot();
@@ -184,8 +188,10 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
             } else {
                 System.out.println("Nema ga");
             }
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
         }
         else if(typeOfUpdate.equals(EventType.ADD_ENUM_TO_TREE)){
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
             ClassyNode enumToAdd = (ClassyNode) notification;
 
             ClassyTreeItem root = (ClassyTreeItem) classyTreeView.getModel().getRoot();
@@ -200,27 +206,30 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
             } else {
                 System.out.println("Nema ga");
             }
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
         }
         else if(typeOfUpdate.equals(EventType.DELETE_ELEMENTS)){
+            System.out.println("DELETE ELEMENTS");
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
             Pair pair = (Pair) notification;
             ClassyTreeItem root = (ClassyTreeItem) classyTreeView.getModel().getRoot();
             DiagramPanel pnl = (DiagramPanel) pair.getFirst();
+            ArrayList<DiagramElement> elements = (ArrayList<DiagramElement>) pair.getSecond();
             ClassyTreeItem targetParent = findNodeWithClassyNode(root, pnl.getDiagram());
             if (targetParent != null) {
-                List<ClassyTreeItem> toRemove = new ArrayList<>();
-                for (int i = 0; i < targetParent.getChildCount(); i++) {
-                    ClassyTreeItem child = (ClassyTreeItem) targetParent.getChildAt(i);
-                    if(child.getClassyNode() instanceof Diagram){
-                        toRemove.add(child);
+                for(DiagramElement diagramElement : elements){
+                    System.out.println("Element: " + diagramElement.getName());
+
+                    ClassyTreeItem toRemove = findNodeWithClassyNode(targetParent, diagramElement);
+                    if(toRemove != null){
+                        System.out.println("Nasao ga");
+                        removeChild(toRemove);
                     }
                 }
-                for(ClassyTreeItem item: toRemove){
-                    targetParent.remove(item);
-                }
-                ((DefaultTreeModel) classyTreeView.getModel()).reload(targetParent);
             } else {
                 System.out.println("Nema ga");
             }
+            expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
         }
     }
 
@@ -236,6 +245,13 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
             }
         }
         return null;
+    }
+
+    private void expandAllPaths(ClassyTreeItem node) {
+        classyTreeView.expandPath(new TreePath(node.getPath()));
+        for (int i = 0; i < node.getChildCount(); i++) {
+            expandAllPaths((ClassyTreeItem) node.getChildAt(i));
+        }
     }
 
 }

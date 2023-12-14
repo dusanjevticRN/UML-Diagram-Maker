@@ -63,5 +63,6 @@ public enum EventType
     CLEAR_DRAG_DEL,
     START_DRAG_DEL,
     DRAG_DEL,
+    DELETE,
 
 }

@@ -36,6 +36,7 @@ public class DiagramPanel extends JPanel {
     private ArrayList<ElementPainter> tempPainters = new ArrayList<>();
     private ArrayList<ElementPainter> selectedPainters = new ArrayList<>();
     private ArrayList<DiagramElement> selectedElements = new ArrayList<>();
+    private ArrayList<DiagramElement> selectedElementsD = new ArrayList<>();
     private SelectionPainter selectionPainter = null;
     private SelectionPainterDel selectionPainterDel = null;
     private Diagram diagram;
@@ -212,24 +213,6 @@ public class DiagramPanel extends JPanel {
 
         this.zoomOut(x, y);
     }
-    public void deleteElements(Object notification){
-        Pair notif = (Pair) notification;
-        if(notif.getFirst() == this) {
-            ArrayList<DiagramElement> elementsForDeleting = (ArrayList<DiagramElement>) ((Pair<?, ?>) notification).getSecond();
-            for (DiagramElement element : elementsForDeleting) {
-                System.out.println(element.getName());
-            }
-            this.init(diagram);
-            this.repaint();
-            for (DiagramElement element : elementsForDeleting) {
-                diagram.getDiagramElements().remove(element);
-            }
-            this.painters.clear();
-            this.selectedPainters.clear();
-            this.init(diagram);
-            this.repaint();
-        }
-    }
     public void refresh(Object notification){
         System.out.println("REFRESH");
         this.init(diagram);
@@ -314,6 +297,7 @@ public class DiagramPanel extends JPanel {
         for(ElementPainter p : selectedPainters){
             System.out.println("Selected: " + p);
             selectedElements.add(p.getDiagramElement());
+            selectedElementsD.add(p.getDiagramElement());
         }
         Graphics2D g2d = (Graphics2D) g;
 

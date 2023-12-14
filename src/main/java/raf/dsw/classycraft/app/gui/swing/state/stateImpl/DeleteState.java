@@ -27,6 +27,9 @@ public class DeleteState implements State {
     @Override
     public void execute(int x, int y, PackageView packageView) {
         packageView.setPanelCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        System.out.println("Delete state");
+        packageView.clearSelectedElements();
+        this.selecteElements.clear();
     }
 
     @Override
@@ -70,6 +73,7 @@ public class DeleteState implements State {
         if(hit) {
             System.out.println(hit);
             System.out.println("Hit: " + selectionModel.getSelected().get(0).getName());
+            selecteElements.add(selectionModel.getSelected().get(0));
             packageView.setPanelSelectionPainters(new ArrayList<>());
             packageView.setSelectionModel(new UmlSelectionModel());
             packageView.setSelectionModel(selectionModel);
@@ -83,6 +87,8 @@ public class DeleteState implements State {
     @Override
     public void stateMouseDragged(int x, int y, PackageView packageView) {
         if (startX == 0 && startY == 0) {
+            packageView.clearSelectedElements();
+            this.selecteElements.clear();
             startX = x;
             startY = y;
             EventBus.getInstance().notifySubscriber(this, EventType.START_DRAG_DEL);
@@ -185,6 +191,7 @@ public class DeleteState implements State {
         EventBus.getInstance().notifySubscriber(startEnd, EventType.CLEAR_DRAG_DEL);
         startXRight = 0;
         startYRight = 0;
+
         deleteSelectedElements(packageView);
     }
 
@@ -275,9 +282,10 @@ public class DeleteState implements State {
     }
 
     private void deleteSelectedElements(PackageView packageView) {
+
         ArrayList<DiagramElement> selectedElements = new ArrayList<>();
         selectedElements.clear();
-        for(DiagramElement element : packageView.getCurrentDiagramPanel().getSelectedElements()){
+        for(DiagramElement element : packageView.getSelectedElementsDel()){
             if(selectedElements.contains(element) || !(element instanceof InterClass)){
                 continue;
             }
@@ -285,7 +293,7 @@ public class DeleteState implements State {
                 selectedElements.add(element);
             }
         }
-        for(DiagramElement element : packageView.getCurrentDiagramPanel().getSelectedElements()){
+        for(DiagramElement element : packageView.getSelectedElementsDel()){
             if(element instanceof Connection){
                 Connection connection = (Connection) element;
                 if(selectedElements.contains(connection.getToElement()) || selectedElements.contains(connection.getFromElement())){
@@ -293,11 +301,14 @@ public class DeleteState implements State {
                 }
             }
         }
+        EventBus.getInstance().notifySubscriber(selectedElements, EventType.DELETE);
         if (!selectedElements.isEmpty()) {
             packageView.deleteElements(selectedElements);
         }
         packageView.setPanelPainters(new ArrayList<>());
+        packageView.setPanelSelectionPainters(new ArrayList<>());
         packageView.panelRepaint();
         packageView.panelOutsideRefresh();
     }
+
 }

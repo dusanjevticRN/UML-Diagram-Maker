@@ -6,6 +6,7 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Conne
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Generalizacija;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Interfejs;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
@@ -51,7 +52,7 @@ public class AddGeneralizationState implements State {
             generalization = (Generalizacija) con;
             if (generalization.getToElement() == null) {
                 for (DiagramElement diagramElement : packageView.currentDiagramElements()) {
-                    if (diagramElement instanceof InterClass) {
+                    if (diagramElement instanceof Klasa || diagramElement instanceof Interfejs) {
                         if (isHit((InterClass) diagramElement, x, y)) {
                             generalization.setFromElement(((InterClass) diagramElement));
                             break;
@@ -87,7 +88,7 @@ public class AddGeneralizationState implements State {
         startX = 0;
         startY = 0;
         for(DiagramElement diagramElement : packageView.currentDiagramElements()){
-            if(diagramElement instanceof InterClass){
+            if((diagramElement instanceof Interfejs || (diagramElement instanceof Klasa && generalization.getFromElement() instanceof Klasa)) && diagramElement != generalization.getFromElement()){
                 if(isHit((InterClass) diagramElement, x, y)){
                     packageView.setPanelPainters(new ArrayList<>());
                     packageView.panelRepaint();

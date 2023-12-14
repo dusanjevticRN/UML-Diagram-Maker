@@ -66,9 +66,9 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             EventBus.getInstance().subscribe(EventType.CLEAR_DRAG_DEL, this);
             EventBus.getInstance().subscribe(EventType.START_DRAG_DEL, this);
             EventBus.getInstance().subscribe(EventType.MOVE, this);
-            EventBus.getInstance().subscribe(EventType.DELETE_ELEMENTS, this);
             EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT_STATE, this);
             EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT, this);
+            EventBus.getInstance().subscribe(EventType.DELETE, this);
         }
 
     @Override
@@ -320,10 +320,6 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             DiagramPanel currentPanel = this.getCurrentDiagramPanel();
             currentPanel.startDrag(notification);
         }
-        else if(EventType.DELETE_ELEMENTS.equals(typeOfUpdate)){
-            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
-            currentPanel.deleteElements(notification);
-        }
         else if(EventType.START_DRAG_DEL.equals(typeOfUpdate)){
             DiagramPanel currentPanel = this.getCurrentDiagramPanel();
             currentPanel.startDragD(notification);
@@ -335,6 +331,12 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
         else if(EventType.CLEAR_DRAG_DEL.equals(typeOfUpdate)){
             DiagramPanel currentPanel = this.getCurrentDiagramPanel();
             currentPanel.clearDragD(notification);
+        }
+        else if(EventType.DELETE.equals(typeOfUpdate)){
+            Pair pair = new Pair(null, null);
+            pair.setFirst(getCurrentDiagramPanel());
+            pair.setSecond(notification);
+            EventBus.getInstance().notifySubscriber(pair, EventType.DELETE_ELEMENTS);
         }
 
     }
@@ -478,5 +480,16 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
     public void deleteElements(ArrayList<DiagramElement> elements)
     {
         this.getCurrentDiagramPanel().getDiagram().getDiagramElements().removeAll(elements);
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public void clearSelectedElements(){
+
+            this.getCurrentDiagramPanel().getSelectedElements().clear();
+    }
+    public ArrayList<DiagramElement> getSelectedElementsDel(){
+            return this.getCurrentDiagramPanel().getSelectedElementsD();
     }
 }

@@ -44,8 +44,19 @@ public class ZavisnostPainter extends ConnectionPainter
             int endXofEnd = endStartX + connectionElement.getToElement().getSize().getFirst();
             int endYofEnd = endStartY + connectionElement.getToElement().getSize().getSecond();
 
+            int startMidCordX = (startX + endXofStart)/2;
+            int startMidCordY = (startY + endYofStart)/2;
+
             int endMidCordX = (endStartX + endXofEnd)/2;
             int endMidCordY = (endStartY + endYofEnd)/2;
+
+            int closestSides[] =
+            findClosestSides(
+                    startMidCordX, startMidCordY, endYofStart, startX, endXofStart, startY,
+                    endMidCordX, endMidCordY, endYofEnd, endStartX, endXofEnd, endStartY
+            );
+
+            System.out.println("Closest sides: " + closestSides[0] + "-" + closestSides[1]);
 
             if (endMidCordX < startX) {
                 // To levo od from
@@ -82,12 +93,7 @@ public class ZavisnostPainter extends ConnectionPainter
                 arrowDir[1] = 1;
             } else {
                 System.out.println("OUT OF BOUNDS");
-                connectionElement.getStart().setFirst(connectionElement.getFromElement().getPosition().getFirst() + connectionElement.getFromElement().getSize().getFirst()/2);
-                connectionElement.getStart().setSecond(connectionElement.getFromElement().getSize().getSecond());
-                connectionElement.getEnd().setFirst(connectionElement.getToElement().getPosition().getFirst() + connectionElement.getToElement().getSize().getFirst()/2);
-                connectionElement.getEnd().setSecond(connectionElement.getToElement().getPosition().getSecond());
-                arrowDir[0] = 1;
-                arrowDir[1] = 1;
+
             }
         }
 
@@ -148,4 +154,42 @@ public class ZavisnostPainter extends ConnectionPainter
         return selected;
     }
 
+    public static int[] findClosestSides(
+            int startMidCordX, int startMidCordY, int endYofStart, int startX, int endXofStart, int startY,
+            int endMidCordX, int endMidCordY, int endYofEnd, int endStartX, int endXofEnd, int endStartY
+    ) {
+        double minDistance = Double.MAX_VALUE;
+        int[] closestSides = new int[2];
+
+        int[][] startSides = {
+                {startMidCordX, startY},       // Top (1)
+                {startMidCordX, endYofStart},  // Bottom (2)
+                {startX, startMidCordY},       // Left (3)
+                {endXofStart, startMidCordY}   // Right (4)
+        };
+
+        int[][] endSides = {
+                {endMidCordX, endStartY},      // Top (1)
+                {endMidCordX, endYofEnd},      // Bottom (2)
+                {endStartX, endMidCordY},      // Left (3)
+                {endXofEnd, endMidCordY}       // Right (4)
+        };
+
+        for (int i = 0; i < startSides.length; i++) {
+            for (int j = 0; j < endSides.length; j++) {
+                double distance = calculateDistance(startSides[i], endSides[j]);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestSides[0] = i + 1; // Adding 1 because array indices start at 0
+                    closestSides[1] = j + 1; // Adding 1 for the same reason
+                }
+            }
+        }
+
+        return closestSides;
+    }
+
+    private static double calculateDistance(int[] point1, int[] point2) {
+        return Math.sqrt(Math.pow(point2[0] - point1[0], 2) + Math.pow(point2[1] - point1[1], 2));
+    }
 }

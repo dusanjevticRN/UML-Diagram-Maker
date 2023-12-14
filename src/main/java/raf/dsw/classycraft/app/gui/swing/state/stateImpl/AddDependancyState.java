@@ -6,6 +6,7 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Inter
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Zavisnost;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.UmlEnum;
 import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.painters.ZavisnostPainter;
 import raf.dsw.classycraft.app.gui.swing.view.painters.ConnectionPainter;
@@ -83,7 +84,7 @@ public class AddDependancyState implements State {
         startX = 0;
         startY = 0;
         for(DiagramElement diagramElement : packageView.currentDiagramElements()){
-            if(diagramElement instanceof InterClass){
+            if(diagramElement instanceof InterClass && diagramElement != dependancy.getFromElement() && !(diagramElement instanceof UmlEnum)){
                 if(isHit((InterClass) diagramElement, x, y)){
                     packageView.setPanelPainters(new ArrayList<>());
                     packageView.panelRepaint();
