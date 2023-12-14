@@ -18,6 +18,8 @@ public class StateManager {
     private ZoomOutState zoomOutState;
     private AddFieldState addFieldState;
     private MoveElementState moveElementState;
+    private AddFieldState addContentState;
+    private ZoomToFitState zoomToFitState;
     public StateManager(){
         initialiseStates();
     }
@@ -35,6 +37,8 @@ public class StateManager {
         this.currentState = selectState;
         this.zoomInState = new ZoomInState();
         this.zoomOutState = new ZoomOutState();
+        this.addContentState = new AddFieldState();
+        this.zoomToFitState = new ZoomToFitState();
         this.addFieldState = new AddFieldState();
         this.moveElementState = new MoveElementState();
     }
@@ -62,7 +66,8 @@ public class StateManager {
     }
     public void setZoomInState() {this.currentState = zoomInState;}
     public void setZoomOutState() {this.currentState = zoomOutState;}
-    public void setAddFieldState() {this.currentState = addFieldState;}
+    public void setAddContentState() {this.currentState = addContentState;}
+    public void setZoomToFitState() {this.currentState = zoomToFitState;}
     public void setAddDependancyState() {
         this.currentState = new AddDependancyState();
     }

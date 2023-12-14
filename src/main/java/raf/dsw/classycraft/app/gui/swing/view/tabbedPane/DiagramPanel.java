@@ -385,6 +385,61 @@ public class DiagramPanel extends JPanel {
         setUpZoomTransformation(mouseX, mouseY);
     }
 
+    public void zoomToFit() {
+        Rectangle boundingBox = calculateBoundingBox();
+
+        //Ako je boundingBox prazan, ne radimo nista
+        if (boundingBox.isEmpty())
+            return;
+
+        double panelWidth = getWidth();
+        double panelHeight = getHeight();
+
+        double scaleX = panelWidth / boundingBox.getWidth();
+        double scaleY = panelHeight / boundingBox.getHeight();
+
+        double minScale = Math.min(scaleX, scaleY);
+
+        // Racunamo horizontalnu tranziaciju i vertikalnu tranziaciju koja nam je potrebna da bi boundingBox bio centriran
+        double translateX = (panelWidth - boundingBox.getWidth() * minScale) / 2.0 - boundingBox.getX() * minScale;
+        double translateY = (panelHeight - boundingBox.getHeight() * minScale) / 2.0 - boundingBox.getY() * minScale;
+
+        // Postavljamo transformaciju
+        affineTransform.setToIdentity();
+        //Pomeramo se na nove koordinate
+        affineTransform.translate(translateX, translateY);
+        //Skaliramo odnosno menjamo velicinu
+        affineTransform.scale(minScale, minScale);
+
+        //Repaint odnosno refreshujemo
+        repaint();
+    }
+
+    private Rectangle calculateBoundingBox() {
+        Rectangle boundingBox = new Rectangle();
+
+        //Iteriramo kroz listu paintera i gledamo da li je painter instnanca interClass, zato sto na osnovu njih zoomToFitujemo
+        for (ElementPainter painter : painters)
+        {
+            DiagramElement element = painter.getDiagramElement();
+
+            if (element instanceof InterClass)
+            {
+                //Uzimam poziciju i velicinu klase i na osnovu toga pravim Rectangle
+                InterClass interClass = (InterClass) element;
+                int x = interClass.getPosition().getFirst();
+                int y = interClass.getPosition().getSecond();
+                int width = interClass.getSize().getFirst();
+                int height = interClass.getSize().getSecond();
+
+                //Dodajemo rectangle u boundingBox koji na osnovu tog dodavanja kreira najmanji moguci pravougaonik koji obuhvata sve Rectangleove
+                boundingBox = boundingBox.union(new Rectangle(x, y, width, height));
+            }
+        }
+
+        return boundingBox;
+    }
+
     private ArrayList<Connection> getConnections(Diagram diagram)
     {
         ArrayList<Connection> connectionList = new ArrayList<>();
