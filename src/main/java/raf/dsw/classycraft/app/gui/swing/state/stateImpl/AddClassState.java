@@ -19,13 +19,13 @@ import java.awt.*;
 public class AddClassState implements State {
 
     @Override
-    public void execute(int x, int y, DiagramPanel panel) {
-        panel.setCursor(Cursor.getDefaultCursor());
+    public void execute(int x, int y, PackageView packageView) {
+        packageView.setPanelCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
-        DiagramPanel diagramPanel = panel;
+    public void stateMousePressed(int x, int y, PackageView packageView) {
+        DiagramPanel diagramPanel = packageView.getCurrentDiagramPanel();
         System.out.println("TEST");
         String name = JOptionPane.showInputDialog("Enter class name:");
 
@@ -49,36 +49,36 @@ public class AddClassState implements State {
         klas.setSize(new Pair(name.length()*8+120, 170));
         InterClassPainter painter = new InterClassPainter(klas);
         System.out.println("Dodajem klasu");
-        panel.getPainters().add(painter);
-        panel.repaint();
-        panel.getDiagram().addDiagramElement(new Pair(x, y),klas);
-        EventBus.getInstance().notifySubscriber(panel.getDiagram(), EventType.SET_PANEL);
+        packageView.addPainter(painter);
+        packageView.panelRepaint();
+        packageView.addDiagramElement(new Pair(x, y),klas);
+        EventBus.getInstance().notifySubscriber(packageView.getCurrentDiagramPanel().getDiagram(), EventType.SET_PANEL);
         EventBus.getInstance().notifySubscriber(klas, EventType.ADD_CLASS_TO_TREE);
 
     }
 
     @Override
-    public void stateMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateMouseReleased(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateRightMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseReleased(int x, int y, PackageView packageView) {
 
     }
 

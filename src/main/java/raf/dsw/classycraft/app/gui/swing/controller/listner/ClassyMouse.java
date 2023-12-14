@@ -9,36 +9,53 @@ import java.awt.event.MouseMotionListener;
 
 public class ClassyMouse implements MouseListener, MouseMotionListener{
 
-    private DiagramPanel currentPanel;
     private boolean rightMouseButtonPressed = false;
-    public ClassyMouse(DiagramPanel currentPanel){
-        this.currentPanel = currentPanel;
-    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         System.out.println("Cordinates: " + e.getX() + " " + e.getY());
-        //MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().stateMousePressed(e.getX(), e.getY(), currentPanel);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        //offset za y kordinatu je dodat jer iz nekog razloga nije lepo havatao poziciju misa idk
+        MouseEvent correctedEvent = new MouseEvent(
+                e.getComponent(),
+                e.getID(),
+                e.getWhen(),
+                e.getModifiers(),
+                e.getX(),
+                e.getY() - 70,
+                e.getClickCount(),
+                e.isPopupTrigger(),
+                //event se prati preko booleana za e a ne correctedEvent pa mozemo da stavimo nobutton
+                MouseEvent.NOBUTTON
+        );
+
         if (e.getButton() == MouseEvent.BUTTON3) {
             rightMouseButtonPressed = true;
-            MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().stateRightMousePressed(e.getX(), e.getY(), currentPanel);
         }
-        else
-            MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().stateMousePressed(e.getX(), e.getY(), currentPanel);
+        System.out.println("Cordinates: " + e.getX() + " " + e.getY());
+        MainFrame.getInstance().getPackageView().handleMousePressed(correctedEvent, rightMouseButtonPressed);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        MouseEvent correctedEvent = new MouseEvent(
+                e.getComponent(),
+                e.getID(),
+                e.getWhen(),
+                e.getModifiers(),
+                e.getX(),
+                e.getY() - 70,
+                e.getClickCount(),
+                e.isPopupTrigger(),
+                MouseEvent.NOBUTTON
+        );
+        MainFrame.getInstance().getPackageView().handleMouseReleased(correctedEvent, rightMouseButtonPressed);
         if (e.getButton() == MouseEvent.BUTTON3) {
             rightMouseButtonPressed = false;
-            MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().stateRightMouseReleased(e.getX(), e.getY(), currentPanel);
         }
-        else
-            MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().stateMouseReleased(e.getX(), e.getY(), currentPanel);
     }
 
     @Override
@@ -53,13 +70,18 @@ public class ClassyMouse implements MouseListener, MouseMotionListener{
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(rightMouseButtonPressed)
-        {
-            System.out.println("Right drag cords: " + e.getX() + " " + e.getY());
-            MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().stateRightMouseDragged(e.getX(), e.getY(), currentPanel);
-        }
-        else
-            MainFrame.getInstance().getPackageView().getSelectedDiagramPanel().getStateManager().getCurrentState().stateMouseDragged(e.getX(), e.getY(), currentPanel);
+        MouseEvent correctedEvent = new MouseEvent(
+                e.getComponent(),
+                e.getID(),
+                e.getWhen(),
+                e.getModifiers(),
+                e.getX(),
+                e.getY() - 70,
+                e.getClickCount(),
+                e.isPopupTrigger(),
+                MouseEvent.NOBUTTON
+        );
+        MainFrame.getInstance().getPackageView().handleMouseDragged(correctedEvent, rightMouseButtonPressed);
     }
 
     @Override

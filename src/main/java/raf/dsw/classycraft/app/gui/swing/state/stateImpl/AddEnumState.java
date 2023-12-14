@@ -10,19 +10,20 @@ import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.painters.InterClassPainter;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class AddEnumState implements State {
     @Override
-    public void execute(int x, int y, DiagramPanel panel) {
-        panel.setCursor(Cursor.getDefaultCursor());
+    public void execute(int x, int y, PackageView packageView) {
+        packageView.setPanelCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
-        DiagramPanel diagramPanel = panel;
+    public void stateMousePressed(int x, int y, PackageView packageView) {
+        DiagramPanel diagramPanel = packageView.getCurrentDiagramPanel();
         System.out.println("TEST");
         String name = JOptionPane.showInputDialog("Enter enum name:");
         if(name == null) return;
@@ -45,36 +46,36 @@ public class AddEnumState implements State {
         enm.setSize(new Pair(name.length()*8+120, 170));
         InterClassPainter painter = new InterClassPainter(enm);
         System.out.println("Dodajem klasu");
-        panel.getPainters().add(painter);
-        panel.repaint();
-        panel.getDiagram().addDiagramElement(new Pair(x, y),enm);
-        EventBus.getInstance().notifySubscriber(panel.getDiagram(), EventType.SET_PANEL);
+        packageView.addPainter(painter);
+        packageView.panelRepaint();
+        packageView.addDiagramElement(new Pair(x, y),enm);
+        EventBus.getInstance().notifySubscriber(packageView.getDiagram(), EventType.SET_PANEL);
         EventBus.getInstance().notifySubscriber(enm, EventType.ADD_ENUM_TO_TREE);
 
     }
 
     @Override
-    public void stateMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateMouseReleased(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateRightMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseReleased(int x, int y, PackageView packageView) {
 
     }
 }

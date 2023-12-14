@@ -10,6 +10,7 @@ import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.painters.ZavisnostPainter;
 import raf.dsw.classycraft.app.gui.swing.view.painters.ConnectionPainter;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,17 +22,17 @@ public class AddDependancyState implements State {
     private int startX= 0;
     private int startY= 0;
     @Override
-    public void execute(int x, int y, DiagramPanel panel) {
-        panel.setCursor(Cursor.getDefaultCursor());
+    public void execute(int x, int y, PackageView packageView) {
+        packageView.setPanelCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateMouseDragged(int x, int y, PackageView packageView) {
 
 
         if(startX == 0 && startY == 0) {
@@ -45,7 +46,7 @@ public class AddDependancyState implements State {
             dep.setEnd(new Pair<>(x, y));
             dependancy = (Zavisnost) dep;
             if (dependancy.getToElement() == null) {
-                for (DiagramElement diagramElement : panel.getDiagram().getDiagramElements()) {
+                for (DiagramElement diagramElement : packageView.currentDiagramElements()) {
                     if (diagramElement instanceof InterClass) {
                         if (isHit((InterClass) diagramElement, x, y)) {
                             dependancy.setFromElement(((InterClass) diagramElement));
@@ -55,52 +56,52 @@ public class AddDependancyState implements State {
                 }
             }
             if (dependancy.getToElement() == null) {
-                dependancy.setToElement(new Klasa(panel.getDiagram(), "Klasa", null, x, y));
+                dependancy.setToElement(new Klasa(packageView.getDiagram(), "Klasa", null, x, y));
             }
             dependancyPainter = new ZavisnostPainter(dependancy,1);
             dependancyPainter.setConnectionElement(dependancy);
             dependancyPainter.setColor(Color.BLACK);
-            panel.getPainters().add(dependancyPainter);
+            packageView.addPainter(dependancyPainter);
         }
 
-        panel.getPainters().remove(dependancyPainter);
+        packageView.removePainter(dependancyPainter);
         System.out.println("PAINT");
         dep.setEnd(new Pair<>(x, y));
-        dependancy.setToElement(new Klasa(panel.getDiagram(), "Klasa", null, x, y));
+        dependancy.setToElement(new Klasa(packageView.getDiagram(), "Klasa", null, x, y));
         dependancyPainter = new ZavisnostPainter(dependancy,1);
-        panel.getPainters().add(dependancyPainter);
+        packageView.addPainter(dependancyPainter);
 
-        panel.repaint();
+        packageView.panelRepaint();
 
     }
 
     @Override
-    public void stateMouseReleased(int x, int y, DiagramPanel panel) {
-        panel.setPainters(new ArrayList<>());
-        panel.repaint();
-        panel.outsideRefresh();
+    public void stateMouseReleased(int x, int y, PackageView packageView) {
+        packageView.setPanelPainters(new ArrayList<>());
+        packageView.panelRepaint();
+        packageView.panelOutsideRefresh();
         startX = 0;
         startY = 0;
-        for(DiagramElement diagramElement : panel.getDiagram().getDiagramElements()){
+        for(DiagramElement diagramElement : packageView.currentDiagramElements()){
             if(diagramElement instanceof InterClass){
                 if(isHit((InterClass) diagramElement, x, y)){
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     dependancy.setToElement(((InterClass) diagramElement));
                     setEnd(dependancy, (InterClass) diagramElement);
                     dependancyPainter.setConnectionElement(dependancy);
                     dependancyPainter = new ZavisnostPainter(dependancy, 0);
-                    panel.getDiagram().addDiagramElement(new Pair<>(x, y), dependancy);
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.addDiagramElement(new Pair<>(x, y), dependancy);
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     break;
                 }
                 else {
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                 }
             }
         }
@@ -111,17 +112,17 @@ public class AddDependancyState implements State {
     }
 
     @Override
-    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateRightMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseReleased(int x, int y, PackageView packageView) {
 
     }
 

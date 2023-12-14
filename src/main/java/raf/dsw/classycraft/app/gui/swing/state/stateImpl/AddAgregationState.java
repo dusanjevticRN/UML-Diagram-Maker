@@ -16,6 +16,7 @@ import raf.dsw.classycraft.app.gui.swing.view.painters.ConnectionPainter;
 import raf.dsw.classycraft.app.gui.swing.view.painters.ElementPainter;
 import raf.dsw.classycraft.app.gui.swing.view.painters.GeneralizacijaPainter;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,17 +28,18 @@ public class AddAgregationState implements State {
     private int startX= 0;
     private int startY= 0;
     @Override
-    public void execute(int x, int y, DiagramPanel panel) {
-        panel.setCursor(Cursor.getDefaultCursor());
+    public void execute(int x, int y, PackageView packageView) {
+
+        packageView.setCursor(Cursor.getDefaultCursor());
     }
 
     @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateMouseDragged(int x, int y, PackageView packageView) {
 
 
         if(startX == 0 && startY == 0) {
@@ -51,7 +53,7 @@ public class AddAgregationState implements State {
             agr.setEnd(new Pair<>(x, y));
             agregation = (Agregacija) agr;
             if (agregation.getToElement() == null) {
-                for (DiagramElement diagramElement : panel.getDiagram().getDiagramElements()) {
+                for (DiagramElement diagramElement : packageView.currentDiagramElements()) {
                     if (diagramElement instanceof InterClass) {
                         if (isHit((InterClass) diagramElement, x, y)) {
                             agregation.setFromElement(((InterClass) diagramElement));
@@ -61,52 +63,52 @@ public class AddAgregationState implements State {
                 }
             }
             if (agregation.getToElement() == null) {
-                agregation.setToElement(new Klasa(panel.getDiagram(), "Klasa", null, x, y));
+                agregation.setToElement(new Klasa(packageView.getDiagram(), "Klasa", null, x, y));
             }
             agregationPainter = new AgregacijaPainter(agregation,1);
             agregationPainter.setConnectionElement(agregation);
             agregationPainter.setColor(Color.BLACK);
-            panel.getPainters().add(agregationPainter);
+            packageView.addPainter(agregationPainter);
         }
 
-        panel.getPainters().remove(agregationPainter);
+        packageView.removePainter(agregationPainter);
         System.out.println("PAINT");
         agr.setEnd(new Pair<>(x, y));
-        agregation.setToElement(new Klasa(panel.getDiagram(), "Klasa", null, x, y));
+        agregation.setToElement(new Klasa(packageView.getDiagram(), "Klasa", null, x, y));
         agregationPainter = new AgregacijaPainter(agregation,1);
-        panel.getPainters().add(agregationPainter);
+        packageView.addPainter(agregationPainter);
 
-        panel.repaint();
+        packageView.panelRepaint();
 
     }
 
     @Override
-    public void stateMouseReleased(int x, int y, DiagramPanel panel) {
-        panel.setPainters(new ArrayList<>());
-        panel.repaint();
-        panel.outsideRefresh();
+    public void stateMouseReleased(int x, int y, PackageView packageView) {
+        packageView.setPanelPainters(new ArrayList<>());
+        packageView.panelRepaint();
+        packageView.panelOutsideRefresh();
         startX = 0;
         startY = 0;
-        for(DiagramElement diagramElement : panel.getDiagram().getDiagramElements()){
+        for(DiagramElement diagramElement : packageView.currentDiagramElements()){
             if(diagramElement instanceof InterClass){
                 if(isHit((InterClass) diagramElement, x, y)){
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     agregation.setToElement(((InterClass) diagramElement));
                     setEnd(agregation, (InterClass) diagramElement);
                     agregationPainter.setConnectionElement(agregation);
                     agregationPainter = new AgregacijaPainter(agregation, 0);
-                    panel.getDiagram().addDiagramElement(new Pair<>(x, y), agregation);
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.addDiagramElement(new Pair<>(x, y), agregation);
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                     break;
                 }
                 else {
-                    panel.setPainters(new ArrayList<>());
-                    panel.repaint();
-                    panel.outsideRefresh();
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                 }
             }
         }
@@ -117,17 +119,17 @@ public class AddAgregationState implements State {
     }
 
     @Override
-    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseDragged(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateRightMousePressed(int x, int y, PackageView packageView) {
 
     }
 
     @Override
-    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseReleased(int x, int y, PackageView packageView) {
 
     }
 

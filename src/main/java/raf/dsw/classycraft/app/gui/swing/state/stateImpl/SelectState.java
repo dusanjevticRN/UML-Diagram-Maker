@@ -7,6 +7,7 @@ import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,18 +26,18 @@ public class SelectState implements State, ISubscriber {
     }
 
     @Override
-    public void execute(int x, int y, DiagramPanel panel) {
-        panel.setCursor(Cursor.getDefaultCursor());
+    public void execute(int x, int y, PackageView packageView) {
+        packageView.setPanelCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
-    public void stateMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateMousePressed(int x, int y, PackageView packageView) {
         System.out.println("Select state");
         this.startX = x;
         this.startY = y;
-        UmlSelectionModel selectionModel = panel.getSelectionModel();
+        UmlSelectionModel selectionModel = packageView.getSelectionModel();
         List<InterClass> selectableElements = new ArrayList<>();
-        for(DiagramElement elem : panel.getDiagram().getDiagramElements()){
+        for(DiagramElement elem : packageView.currentDiagramElements()){
             if(elem instanceof InterClass){
                 InterClass interClass = (InterClass) elem;
                 selectableElements.add(interClass);
@@ -63,16 +64,16 @@ public class SelectState implements State, ISubscriber {
         }
         if(!hit){
             System.out.println(hit);
-            panel.setSelectionModel(new UmlSelectionModel());
-            panel.setSelectedPainters(new ArrayList<>());
+            packageView.setSelectionModel(new UmlSelectionModel());
+            packageView.setPanelSelectionPainters(new ArrayList<>());
             EventBus.getInstance().notifySubscriber(this, EventType.REFRESH);
         }
         if(hit) {
             System.out.println(hit);
             System.out.println("Hit: " + selectionModel.getSelected().get(0).getName());
-            panel.setSelectedPainters(new ArrayList<>());
-            panel.setSelectionModel(new UmlSelectionModel());
-            panel.setSelectionModel(selectionModel);
+            packageView.setPanelSelectionPainters(new ArrayList<>());
+            packageView.setSelectionModel(new UmlSelectionModel());
+            packageView.setSelectionModel(selectionModel);
             EventBus.getInstance().notifySubscriber(this, EventType.REFRESH);
         }
         hit = false;
@@ -80,30 +81,68 @@ public class SelectState implements State, ISubscriber {
     }
 
     @Override
-    public void stateMouseDragged(int x, int y, DiagramPanel panel) {
-        if(startX == 0 && startY == 0){
+    public void stateMouseDragged(int x, int y, PackageView packageView) {
+        if (startX == 0 && startY == 0) {
             startX = x;
             startY = y;
             EventBus.getInstance().notifySubscriber(this, EventType.START_DRAG);
         }
 
+        //stara selekcija (on release koja je bila)
         String start = startX + "/" + startY;
         String end = x + "/" + y;
-        System.out.println(start + "-" + end);
         String startEnd = start + "-" + end;
         EventBus.getInstance().notifySubscriber(startEnd, EventType.DRAG);
+
+        // dinamicka selekcija
+        UmlSelectionModel selectionModel = packageView.getSelectionModel();
+        List<DiagramElement> newSelectedElements = new ArrayList<>();
+
+        // prolazimo kroz elemente i proveravamo da li su hitovani
+        for (DiagramElement elem : packageView.currentDiagramElements()) {
+            if (elem instanceof InterClass) {
+                InterClass interClass = (InterClass) elem;
+                if (isHitDrag(interClass, startX, startY, x, y)) {
+                    newSelectedElements.add(interClass);
+                    if (!selecteElements.contains(interClass)) {
+                        //selektujemo elemente koji su hitovani u dragu
+                        selectionModel.select(interClass);
+                    }
+                }
+            } else if (elem instanceof Connection) {
+                Connection connection = (Connection) elem;
+                if (isHitLineDrag(connection, startX, startY, x, y)) {
+                    newSelectedElements.add(connection);
+                    if (!selecteElements.contains(connection)) {
+                        //selektuiju se konekcije koje su hitovane u dragu
+                        selectionModel.select(connection);
+                    }
+                }
+            }
+        }
+
+        //dinamicki unselektrujemo elemente
+        for (DiagramElement previouslySelected : selecteElements) {
+            if (!newSelectedElements.contains(previouslySelected)) {
+                selectionModel.unselect(previouslySelected);
+            }
+        }
+
+        selecteElements = newSelectedElements;
+
+        EventBus.getInstance().notifySubscriber(this, EventType.REFRESH);
     }
 
     @Override
-    public void stateMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateMouseReleased(int x, int y, PackageView packageView) {
         System.out.println("Released");
         String start = startX + "/" + startY;
         String end = x + "/" + y;
         String startEnd = start + "-" + end;
 
-        UmlSelectionModel selectionModel = panel.getSelectionModel();
+        UmlSelectionModel selectionModel = packageView.getSelectionModel();
         List<InterClass> selectableElements = new ArrayList<>();
-        for(DiagramElement elem : panel.getDiagram().getDiagramElements()){
+        for(DiagramElement elem : packageView.currentDiagramElements()){
             if(elem instanceof InterClass){
                 InterClass interClass = (InterClass) elem;
                 selectableElements.add(interClass);
@@ -128,16 +167,16 @@ public class SelectState implements State, ISubscriber {
         }
         if(!hit){
             System.out.println(hit);
-            panel.setSelectionModel(new UmlSelectionModel());
-            panel.setSelectedPainters(new ArrayList<>());
+            packageView.setSelectionModel(new UmlSelectionModel());
+            packageView.setPanelSelectionPainters(new ArrayList<>());
             EventBus.getInstance().notifySubscriber(this, EventType.REFRESH);
         }
         if(hit) {
             System.out.println(hit);
             System.out.println("Hit: " + selectionModel.getSelected().get(0).getName());
-            panel.setSelectedPainters(new ArrayList<>());
-            panel.setSelectionModel(new UmlSelectionModel());
-            panel.setSelectionModel(selectionModel);
+            packageView.setSelectionModel(new UmlSelectionModel());
+            packageView.setPanelSelectionPainters(new ArrayList<>());
+            packageView.setSelectionModel(selectionModel);
             EventBus.getInstance().notifySubscriber(this, EventType.REFRESH);
         }
         hit = false;
@@ -149,29 +188,29 @@ public class SelectState implements State, ISubscriber {
     }
 
     @Override
-    public void stateRightMouseDragged(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseDragged(int x, int y, PackageView packageView) {
         int movementX = x - startXRight;
         int movementY = y - startYRight;
 
-        EventBus.getInstance().notifySubscriber(new Triple<>(panel, movementX,movementY), EventType.MOVE);
+        EventBus.getInstance().notifySubscriber(new Triple<>(packageView.getCurrentDiagramPanel(), movementX,movementY), EventType.MOVE);
 
         startXRight = x;
         startYRight = y;
     }
 
     @Override
-    public void stateRightMousePressed(int x, int y, DiagramPanel panel) {
+    public void stateRightMousePressed(int x, int y, PackageView packageView) {
         startXRight = x;
         startYRight = y;
-        panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        packageView.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
     }
 
     @Override
-    public void stateRightMouseReleased(int x, int y, DiagramPanel panel) {
+    public void stateRightMouseReleased(int x, int y, PackageView packageView) {
         startXRight = 0;
         startYRight = 0;
-        panel.setCursor(Cursor.getDefaultCursor());
+        packageView.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     private boolean isHit(InterClass interClass, int x, int y){
