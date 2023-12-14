@@ -12,7 +12,7 @@ Informacije u vezi programa:
   obrisati jedan element, moraće povući crvenu površinu preko njega, jer direktna opcija brisanja na jedan klik nije dostupna.
 
 - Moguće veze između elemenata:
-- Generalizacija: Class to Class, Class to Interface, Interface to Interface.
-- Zavisnot: Class to Class, Class to Interface, Interface to Class, Interface to Interface, Enum to Class/Interface.
-- Agregacija: Class to Class.
-- Kompozicija: Class to Class.
+  - Generalizacija: Class to Class, Class to Interface, Interface to Interface.
+  - Zavisnot: Class to Class, Class to Interface, Interface to Class, Interface to Interface, Enum to Class/Interface.
+  - Agregacija: Class to Class.
+  - Kompozicija: Class to Class.
