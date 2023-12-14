@@ -18,6 +18,7 @@ import raf.dsw.classycraft.app.gui.swing.view.painters.ElementPainter;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +36,13 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             super();
             openDiagrams = new ArrayList<>();
             tabs = new ArrayList<>();
-            ClassyMouse classyMouse = new ClassyMouse();
+            ClassyMouse classyMouse;
+            if(getCurrentDiagramPanel() != null) {
+                classyMouse = new ClassyMouse(getAffineTransform());
+            }
+            else {
+                classyMouse = new ClassyMouse(new AffineTransform());
+            }
             this.addMouseListener(classyMouse);
             this.addMouseMotionListener(classyMouse);
             EventBus.getInstance().subscribe(EventType.DIAGRAM_SELECTION, this);
@@ -385,47 +392,108 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
         return (DiagramPanel) this.getSelectedComponent();
    }
    public DiagramPanel getCurrentDiagramPanel(){
+            if(this.getSelectedIndex() == -1)
+                return null;
         return (DiagramPanel) this.getComponentAt(this.getSelectedIndex());
    }
 
     public void startAddClassState()
     {
         this.stateManager.setAddClassState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
     }
     public void startAddInterfaceState()
     {
         this.stateManager.setAddInterfaceState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
     }
     public void startAddEnumState()
     {
         this.stateManager.setAddEnumState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
     }
     public void startSelectState()
     {
         this.stateManager.setSelectState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
     }
     public void startGeneralizationState()
     {
         this.stateManager.setGeneralizationState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
     }
     public void startAgregationState()
     {
         this.stateManager.setAgregationState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
     }
     public void startKompozicijaState()
     {
         this.stateManager.setCompositionState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
     }
     public void startDependencyState()
     {
         this.stateManager.setAddDependancyState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
     }
-    public void startZoomInState() {this.stateManager.setZoomInState();}
-    public void startZoomOutState() {this.stateManager.setZoomOutState();}
-    public void startAddFieldState() {this.stateManager.setAddContentState();}
-    public void startMoveElementState() {this.stateManager.setMoveElementState();}
-    public void startZoomToFitState() {this.stateManager.setZoomToFitState();}
-    public void startDeleteElementState() {this.stateManager.setDeleteState();}
+    public void startZoomInState() {this.stateManager.setZoomInState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();}
+    public void startZoomOutState() {this.stateManager.setZoomOutState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();}
+    public void startAddFieldState() {this.stateManager.setAddContentState();
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();}
+    public void startMoveElementState() {
+            this.stateManager.setMoveElementState();
+
+        }
+    public void startZoomToFitState() {
+            this.stateManager.setZoomToFitState();
+            this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+            this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+            this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+            this.getCurrentDiagramPanel().repaint();
+        }
+    public void startDeleteElementState() {
+            this.stateManager.setDeleteState();
+            this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+            this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+            this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+            this.getCurrentDiagramPanel().repaint();
+        }
 
 
     //Metode za kontrolisanje komunikacije sa dijagramom
@@ -491,5 +559,14 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
     }
     public ArrayList<DiagramElement> getSelectedElementsDel(){
             return this.getCurrentDiagramPanel().getSelectedElementsD();
+    }
+    public void clearSelectedAll (){
+        this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
+        this.getCurrentDiagramPanel().setSelectedElementsD(new ArrayList<>());
+        this.getCurrentDiagramPanel().repaint();
+    }
+    public AffineTransform getAffineTransform(){
+        return this.getCurrentDiagramPanel().getAffineTransform();
     }
 }

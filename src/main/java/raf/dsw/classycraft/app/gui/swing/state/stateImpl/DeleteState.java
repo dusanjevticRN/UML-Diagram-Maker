@@ -34,6 +34,9 @@ public class DeleteState implements State {
 
     @Override
     public void stateMousePressed(int x, int y, PackageView packageView) {
+
+        this.selecteElements.clear();
+        packageView.setSelectionModel(new UmlSelectionModel());
         System.out.println("Select state");
         this.startX = x;
         this.startY = y;

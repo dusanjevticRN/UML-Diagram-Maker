@@ -57,7 +57,7 @@ public class MoveElementState implements State {
 
     @Override
     public void stateMouseReleased(int x, int y, PackageView packageView) {
-        // resetujemo listu
+        packageView.clearSelectedAll();
         elements.clear();
     }
 

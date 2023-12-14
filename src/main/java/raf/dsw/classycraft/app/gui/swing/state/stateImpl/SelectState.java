@@ -10,6 +10,9 @@ import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,7 @@ public class SelectState implements State {
     private int startY;
     private boolean hit = false;
     private List<DiagramElement> selecteElements = new ArrayList<>();
+    private AffineTransform affineTransform;
 
     @Override
     public void execute(int x, int y, PackageView packageView) {
@@ -277,6 +281,18 @@ public class SelectState implements State {
         }
 
         return true;
+    }
+
+    private Point2D transformMouseCoordinates(int mouseX, int mouseY) {
+        try {
+            AffineTransform inverse = affineTransform.createInverse();
+            Point2D transformedPoint = new Point2D.Float();
+            inverse.transform(new Point2D.Float(mouseX, mouseY), transformedPoint);
+            return transformedPoint;
+        } catch (NoninvertibleTransformException e) {
+            e.printStackTrace();
+            return new Point2D.Float(mouseX, mouseY); // Fallback to raw coordinates if transformation fails
+        }
     }
 
 }
