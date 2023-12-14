@@ -62,8 +62,13 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             EventBus.getInstance().subscribe(EventType.DRAG, this);
             EventBus.getInstance().subscribe(EventType.CLEAR_DRAG, this);
             EventBus.getInstance().subscribe(EventType.START_DRAG, this);
+            EventBus.getInstance().subscribe(EventType.DRAG_DEL, this);
+            EventBus.getInstance().subscribe(EventType.CLEAR_DRAG_DEL, this);
+            EventBus.getInstance().subscribe(EventType.START_DRAG_DEL, this);
             EventBus.getInstance().subscribe(EventType.MOVE, this);
             EventBus.getInstance().subscribe(EventType.DELETE_ELEMENTS, this);
+            EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT_STATE, this);
+            EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT, this);
         }
 
     @Override
@@ -91,6 +96,12 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             this.startZoomInState();
         else if(EventType.ZOOM_OUT.equals(typeOfUpdate))
             this.startZoomOutState();
+        else if(EventType.ZOOM_TO_FIT.equals(typeOfUpdate))
+            this.startZoomToFitState();
+        else if(EventType.ZOOM_TO_FIT_STATE.equals(typeOfUpdate)){
+            this.getCurrentDiagramPanel().zoomToFit();
+        }
+
 
         if(EventType.CLOSE_TABS.equals(typeOfUpdate))
         {
@@ -313,6 +324,18 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             DiagramPanel currentPanel = this.getCurrentDiagramPanel();
             currentPanel.deleteElements(notification);
         }
+        else if(EventType.START_DRAG_DEL.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.startDragD(notification);
+        }
+        else if(EventType.DRAG_DEL.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.dragD(notification);
+        }
+        else if(EventType.CLEAR_DRAG_DEL.equals(typeOfUpdate)){
+            DiagramPanel currentPanel = this.getCurrentDiagramPanel();
+            currentPanel.clearDragD(notification);
+        }
 
     }
     private void closeAllTabs() {
@@ -397,8 +420,10 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
     }
     public void startZoomInState() {this.stateManager.setZoomInState();}
     public void startZoomOutState() {this.stateManager.setZoomOutState();}
-    public void startAddFieldState() {this.stateManager.setAddFieldState();}
+    public void startAddFieldState() {this.stateManager.setAddContentState();}
     public void startMoveElementState() {this.stateManager.setMoveElementState();}
+    public void startZoomToFitState() {this.stateManager.setZoomToFitState();}
+    public void startDeleteElementState() {this.stateManager.setDeleteState();}
 
 
     //Metode za kontrolisanje komunikacije sa dijagramom
@@ -449,5 +474,9 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
     public void setSelectionModel(UmlSelectionModel selectionModel)
     {
         this.getCurrentDiagramPanel().setSelectionModel(selectionModel);
+    }
+    public void deleteElements(ArrayList<DiagramElement> elements)
+    {
+        this.getCurrentDiagramPanel().getDiagram().getDiagramElements().removeAll(elements);
     }
 }

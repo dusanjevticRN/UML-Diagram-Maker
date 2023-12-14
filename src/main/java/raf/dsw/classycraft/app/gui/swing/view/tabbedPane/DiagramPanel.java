@@ -37,6 +37,7 @@ public class DiagramPanel extends JPanel {
     private ArrayList<ElementPainter> selectedPainters = new ArrayList<>();
     private ArrayList<DiagramElement> selectedElements = new ArrayList<>();
     private SelectionPainter selectionPainter = null;
+    private SelectionPainterDel selectionPainterDel = null;
     private Diagram diagram;
     int startDargX;
     int startDragY;
@@ -270,7 +271,42 @@ public class DiagramPanel extends JPanel {
         selectionPainter = null;
         this.repaint();
     }
+    public void startDragD(Object notification){
+        tempPainters.addAll(painters);
+    }
+    public void clearDragD(Object notification){
+        painters.remove(selectionPainterDel);
+        selectionPainterDel = null;
+        this.repaint();
+    }
+    public void dragD(Object notification){
+        if(selectionPainterDel == null) {
+            InterClass temp = new Klasa(null, "temp");
+            selectionPainterDel = new SelectionPainterDel(temp);
+            painters.add(selectionPainterDel);
+        }
+        System.out.println(notification.toString());
+        String startStr[] = notification.toString().split("-");
+        String start[] = startStr[0].split("/");
+        String end[] = startStr[1].split("/");
+        int startX = Integer.parseInt(start[0]);
+        int startY = Integer.parseInt(start[1]);
+        int endX = Integer.parseInt(end[0]);
+        int endY = Integer.parseInt(end[1]);
 
+        int rectX = Math.min(startX, endX);
+        int rectY = Math.min(startY, endY);
+        int rectWidth = Math.abs(endX - startX);
+        int rectHeight = Math.abs(endY - startY);
+
+        InterClass interClassElement = (InterClass) selectionPainterDel.getDiagramElement();
+        interClassElement.getPosition().setFirst(rectX);
+        interClassElement.getPosition().setSecond(rectY);
+        interClassElement.getSize().setFirst(rectWidth);
+        interClassElement.getSize().setSecond(rectHeight);
+
+        this.repaint();
+    }
 
     @Override
     protected void paintComponent(Graphics g) {

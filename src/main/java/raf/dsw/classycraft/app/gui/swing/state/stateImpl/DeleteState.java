@@ -1,10 +1,12 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.*;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Triple;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
-import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
@@ -13,7 +15,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectState implements State {
+public class DeleteState implements State {
+    //kod bukv iz selecta samo promanjen malo da radi za delete sa hitom bez movea
     private int startXRight;
     private int startYRight;
     private int startX;
@@ -74,6 +77,7 @@ public class SelectState implements State {
         }
         hit = false;
         selectionModel.getSelected().clear();
+        deleteSelectedElements(packageView);
     }
 
     @Override
@@ -81,14 +85,14 @@ public class SelectState implements State {
         if (startX == 0 && startY == 0) {
             startX = x;
             startY = y;
-            EventBus.getInstance().notifySubscriber(this, EventType.START_DRAG);
+            EventBus.getInstance().notifySubscriber(this, EventType.START_DRAG_DEL);
         }
 
         //stara selekcija (on release koja je bila)
         String start = startX + "/" + startY;
         String end = x + "/" + y;
         String startEnd = start + "-" + end;
-        EventBus.getInstance().notifySubscriber(startEnd, EventType.DRAG);
+        EventBus.getInstance().notifySubscriber(startEnd, EventType.DRAG_DEL);
 
         // dinamicka selekcija
         UmlSelectionModel selectionModel = packageView.getSelectionModel();
@@ -178,35 +182,26 @@ public class SelectState implements State {
         hit = false;
         selectionModel.getSelected().clear();
 
-        EventBus.getInstance().notifySubscriber(startEnd, EventType.CLEAR_DRAG);
+        EventBus.getInstance().notifySubscriber(startEnd, EventType.CLEAR_DRAG_DEL);
         startXRight = 0;
         startYRight = 0;
+        deleteSelectedElements(packageView);
     }
 
     @Override
     public void stateRightMouseDragged(int x, int y, PackageView packageView) {
-        int movementX = x - startXRight;
-        int movementY = y - startYRight;
 
-        EventBus.getInstance().notifySubscriber(new Triple<>(packageView.getCurrentDiagramPanel(), movementX,movementY), EventType.MOVE);
-
-        startXRight = x;
-        startYRight = y;
     }
 
     @Override
     public void stateRightMousePressed(int x, int y, PackageView packageView) {
-        startXRight = x;
-        startYRight = y;
-        packageView.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
 
     }
 
     @Override
     public void stateRightMouseReleased(int x, int y, PackageView packageView) {
-        startXRight = 0;
-        startYRight = 0;
-        packageView.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
     }
 
     private boolean isHit(InterClass interClass, int x, int y){
@@ -216,7 +211,7 @@ public class SelectState implements State {
         int endY = startY + interClass.getSize().getSecond(); //Donja desna y koordinata
 
         if(x >= startX && x <= endX && y >= startY && y <= endY){
-        return true;
+            return true;
         }
         return false;
 
@@ -279,4 +274,30 @@ public class SelectState implements State {
         return true;
     }
 
+    private void deleteSelectedElements(PackageView packageView) {
+        ArrayList<DiagramElement> selectedElements = new ArrayList<>();
+        selectedElements.clear();
+        for(DiagramElement element : packageView.getCurrentDiagramPanel().getSelectedElements()){
+            if(selectedElements.contains(element) || !(element instanceof InterClass)){
+                continue;
+            }
+            else {
+                selectedElements.add(element);
+            }
+        }
+        for(DiagramElement element : packageView.getCurrentDiagramPanel().getSelectedElements()){
+            if(element instanceof Connection){
+                Connection connection = (Connection) element;
+                if(selectedElements.contains(connection.getToElement()) || selectedElements.contains(connection.getFromElement())){
+                    selectedElements.add(connection);
+                }
+            }
+        }
+        if (!selectedElements.isEmpty()) {
+            packageView.deleteElements(selectedElements);
+        }
+        packageView.setPanelPainters(new ArrayList<>());
+        packageView.panelRepaint();
+        packageView.panelOutsideRefresh();
+    }
 }

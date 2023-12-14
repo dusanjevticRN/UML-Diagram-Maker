@@ -17,6 +17,7 @@ public class ZoomToFitAction extends AbstractClassyAction
     @Override
     public void actionPerformed(ActionEvent e)
     {
+
         EventBus.getInstance().notifySubscriber(this, EventType.ZOOM_TO_FIT);
     }
 }

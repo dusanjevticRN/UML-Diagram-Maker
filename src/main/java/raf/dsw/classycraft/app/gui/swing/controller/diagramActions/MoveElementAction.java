@@ -17,6 +17,7 @@ public class MoveElementAction extends AbstractClassyAction
     @Override
     public void actionPerformed(ActionEvent e)
     {
+
         MainFrame.getInstance().getPackageView().startMoveElementState();
     }
 }
