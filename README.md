@@ -10,3 +10,9 @@ Informacije u vezi programa:
 - Kopiranje elemenata se vrši tako što korisnik prvo selektuje element uz pomoć selekt dugmeta, zatim  klikne na copy button, a onda klikne bilo gde na radnu površinu gde hoće da paste-uje element.
 - Brisanje elemenata se izvršava pritiskom na dugme "Delete element" (8. dugme od vrha) i nakon toga povlačenjem crvene površine preko željenih elemenata. Drugim rečima, čak i ako korisnik želi  
   obrisati jedan element, moraće povući crvenu površinu preko njega, jer direktna opcija brisanja na jedan klik nije dostupna.
+
+- Moguće veze između elemenata:
+- Generalizacija: Class to Class, Class to Interface, Interface to Interface.
+- Zavisnot: Class to Class, Class to Interface, Interface to Class, Interface to Interface, Enum to Class/Interface.
+- Agregacija: Class to Class.
+- Kompozicija: Class to Class.
