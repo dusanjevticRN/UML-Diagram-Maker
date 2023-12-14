@@ -76,6 +76,9 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT_STATE, this);
             EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT, this);
             EventBus.getInstance().subscribe(EventType.DELETE, this);
+            EventBus.getInstance().subscribe(EventType.ADD_CLASS_TO_TREE_S, this);
+            EventBus.getInstance().subscribe(EventType.ADD_INTERFACE_TO_TREE_S, this);
+            EventBus.getInstance().subscribe(EventType.ADD_ENUM_TO_TREE_S, this);
         }
 
     @Override
@@ -107,6 +110,15 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             this.startZoomToFitState();
         else if(EventType.ZOOM_TO_FIT_STATE.equals(typeOfUpdate)){
             this.getCurrentDiagramPanel().zoomToFit();
+        }
+        else if(EventType.ADD_CLASS_TO_TREE_S.equals(typeOfUpdate)){
+            EventBus.getInstance().notifySubscriber(notification, EventType.ADD_CLASS_TO_TREE);
+        }
+        else if(EventType.ADD_INTERFACE_TO_TREE_S.equals(typeOfUpdate)){
+            EventBus.getInstance().notifySubscriber(notification, EventType.ADD_INTERFACE_TO_TREE);
+        }
+        else if(EventType.ADD_ENUM_TO_TREE_S.equals(typeOfUpdate)){
+            EventBus.getInstance().notifySubscriber(notification, EventType.ADD_ENUM_TO_TREE);
         }
 
 
@@ -480,6 +492,9 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             this.stateManager.setMoveElementState();
 
         }
+    public void startCopyState(){
+            this.stateManager.setCopyState();
+    }
     public void startZoomToFitState() {
             this.stateManager.setZoomToFitState();
             this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());

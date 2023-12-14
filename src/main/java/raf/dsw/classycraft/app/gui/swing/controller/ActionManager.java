@@ -27,6 +27,7 @@ public class ActionManager
     private ZoomOutAction zoomOutAction;
     private AddContentAction addContentAction;
     private ZoomToFitAction zoomToFitAction;
+    private CopyAction copyAction;
     public ActionManager()
     {
         initialiseAction();
@@ -52,5 +53,6 @@ public class ActionManager
         this.zoomOutAction = new ZoomOutAction();
         this.addContentAction = new AddContentAction();
         this.zoomToFitAction = new ZoomToFitAction();
+        this.copyAction = new CopyAction();
     }
 }

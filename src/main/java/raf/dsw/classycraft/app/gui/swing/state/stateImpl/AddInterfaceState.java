@@ -50,7 +50,7 @@ public class AddInterfaceState implements State {
         packageView.panelRepaint();
         packageView.addDiagramElement(new Pair(x, y),inter);
         EventBus.getInstance().notifySubscriber(packageView.getDiagram(), EventType.SET_PANEL);
-        EventBus.getInstance().notifySubscriber(inter, EventType.ADD_INTERFACE_TO_TREE);
+        EventBus.getInstance().notifySubscriber(inter, EventType.ADD_INTERFACE_TO_TREE_S);
 
     }
 
