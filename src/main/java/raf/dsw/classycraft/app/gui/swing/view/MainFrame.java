@@ -58,7 +58,7 @@ public class MainFrame extends JFrame implements ISubscriber
         Dimension screenSize = kit.getScreenSize();
         int screenHeight = screenSize.height;
         int screenWidth = screenSize.width;
-        this.setSize(screenWidth / 2, screenHeight / 2 + 60); //+60 zbog zoomToFita
+        this.setSize(screenWidth / 2, screenHeight / 2 + 100); //+90 zbog zoomToFita i copy
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("ClassyCrafT");

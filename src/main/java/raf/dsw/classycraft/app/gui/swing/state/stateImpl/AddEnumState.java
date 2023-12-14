@@ -50,7 +50,7 @@ public class AddEnumState implements State {
         packageView.panelRepaint();
         packageView.addDiagramElement(new Pair(x, y),enm);
         EventBus.getInstance().notifySubscriber(packageView.getDiagram(), EventType.SET_PANEL);
-        EventBus.getInstance().notifySubscriber(enm, EventType.ADD_ENUM_TO_TREE);
+        EventBus.getInstance().notifySubscriber(enm, EventType.ADD_ENUM_TO_TREE_S);
 
     }
 

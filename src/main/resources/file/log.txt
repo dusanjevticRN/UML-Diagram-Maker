@@ -236,3 +236,5 @@
 [ Error] [ 2023-12-14 19:18:41.951 ] [ Packages can only be added within a project ]
 [ Error] [ 2023-12-14 19:58:36.39 ] [ Project explorer is not selected ]
 [ Error] [ 2023-12-14 20:24:52.404 ] [ Diagram is zoomed in at its maximum ]
+[ Error] [ 2023-12-14 21:22:56.469 ] [ Adding a project inside another project is not allowed ]
+[ Error] [ 2023-12-14 21:56:21.843 ] [ Field already exists! ]

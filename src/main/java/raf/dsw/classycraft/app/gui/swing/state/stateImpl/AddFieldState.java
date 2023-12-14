@@ -274,7 +274,7 @@ public class AddFieldState implements State
                         visibility = Visibility.PACKAGE_PRIVATE;
                     }
 
-                    sb.append(textField.getText() + "(): ");
+                    sb.append(textField.getText() + ": ");
 
                     if(staticChoiceBox.getSelectedItem().equals("Static"))
                     {

@@ -53,7 +53,7 @@ public class AddClassState implements State {
         packageView.panelRepaint();
         packageView.addDiagramElement(new Pair(x, y),klas);
         EventBus.getInstance().notifySubscriber(packageView.getCurrentDiagramPanel().getDiagram(), EventType.SET_PANEL);
-        EventBus.getInstance().notifySubscriber(klas, EventType.ADD_CLASS_TO_TREE);
+        EventBus.getInstance().notifySubscriber(klas, EventType.ADD_CLASS_TO_TREE_S);
 
     }
 
