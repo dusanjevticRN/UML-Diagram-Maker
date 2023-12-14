@@ -221,3 +221,5 @@
 [ Error] [ 2023-12-07 20:26:06.727 ] [ Project explorer is not selected ]
 [ Error] [ 2023-12-08 11:51:50.692 ] [ Field already exists! ]
 [ Error] [ 2023-12-08 11:53:18.46 ] [ Field already exists! ]
+[ Error] [ 2023-12-08 12:13:21.382 ] [ Name cannot be empty ]
+[ Error] [ 2023-12-08 12:14:57.224 ] [ Adding a diagram inside another diagram is not allowed ]

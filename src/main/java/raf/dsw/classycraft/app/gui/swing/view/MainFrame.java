@@ -58,7 +58,7 @@ public class MainFrame extends JFrame implements ISubscriber
         Dimension screenSize = kit.getScreenSize();
         int screenHeight = screenSize.height;
         int screenWidth = screenSize.width;
-        setSize(screenWidth / 2, screenHeight / 2 + 15);
+        this.setSize(screenWidth / 2, screenHeight / 2 + 60); //+60 zbog zoomToFita
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("ClassyCrafT");
@@ -79,8 +79,8 @@ public class MainFrame extends JFrame implements ISubscriber
 
         this.jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
-        classyTabView = new ClassyTabView();
-        packageView = new PackageView();
+        this.classyTabView = new ClassyTabView();
+        this.packageView = new PackageView();
         JTree projectExplorer = classyTree.generateTree(AppCore.getInstance().getMapRepository().getProjectExplorer(), classyTabView, packageView);
         this.workingAreaPane = new JPanel();
         JScrollPane scrollPane = new JScrollPane(projectExplorer);
@@ -90,12 +90,12 @@ public class MainFrame extends JFrame implements ISubscriber
         this.splitTabPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitTabPane.setTopComponent(classyTabView);
 
-        splitTabPane.setBottomComponent(packageView);
-        splitTabPane.setResizeWeight(0.08);
+        this.splitTabPane.setBottomComponent(packageView);
+        this.splitTabPane.setResizeWeight(0.08);
 
-        jSplitPane.setLeftComponent(scrollPane);
-        jSplitPane.setRightComponent(splitTabPane);
-        jSplitPane.setOneTouchExpandable(true);
+        this.jSplitPane.setLeftComponent(scrollPane);
+        this.jSplitPane.setRightComponent(splitTabPane);
+        this.jSplitPane.setOneTouchExpandable(true);
         this.add(jSplitPane, BorderLayout.CENTER);
     }
 

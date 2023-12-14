@@ -22,8 +22,6 @@ import raf.dsw.classycraft.app.gui.swing.view.painters.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -64,6 +62,8 @@ public class DiagramPanel extends JPanel implements ISubscriber {
         this.addMouseMotionListener(classyMouse);
         setupDeleteKeyBinding();
         EventBus.getInstance().subscribe(EventType.ADD_CLASS, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT_STATE, this);
         EventBus.getInstance().subscribe(EventType.ADD_METHOD, this);
         EventBus.getInstance().subscribe(EventType.ZOOM_IN_STATE, this);
         EventBus.getInstance().subscribe(EventType.ZOOM_IN, this);
@@ -235,7 +235,8 @@ public class DiagramPanel extends JPanel implements ISubscriber {
     }
     public void startZoomInState() {this.stateManager.setZoomInState();}
     public void startZoomOutState() {this.stateManager.setZoomOutState();}
-    public void startAddFieldState() {this.stateManager.setAddFieldState();}
+    public void startAddFieldState() {this.stateManager.setAddContentState();}
+    public void startZoomToFitState() {this.stateManager.setZoomToFitState();}
 
     @Override
     public void update(Object notification, Object typeOfUpdate) {
@@ -290,6 +291,12 @@ public class DiagramPanel extends JPanel implements ISubscriber {
 
             this.zoomOut(x, y);
         }
+
+        else if(EventType.ZOOM_TO_FIT.equals(typeOfUpdate))
+            this.startZoomToFitState();
+
+        else if(EventType.ZOOM_TO_FIT_STATE.equals(typeOfUpdate))
+            this.zoomToFit();
 
         else if(EventType.CONTENT_STATE.equals(typeOfUpdate))
             this.startAddFieldState();
@@ -481,6 +488,61 @@ public class DiagramPanel extends JPanel implements ISubscriber {
             return;
         }
         setUpZoomTransformation(mouseX, mouseY);
+    }
+
+    public void zoomToFit() {
+        Rectangle boundingBox = calculateBoundingBox();
+
+        //Ako je boundingBox prazan, ne radimo nista
+        if (boundingBox.isEmpty())
+            return;
+
+        double panelWidth = getWidth();
+        double panelHeight = getHeight();
+
+        double scaleX = panelWidth / boundingBox.getWidth();
+        double scaleY = panelHeight / boundingBox.getHeight();
+
+        double minScale = Math.min(scaleX, scaleY);
+
+        // Racunamo horizontalnu tranziaciju i vertikalnu tranziaciju koja nam je potrebna da bi boundingBox bio centriran
+        double translateX = (panelWidth - boundingBox.getWidth() * minScale) / 2.0 - boundingBox.getX() * minScale;
+        double translateY = (panelHeight - boundingBox.getHeight() * minScale) / 2.0 - boundingBox.getY() * minScale;
+
+        // Postavljamo transformaciju
+        affineTransform.setToIdentity();
+        //Pomeramo se na nove koordinate
+        affineTransform.translate(translateX, translateY);
+        //Skaliramo odnosno menjamo velicinu
+        affineTransform.scale(minScale, minScale);
+
+        //Repaint odnosno refreshujemo
+        repaint();
+    }
+
+    private Rectangle calculateBoundingBox() {
+        Rectangle boundingBox = new Rectangle();
+
+        //Iteriramo kroz listu paintera i gledamo da li je painter instnanca interClass, zato sto na osnovu njih zoomToFitujemo
+        for (ElementPainter painter : painters)
+        {
+            DiagramElement element = painter.getDiagramElement();
+
+            if (element instanceof InterClass)
+            {
+                //Uzimam poziciju i velicinu klase i na osnovu toga pravim Rectangle
+                InterClass interClass = (InterClass) element;
+                int x = interClass.getPosition().getFirst();
+                int y = interClass.getPosition().getSecond();
+                int width = interClass.getSize().getFirst();
+                int height = interClass.getSize().getSecond();
+
+                //Dodajemo rectangle u boundingBox koji na osnovu tog dodavanja kreira najmanji moguci pravougaonik koji obuhvata sve Rectangleove
+                boundingBox = boundingBox.union(new Rectangle(x, y, width, height));
+            }
+        }
+
+        return boundingBox;
     }
 
     private ArrayList<Connection> getConnections(Diagram diagram)
