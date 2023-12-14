@@ -58,5 +58,7 @@ public enum EventType
     DELETE_KEY,
     DELETE_ELEMENTS,
     CONTENT_STATE,
+    ZOOM_TO_FIT,
+    ZOOM_TO_FIT_STATE,
 
 }

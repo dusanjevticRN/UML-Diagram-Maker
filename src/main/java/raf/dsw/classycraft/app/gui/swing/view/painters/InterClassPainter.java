@@ -27,18 +27,7 @@ public class InterClassPainter extends ElementPainter
 
     public void paint(Graphics2D g) {
         // Set the position and size of the Rectangle
-        ArrayList<String> contentList = checkContent();
-        contentList.add(0, "     " +interClassElement.getName());
-        if(contentList.size()< 3){
-            contentList.add(1, "     ");
-            contentList.add(2, "     ");
-        }
-        for(String s : contentList)
-        {
-            maxWidth = Math.max(maxWidth, g.getFontMetrics().stringWidth(s) + 10) + 20;
-        }
-        int maxHeight = g.getFontMetrics().getHeight() * contentList.size() + 20;
-        interClassElement.setSize(new Pair<>(maxWidth + 10, maxHeight + 10));
+        interClassElement.setSize(new Pair<>(interClassElement.maxContentW().length()*8+120, interClassElement.maxContentL()*20 + 50));
         ((Rectangle2D)shape).setFrame(interClassElement.getPosition().getFirst(), interClassElement.getPosition().getSecond(), interClassElement.getSize().getFirst(), interClassElement.getSize().getSecond());
 
         //Boarder
@@ -200,19 +189,6 @@ public class InterClassPainter extends ElementPainter
     }
 
     public void paintSelected(Graphics2D g) {
-        // Set the position and size of the Rectangle
-        ArrayList<String> contentList = checkContent();
-        contentList.add(0, "     " +interClassElement.getName());
-        if(contentList.size()< 3){
-            contentList.add(1, "     ");
-            contentList.add(2, "     ");
-        }
-        for(String s : contentList)
-        {
-            maxWidth = Math.max(maxWidth, g.getFontMetrics().stringWidth(s)) + 10;
-        }
-        int maxHeight = g.getFontMetrics().getHeight() * contentList.size();
-        interClassElement.setSize(new Pair<>(maxWidth + 10, maxHeight + 10));
         ((Rectangle2D)shape).setFrame(interClassElement.getPosition().getFirst(), interClassElement.getPosition().getSecond(), interClassElement.getSize().getFirst(), interClassElement.getSize().getSecond());
 
         //Boarder
