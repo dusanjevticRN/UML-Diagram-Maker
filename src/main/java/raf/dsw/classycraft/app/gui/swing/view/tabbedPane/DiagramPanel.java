@@ -415,14 +415,41 @@ public class DiagramPanel extends JPanel {
         double panelWidth = getWidth();
         double panelHeight = getHeight();
 
+        //Racunamo scaling factor kako bi fitovali boundingBox u panel
         double scaleX = panelWidth / boundingBox.getWidth();
         double scaleY = panelHeight / boundingBox.getHeight();
 
+        //Racunamo minScale kako bi boundingBox bio vidljiv u panelu, odnosno kako bi se videlo sve sto je iscrtano
         double minScale = Math.min(scaleX, scaleY);
 
+        // Calculate average position of all elements
+        double avgX = 0;
+        double avgY = 0;
+        int count = 0;
+
+        //Iteriramo kroz listu paintera i gledamo da li je painter instnanca interClass, zato sto na osnovu njih racunamo prosecnu poziciju oko koje bi trebalo da se centriramo
+        for (ElementPainter painter : painters)
+        {
+            DiagramElement element = painter.getDiagramElement();
+
+            if (element instanceof InterClass)
+            {
+                InterClass interClass = (InterClass) element;
+                avgX += interClass.getPosition().getFirst() + 0.5 * interClass.getSize().getFirst();
+                avgY += interClass.getPosition().getSecond() + 0.5 * interClass.getSize().getSecond();
+                count++;
+            }
+        }
+
+        if (count == 0)
+            return; // No elements to calculate average
+
+        avgX /= count;
+        avgY /= count;
+
         // Racunamo horizontalnu tranziaciju i vertikalnu tranziaciju koja nam je potrebna da bi boundingBox bio centriran
-        double translateX = (panelWidth - boundingBox.getWidth() * minScale) / 2.0 - boundingBox.getX() * minScale;
-        double translateY = (panelHeight - boundingBox.getHeight() * minScale) / 2.0 - boundingBox.getY() * minScale;
+        double translateX = panelWidth / 2.0 - avgX * minScale;
+        double translateY = panelHeight / 2.0 - avgY * minScale;
 
         // Postavljamo transformaciju
         affineTransform.setToIdentity();
