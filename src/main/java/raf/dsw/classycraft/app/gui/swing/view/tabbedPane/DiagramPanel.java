@@ -359,17 +359,20 @@ public class DiagramPanel extends JPanel {
 
     private void setUpZoomTransformation(int mouseX, int mouseY)
     {
-        // Translate graphics context to position the mouse coordinates at the origin
+        //AffineTransform je ugradjena klasa koja se koristi za razne transformacije
         double translateX = affineTransform.getTranslateX();
         double translateY = affineTransform.getTranslateY();
+
+        //Na osnovu pozicije misa, translateX translateY i scaleFactora, trazimo koordinate na koje treba da se transliramo odnosno pomerimo
         affineTransform.translate(
                 (mouseX - translateX) * (1 - scaleFactor),
                 (mouseY - translateY) * (1 - scaleFactor)
         );
 
-        // Apply scale transformation
+        //scale uzima dva argumenta jedan za skejlovanje duz x ose jedan za skejlovanje duz y ose
         this.affineTransform.scale(scaleFactor, scaleFactor);
 
+        //Proveravamo da li je razlika izmedju trenutnog scalea i scalea koji smo prosledili manja od 0.01 ako jeste onda menjamo scale na default vrednost
         if(Math.abs(affineTransform.getScaleX() - scale) < 0.01) {
             AffineTransform newTransform = new AffineTransform();
             newTransform.translate(affineTransform.getTranslateX(), affineTransform.getTranslateY());
@@ -377,7 +380,9 @@ public class DiagramPanel extends JPanel {
             this.affineTransform.setTransform(newTransform);
         }
 
+        //Rekalkulisi layout i podesi ga na novu velicinu
         this.revalidate();
+        //Repaint odnosno refreshujemo
         this.repaint();
     }
 
@@ -451,6 +456,7 @@ public class DiagramPanel extends JPanel {
         double translateX = panelWidth / 2.0 - avgX * minScale;
         double translateY = panelHeight / 2.0 - avgY * minScale;
 
+        //AffineTransform je ugradjena klasa koja se koristi za razne transformacije
         // Postavljamo transformaciju
         affineTransform.setToIdentity();
         //Pomeramo se na nove koordinate
