@@ -91,7 +91,7 @@ public class SelectState implements State {
         //stara selekcija (on release koja je bila)
         String start = startX + "/" + startY;
         String end = x + "/" + y;
-        String startEnd = start + "-" + end;
+        String startEnd = start + ":" + end;
         EventBus.getInstance().notifySubscriber(startEnd, EventType.DRAG);
 
         // dinamicka selekcija
@@ -138,7 +138,7 @@ public class SelectState implements State {
         System.out.println("Released");
         String start = startX + "/" + startY;
         String end = x + "/" + y;
-        String startEnd = start + "-" + end;
+        String startEnd = start + ":" + end;
 
         UmlSelectionModel selectionModel = packageView.getSelectionModel();
         List<InterClass> selectableElements = new ArrayList<>();

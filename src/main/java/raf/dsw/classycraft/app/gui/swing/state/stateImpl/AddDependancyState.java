@@ -90,6 +90,7 @@ public class AddDependancyState implements State {
                     packageView.panelRepaint();
                     packageView.panelOutsideRefresh();
                     dependancy.setToElement(((InterClass) diagramElement));
+                    dependancy.setName("Dependancy: " + dependancy.getFromElement().getName() + " -> " + dependancy.getToElement().getName());
                     setEnd(dependancy, (InterClass) diagramElement);
                     dependancyPainter.setConnectionElement(dependancy);
                     dependancyPainter = new ZavisnostPainter(dependancy, 0);

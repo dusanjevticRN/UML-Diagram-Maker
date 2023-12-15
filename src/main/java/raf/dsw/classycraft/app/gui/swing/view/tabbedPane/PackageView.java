@@ -2,6 +2,7 @@ package raf.dsw.classycraft.app.gui.swing.view.tabbedPane;
 
 import lombok.Getter;
 import lombok.Setter;
+import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
@@ -43,8 +44,6 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             else {
                 classyMouse = new ClassyMouse(new AffineTransform());
             }
-            this.addMouseListener(classyMouse);
-            this.addMouseMotionListener(classyMouse);
             EventBus.getInstance().subscribe(EventType.DIAGRAM_SELECTION, this);
             EventBus.getInstance().subscribe(EventType.DIAGRAM_DELETION, this);
             EventBus.getInstance().subscribe(EventType.DIAGRAM_RENAME, this);
@@ -79,6 +78,7 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             EventBus.getInstance().subscribe(EventType.ADD_CLASS_TO_TREE_S, this);
             EventBus.getInstance().subscribe(EventType.ADD_INTERFACE_TO_TREE_S, this);
             EventBus.getInstance().subscribe(EventType.ADD_ENUM_TO_TREE_S, this);
+            EventBus.getInstance().subscribe(EventType.DEL_REL, this);
         }
 
     @Override
@@ -120,7 +120,9 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
         else if(EventType.ADD_ENUM_TO_TREE_S.equals(typeOfUpdate)){
             EventBus.getInstance().notifySubscriber(notification, EventType.ADD_ENUM_TO_TREE);
         }
-
+        else if(EventType.DEL_REL.equals(typeOfUpdate)){
+            getCurrentDiagramPanel().delRel(notification);
+        }
 
         if(EventType.CLOSE_TABS.equals(typeOfUpdate))
         {
@@ -184,8 +186,13 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
                 }
 
                 this.openDiagrams.add((Diagram) notification);
-                String title = ((ClassyNode) notification).getName();
                 DiagramPanel diagramPanel = new DiagramPanel(selectedDiagram);
+                ClassyMouse classyMouse = new ClassyMouse(diagramPanel.getAffineTransform());
+
+                // Attach the mouse listener and motion listener to the diagram panel
+                diagramPanel.addMouseListener(classyMouse);
+                diagramPanel.addMouseMotionListener(classyMouse);
+                String title = ((ClassyNode) notification).getName();
                 this.addTab(title, diagramPanel);
                 int index = this.indexOfTab(title);
                 this.getComponentAt(index).setName(((ClassyNode) notification).getUniqueId());
@@ -562,6 +569,7 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
     }
     public void deleteElements(ArrayList<DiagramElement> elements)
     {
+        System.out.println("Brisem elemente prvi je:" + elements.get(0).getName());
         this.getCurrentDiagramPanel().getDiagram().getDiagramElements().removeAll(elements);
         this.getCurrentDiagramPanel().setSelectedPainters(new ArrayList<>());
         this.getCurrentDiagramPanel().setSelectedElements(new ArrayList<>());
@@ -583,5 +591,14 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
     }
     public AffineTransform getAffineTransform(){
         return this.getCurrentDiagramPanel().getAffineTransform();
+    }
+    public void raiseErrorFC(){
+        AppCore.getInstance().getMessageGenerator().generate(EventType.FAULTY_CONNECTION);
+    }
+    public void raiseErrorNE(){
+        AppCore.getInstance().getMessageGenerator().generate(EventType.NAME_CANNOT_BE_EMPTY);
+    }
+    public void raiseErrorNAE(){
+        AppCore.getInstance().getMessageGenerator().generate(EventType.NAME_ALREADY_EXISTS);
     }
 }

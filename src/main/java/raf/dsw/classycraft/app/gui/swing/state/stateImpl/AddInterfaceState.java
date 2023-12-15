@@ -1,6 +1,7 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
 import raf.dsw.classycraft.app.AppCore;
+import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Interfejs;
@@ -14,6 +15,7 @@ import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class AddInterfaceState implements State {
     @Override
@@ -30,13 +32,15 @@ public class AddInterfaceState implements State {
 
         else if(name.isEmpty())
         {
-            AppCore.getInstance().getMessageGenerator().generate(EventType.NAME_CANNOT_BE_EMPTY);
+            packageView.raiseErrorNE();
             return;
         }
-
-        else if(!diagramPanel.getDiagram().checkName(name))
-        {
-            AppCore.getInstance().getMessageGenerator().generate(EventType.NAME_ALREADY_EXISTS);
+        ArrayList<String> names = new ArrayList<>();
+        for(DiagramElement elem: packageView.getDiagram().getDiagramElements()){
+            names.add(elem.getName());
+        }
+        if(names.contains("Class:"+name)){
+            packageView.raiseErrorNAE();
             return;
         }
 

@@ -73,7 +73,8 @@ public class MessageGeneratorClass implements MessageGenerator
 
         else if(typeOfEvent == EventType.SELECT_ITEM_TO_EDIT)
             this.notifySubscriber(new Message("Please select item to edit", "Information"), typeOfEvent);
-
+        else if(typeOfEvent == EventType.FAULTY_CONNECTION)
+            this.notifySubscriber(new Message("These elements can not be connected", "Error"), typeOfEvent);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class AddGeneralizationState implements State {
             generalization = (Generalizacija) con;
             if (generalization.getToElement() == null) {
                 for (DiagramElement diagramElement : packageView.currentDiagramElements()) {
-                    if (diagramElement instanceof Klasa || diagramElement instanceof Interfejs) {
+                    if (diagramElement instanceof InterClass) {
                         if (isHit((InterClass) diagramElement, x, y)) {
                             generalization.setFromElement(((InterClass) diagramElement));
                             break;
@@ -88,12 +88,13 @@ public class AddGeneralizationState implements State {
         startX = 0;
         startY = 0;
         for(DiagramElement diagramElement : packageView.currentDiagramElements()){
-            if((diagramElement instanceof Interfejs || (diagramElement instanceof Klasa && generalization.getFromElement() instanceof Klasa)) && diagramElement != generalization.getFromElement()){
+            if((diagramElement instanceof InterClass && diagramElement != generalization.getFromElement())){
                 if(isHit((InterClass) diagramElement, x, y)){
                     packageView.setPanelPainters(new ArrayList<>());
                     packageView.panelRepaint();
                     packageView.panelOutsideRefresh();
                     generalization.setToElement(((InterClass) diagramElement));
+                    generalization.setName("Generalization:" + generalization.getFromElement().getName() + "->" + generalization.getToElement().getName());
                     setEnd(generalization, (InterClass) diagramElement);
                     generalizacijaPainter.setConnectionElement(generalization);
                     generalizacijaPainter = new GeneralizacijaPainter(generalization, 0);

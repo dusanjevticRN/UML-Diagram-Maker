@@ -67,5 +67,7 @@ public enum EventType
     START_DRAG_DEL,
     DRAG_DEL,
     DELETE,
+    DEL_REL,
+    FAULTY_CONNECTION,
 
 }
