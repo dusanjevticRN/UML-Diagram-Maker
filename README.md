@@ -16,3 +16,4 @@ Informacije u vezi programa:
   - Zavisnost: Class to Class, Class to Interface, Interface to Class, Interface to Interface, Enum to Class/Interface.
   - Agregacija: Class to Class.
   - Kompozicija: Class to Class.
+Editovanje veza se vrši preko content statea klikom na vezu.
