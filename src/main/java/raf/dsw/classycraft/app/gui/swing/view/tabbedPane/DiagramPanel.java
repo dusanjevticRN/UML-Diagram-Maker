@@ -359,17 +359,20 @@ public class DiagramPanel extends JPanel {
 
     private void setUpZoomTransformation(int mouseX, int mouseY)
     {
-        // Translate graphics context to position the mouse coordinates at the origin
+        //AffineTransform je ugradjena klasa koja se koristi za razne transformacije
         double translateX = affineTransform.getTranslateX();
         double translateY = affineTransform.getTranslateY();
+
+        //Na osnovu pozicije misa, translateX translateY i scaleFactora, trazimo koordinate na koje treba da se transliramo odnosno pomerimo
         affineTransform.translate(
                 (mouseX - translateX) * (1 - scaleFactor),
                 (mouseY - translateY) * (1 - scaleFactor)
         );
 
-        // Apply scale transformation
+        //scale uzima dva argumenta jedan za skejlovanje duz x ose jedan za skejlovanje duz y ose
         this.affineTransform.scale(scaleFactor, scaleFactor);
 
+        //Proveravamo da li je razlika izmedju trenutnog scalea i scalea koji smo prosledili manja od 0.01 ako jeste onda menjamo scale na default vrednost
         if(Math.abs(affineTransform.getScaleX() - scale) < 0.01) {
             AffineTransform newTransform = new AffineTransform();
             newTransform.translate(affineTransform.getTranslateX(), affineTransform.getTranslateY());
@@ -377,7 +380,9 @@ public class DiagramPanel extends JPanel {
             this.affineTransform.setTransform(newTransform);
         }
 
+        //Rekalkulisi layout i podesi ga na novu velicinu
         this.revalidate();
+        //Repaint odnosno refreshujemo
         this.repaint();
     }
 
@@ -415,15 +420,43 @@ public class DiagramPanel extends JPanel {
         double panelWidth = getWidth();
         double panelHeight = getHeight();
 
+        //Racunamo scaling factor kako bi fitovali boundingBox u panel
         double scaleX = panelWidth / boundingBox.getWidth();
         double scaleY = panelHeight / boundingBox.getHeight();
 
+        //Racunamo minScale kako bi boundingBox bio vidljiv u panelu, odnosno kako bi se videlo sve sto je iscrtano
         double minScale = Math.min(scaleX, scaleY);
 
-        // Racunamo horizontalnu tranziaciju i vertikalnu tranziaciju koja nam je potrebna da bi boundingBox bio centriran
-        double translateX = (panelWidth - boundingBox.getWidth() * minScale) / 2.0 - boundingBox.getX() * minScale;
-        double translateY = (panelHeight - boundingBox.getHeight() * minScale) / 2.0 - boundingBox.getY() * minScale;
+        // Calculate average position of all elements
+        double avgX = 0;
+        double avgY = 0;
+        int count = 0;
 
+        //Iteriramo kroz listu paintera i gledamo da li je painter instnanca interClass, zato sto na osnovu njih racunamo prosecnu poziciju oko koje bi trebalo da se centriramo
+        for (ElementPainter painter : painters)
+        {
+            DiagramElement element = painter.getDiagramElement();
+
+            if (element instanceof InterClass)
+            {
+                InterClass interClass = (InterClass) element;
+                avgX += interClass.getPosition().getFirst() + 0.5 * interClass.getSize().getFirst();
+                avgY += interClass.getPosition().getSecond() + 0.5 * interClass.getSize().getSecond();
+                count++;
+            }
+        }
+
+        if (count == 0)
+            return; // No elements to calculate average
+
+        avgX /= count;
+        avgY /= count;
+
+        // Racunamo horizontalnu tranziaciju i vertikalnu tranziaciju koja nam je potrebna da bi boundingBox bio centriran
+        double translateX = panelWidth / 2.0 - avgX * minScale;
+        double translateY = panelHeight / 2.0 - avgY * minScale;
+
+        //AffineTransform je ugradjena klasa koja se koristi za razne transformacije
         // Postavljamo transformaciju
         affineTransform.setToIdentity();
         //Pomeramo se na nove koordinate
