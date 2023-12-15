@@ -1,16 +1,19 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Triple;
-import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.*;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Agregacija;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.state.State;
+import raf.dsw.classycraft.app.gui.swing.view.painters.AgregacijaPainter;
+import raf.dsw.classycraft.app.gui.swing.view.painters.ConnectionPainter;
+import raf.dsw.classycraft.app.gui.swing.view.painters.InterClassPainter;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +103,7 @@ public class DeleteState implements State {
         //stara selekcija (on release koja je bila)
         String start = startX + "/" + startY;
         String end = x + "/" + y;
-        String startEnd = start + "-" + end;
+        String startEnd = start + ":" + end;
         EventBus.getInstance().notifySubscriber(startEnd, EventType.DRAG_DEL);
 
         // dinamicka selekcija
@@ -147,10 +150,9 @@ public class DeleteState implements State {
         System.out.println("Released");
         String start = startX + "/" + startY;
         String end = x + "/" + y;
-        String startEnd = start + "-" + end;
-
+        String startEnd = start + ":" + end;
         UmlSelectionModel selectionModel = packageView.getSelectionModel();
-        List<InterClass> selectableElements = new ArrayList<>();
+        List<DiagramElement> selectableElements = new ArrayList<>();
         for(DiagramElement elem : packageView.currentDiagramElements()){
             if(elem instanceof InterClass){
                 InterClass interClass = (InterClass) elem;
@@ -164,14 +166,24 @@ public class DeleteState implements State {
                     hit = true;
                     selecteElements.add(connection);
                     System.out.println("Hit: " + connection.getName());
+                    selectableElements.add(connection);
+                    selecteElements.add(connection);
                 }
             }
         }
-        for(InterClass ic : selectableElements){
-            if(isHitDrag(ic,startX, startY, x, y)){
-                selectionModel.select(ic);
-                hit = true;
-                System.out.println("Hit: " + ic.getName());
+        for(DiagramElement ic : selectableElements){
+            if(ic instanceof InterClass)
+                if(isHitDrag((InterClass) ic,startX, startY, x, y)){
+                    selectionModel.select(ic);
+                    hit = true;
+                }
+            else if(ic instanceof Connection){
+                System.out.println("Connection");
+                if (isHitLineDrag((Connection) ic, startX, startY, x, y)) {
+                    selectionModel.select(ic);
+                    hit = true;
+                    System.out.println("Hit: " + ic.getName());
+                }
             }
         }
         if(!hit){
@@ -183,6 +195,7 @@ public class DeleteState implements State {
         if(hit) {
             System.out.println(hit);
             System.out.println("Hit: " + selectionModel.getSelected().get(0).getName());
+            System.out.println("HILT");
             packageView.setSelectionModel(new UmlSelectionModel());
             packageView.setPanelSelectionPainters(new ArrayList<>());
             packageView.setSelectionModel(selectionModel);
@@ -262,52 +275,54 @@ public class DeleteState implements State {
     }
 
     private boolean isHitLineDrag(Connection connection, int sX, int sY, int x, int y) {
-        // Uzimamo minimum i max izmedju pocetne i krajnje tacke
-        int rect1TopLeftX = Math.min(sX, x);
-        int rect1TopLeftY = Math.min(sY, y);
-        int rect1BottomRightX = Math.max(sX, x);
-        int rect1BottomRightY = Math.max(sY, y);
+        int rectLeftX = Math.min(sX, x);
+        int rectTopY = Math.min(sY, y);
+        int rectRightX = Math.max(sX, x);
+        int rectBottomY = Math.max(sY, y);
 
-        int rect2TopLeftX = connection.getStart().getFirst();
-        int rect2TopLeftY = connection.getStart().getSecond();
-        int rect2BottomRightX = connection.getEnd().getFirst();
-        int rect2BottomRightY = connection.getEnd().getSecond();
+        ConnectionPainter cp = new AgregacijaPainter(connection, 0);
+        Klasa klasa = new Klasa(null, "tmp");
+        klasa.setPosition(new Pair<>(rectLeftX, rectTopY));
+        klasa.setSize(new Pair<>(rectRightX - rectLeftX, rectBottomY - rectTopY));
+        InterClassPainter icp = new InterClassPainter(klasa);
 
-        if (rect1TopLeftX > rect2BottomRightX || rect2TopLeftX > rect1BottomRightX) {
-            return false;
-        }
-
-        if (rect1TopLeftY > rect2BottomRightY || rect2TopLeftY > rect1BottomRightY) {
-            return false;
-        }
-
-        return true;
+        Shape shape = cp.getShape();
+        Shape shape1 = icp.getShape();
+        return shape.intersects(shape1.getBounds2D());
     }
 
-    private void deleteSelectedElements(PackageView packageView) {
 
-        ArrayList<DiagramElement> selectedElements = new ArrayList<>();
-        selectedElements.clear();
-        for(DiagramElement element : packageView.getSelectedElementsDel()){
-            if(selectedElements.contains(element) || !(element instanceof InterClass)){
-                continue;
-            }
-            else {
-                selectedElements.add(element);
-            }
-        }
-        for(DiagramElement element : packageView.getSelectedElementsDel()){
-            if(element instanceof Connection){
-                Connection connection = (Connection) element;
-                if(selectedElements.contains(connection.getToElement()) || selectedElements.contains(connection.getFromElement())){
-                    selectedElements.add(connection);
+
+    private void deleteSelectedElements(PackageView packageView) {
+        // Use only the elements currently selected for deletion
+        ArrayList<DiagramElement> elementsToDelete = new ArrayList<>();
+        for(DiagramElement elem : packageView.getSelectedElementsDel()){
+            if(elem instanceof InterClass){
+                InterClass interClass = (InterClass) elem;
+                elementsToDelete.add(interClass);
+                for(DiagramElement con: packageView.currentDiagramElements()){
+                    if(con instanceof Connection){
+                        Connection connection = (Connection) con;
+                        if(connection.getFromElement().equals(interClass) || connection.getToElement().equals(interClass)){
+                            elementsToDelete.add(connection);
+                        }
+                    }
                 }
             }
+            else if(elem instanceof Connection){
+                Connection connection = (Connection) elem;
+                elementsToDelete.add(connection);
+            }
         }
-        EventBus.getInstance().notifySubscriber(selectedElements, EventType.DELETE);
-        if (!selectedElements.isEmpty()) {
-            packageView.deleteElements(selectedElements);
+
+        EventBus.getInstance().notifySubscriber(elementsToDelete, EventType.DELETE);
+        if (!elementsToDelete.isEmpty()) {
+            System.out.println("Delete");
+            packageView.deleteElements(elementsToDelete);
         }
+
+        // Clear the selection after deletion
+        packageView.getSelectionModel().getSelected().clear();
         packageView.setPanelPainters(new ArrayList<>());
         packageView.setPanelSelectionPainters(new ArrayList<>());
         packageView.panelRepaint();

@@ -1,11 +1,17 @@
 package raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements;
 
+import lombok.Getter;
+import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 
+@Setter
+@Getter
 public class Kompozicija extends Connection
 {
+    String fromMultiplicity = "0";
+    String toMultiplicity = "1";
     public Kompozicija(ClassyNode parent, String name)
     {
         super(parent, name);

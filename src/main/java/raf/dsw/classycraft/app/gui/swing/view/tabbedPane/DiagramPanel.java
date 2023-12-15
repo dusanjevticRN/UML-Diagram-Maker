@@ -221,6 +221,7 @@ public class DiagramPanel extends JPanel {
     public void startDrag(Object notification){
         tempPainters.addAll(painters);
     }
+
     public void drag(Object notification){
         if(selectionPainter == null) {
             InterClass temp = new Klasa(null, "temp");
@@ -228,7 +229,7 @@ public class DiagramPanel extends JPanel {
             painters.add(selectionPainter);
         }
 
-        String startStr[] = notification.toString().split("-");
+        String startStr[] = notification.toString().split(":");
         String start[] = startStr[0].split("/");
         String end[] = startStr[1].split("/");
         int startX = Integer.parseInt(start[0]);
@@ -262,6 +263,43 @@ public class DiagramPanel extends JPanel {
         selectionPainterDel = null;
         this.repaint();
     }
+    public void delRel(Object notification){
+        painters.clear();
+        selectedElementsD.clear();
+        this.init(diagram);
+        this.repaint();
+        String startStr[] = notification.toString().split(":");
+        String start[] = startStr[0].split("/");
+        String end[] = startStr[1].split("/");
+        int startX = Integer.parseInt(start[0]);
+        int startY = Integer.parseInt(start[1]);
+        int endX = Integer.parseInt(end[0]);
+        int endY = Integer.parseInt(end[1]);
+        for(DiagramElement elem : diagram.getDiagramElements()){
+            if(elem instanceof InterClass){
+                if(startX >= ((InterClass) elem).getPosition().getFirst() && startX <= ((InterClass) elem).getPosition().getFirst() + ((InterClass) elem).getSize().getFirst() && startY >= ((InterClass) elem).getPosition().getSecond() && startY <= ((InterClass) elem).getPosition().getSecond() + ((InterClass) elem).getSize().getSecond()){
+                    selectedElementsD.add(elem);
+                }
+                else if(endX >= ((InterClass) elem).getPosition().getFirst() && endX <= ((InterClass) elem).getPosition().getFirst() + ((InterClass) elem).getSize().getFirst() && endY >= ((InterClass) elem).getPosition().getSecond() && endY <= ((InterClass) elem).getPosition().getSecond() + ((InterClass) elem).getSize().getSecond()){
+                    selectedElementsD.add(elem);
+                }
+            }
+            else if(elem instanceof  Connection){
+                if(startX >= ((Connection) elem).getFromElement().getPosition().getFirst() && startX <= ((Connection) elem).getFromElement().getPosition().getFirst() + ((Connection) elem).getFromElement().getSize().getFirst() && startY >= ((Connection) elem).getFromElement().getPosition().getSecond() && startY <= ((Connection) elem).getFromElement().getPosition().getSecond() + ((Connection) elem).getFromElement().getSize().getSecond()){
+                    selectedElementsD.add(elem);
+                }
+                else if(endX >= ((Connection) elem).getFromElement().getPosition().getFirst() && endX <= ((Connection) elem).getFromElement().getPosition().getFirst() + ((Connection) elem).getFromElement().getSize().getFirst() && endY >= ((Connection) elem).getFromElement().getPosition().getSecond() && endY <= ((Connection) elem).getFromElement().getPosition().getSecond() + ((Connection) elem).getFromElement().getSize().getSecond()){
+                    selectedElementsD.add(elem);
+                }
+                else if(startX >= ((Connection) elem).getToElement().getPosition().getFirst() && startX <= ((Connection) elem).getToElement().getPosition().getFirst() + ((Connection) elem).getToElement().getSize().getFirst() && startY >= ((Connection) elem).getToElement().getPosition().getSecond() && startY <= ((Connection) elem).getToElement().getPosition().getSecond() + ((Connection) elem).getToElement().getSize().getSecond()){
+                    selectedElementsD.add(elem);
+                }
+                else if(endX >= ((Connection) elem).getToElement().getPosition().getFirst() && endX <= ((Connection) elem).getToElement().getPosition().getFirst() + ((Connection) elem).getToElement().getSize().getFirst() && endY >= ((Connection) elem).getToElement().getPosition().getSecond() && endY <= ((Connection) elem).getToElement().getPosition().getSecond() + ((Connection) elem).getToElement().getSize().getSecond()){
+                    selectedElementsD.add(elem);
+                }
+            }
+        }
+    }
     public void dragD(Object notification){
         if(selectionPainterDel == null) {
             InterClass temp = new Klasa(null, "temp");
@@ -269,7 +307,7 @@ public class DiagramPanel extends JPanel {
             painters.add(selectionPainterDel);
         }
         System.out.println(notification.toString());
-        String startStr[] = notification.toString().split("-");
+        String startStr[] = notification.toString().split(":");
         String start[] = startStr[0].split("/");
         String end[] = startStr[1].split("/");
         int startX = Integer.parseInt(start[0]);

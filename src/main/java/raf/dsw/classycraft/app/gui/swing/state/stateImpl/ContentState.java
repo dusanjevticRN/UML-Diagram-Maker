@@ -2,31 +2,36 @@ package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
 import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Agregacija;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Generalizacija;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Kompozicija;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Zavisnost;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.*;
-import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddType;
 import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
-import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddFieldState implements State
+public class ContentState implements State
 {
     private int startX;
     private int startY;
     private Klasa klasa;
     private Interfejs interfejs;
     private UmlEnum umlEnum;
+    private Connection connection;
     private AddType addType;
     private List<String> classAtributes = new ArrayList<>();
     private boolean hit = false;
@@ -49,23 +54,44 @@ public class AddFieldState implements State
         return false;
 
     }
+    private boolean isLineHit(Connection connection, int x, int y){
+        int startX = connection.getStart().getFirst();
+        int startY = connection.getStart().getSecond();
+        int endX = connection.getEnd().getFirst();
+        int endY = connection.getEnd().getSecond();
+
+        Line2D.Double line = new Line2D.Double(startX, startY, endX, endY);
+
+        float lineWidth = 10.0f;
+        BasicStroke stroke = new BasicStroke(lineWidth);
+
+        Shape wideLine = stroke.createStrokedShape(line);
+
+        System.out.println(wideLine.intersects(x, y, 1, 1));
+        return wideLine.intersects(x, y, 1, 1);
+    }
 
     @Override
     public void stateMousePressed(int x, int y, PackageView packageView)
     {
+        addType = AddType.PROJECT_ADD; //da ne baca null exceptiopn
         System.out.println("Add Field state");
         this.startX = x;
         this.startY = y;
 
 
         List<InterClass> selectableElements = new ArrayList<>();
-
+        List<Connection> connections = new ArrayList<>();
         for (DiagramElement elem : packageView.currentDiagramElements())
         {
             if (elem instanceof InterClass)
             {
                 InterClass interClass = (InterClass) elem;
                 selectableElements.add(interClass);
+            }
+            else if(elem instanceof Connection){
+                Connection connection = (Connection) elem;
+                connections.add(connection);
             }
         }
 
@@ -101,12 +127,226 @@ public class AddFieldState implements State
                 break;
             }
         }
+        for(Connection c : connections){
+            System.out.println("Connection: " + c.getName());
+            if(isLineHit(c, x, y)){
+                hit = true;
+                this.umlEnum = null;
+                this.klasa = null;
+                this.interfejs = null;
+                this.connection = c;
+                System.out.println("Hit: " + c.getName());
+                break;
+            }
+        }
 
         if(!hit) {
             System.out.println(hit);
         }
 
-        if(hit && this.klasa != null && addType == AddType.ATRIBUTE_ADD){
+        if(hit && this.connection != null){
+            if(connection instanceof Agregacija) {
+                SwingUtilities.invokeLater(() -> {
+                    JFrame frame = new JFrame("Add Connection Dialog");
+                    frame.setLayout(new GridBagLayout());
+                    GridBagConstraints gbc = new GridBagConstraints();
+
+                    JTextField textField = new JTextField(connection.getName(), 20);
+                    gbc.gridx = 0;
+                    gbc.gridy = 0;
+                    gbc.gridwidth = 2;
+                    gbc.insets = new Insets(10, 10, 10, 10);
+                    frame.add(textField, gbc);
+
+                    String[] fromOptions = {"0", "1"};
+                    JComboBox<String> firstDropdown = new JComboBox<>(fromOptions);
+                    firstDropdown.setSelectedItem(((Agregacija) connection).getFromMultiplicity());
+                    gbc.gridx = 0;
+                    gbc.gridy = 1;
+                    gbc.gridwidth = 1;
+                    frame.add(firstDropdown, gbc);
+
+                    JLabel arrowLabel = new JLabel("--->");
+                    gbc.gridx = 1;
+                    gbc.gridy = 1;
+                    frame.add(arrowLabel, gbc);
+
+                    String[] toOptions = {"1", "*"};
+                    JComboBox<String> secondDropdown = new JComboBox<>(toOptions);
+                    secondDropdown.setSelectedItem(((Agregacija) connection).getToMultiplicity());
+                    gbc.gridx = 2;
+                    gbc.gridy = 1;
+                    frame.add(secondDropdown, gbc);
+
+
+
+
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    frame.setSize(400, 200);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+
+                    JButton button = new JButton("Confirm");
+                    button.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            ((Agregacija) connection).setFromMultiplicity((String) firstDropdown.getSelectedItem());
+                            ((Agregacija) connection).setToMultiplicity((String) secondDropdown.getSelectedItem());
+                            connection.setName(textField.getText());
+                            packageView.setPanelPainters(new ArrayList<>());
+                            packageView.setPanelSelectionPainters(new ArrayList<>());
+                            packageView.panelRepaint();
+                            packageView.panelOutsideRefresh();
+                            frame.dispose();
+                        }
+                    });
+                    gbc.gridx = 0;
+                    gbc.gridy = 2;
+                    gbc.gridwidth = 3;
+                    frame.add(button, gbc);
+                });
+
+            }
+            else if(connection instanceof Kompozicija){
+                SwingUtilities.invokeLater(() -> {
+                    JFrame frame = new JFrame("Add Connection Dialog");
+                    frame.setLayout(new GridBagLayout());
+                    GridBagConstraints gbc = new GridBagConstraints();
+
+                    JTextField textField = new JTextField(connection.getName(), 20);
+                    gbc.gridx = 0;
+                    gbc.gridy = 0;
+                    gbc.gridwidth = 2;
+                    gbc.insets = new Insets(10, 10, 10, 10);
+                    frame.add(textField, gbc);
+
+                    String[] fromOptions = {"0", "1"};
+                    JComboBox<String> firstDropdown = new JComboBox<>(fromOptions);
+                    firstDropdown.setSelectedItem(((Kompozicija) connection).getFromMultiplicity());
+                    gbc.gridx = 0;
+                    gbc.gridy = 1;
+                    gbc.gridwidth = 1;
+                    frame.add(firstDropdown, gbc);
+
+                    JLabel arrowLabel = new JLabel("--->");
+                    gbc.gridx = 1;
+                    gbc.gridy = 1;
+                    frame.add(arrowLabel, gbc);
+
+
+                    String[] toOptions = {"1", "*"};
+                    JComboBox<String> secondDropdown = new JComboBox<>(toOptions);
+                    secondDropdown.setSelectedItem(((Kompozicija) connection).getToMultiplicity());
+                    gbc.gridx = 2;
+                    gbc.gridy = 1;
+                    frame.add(secondDropdown, gbc);
+
+
+
+
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    frame.setSize(400, 200);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+
+                    JButton button = new JButton("Confirm");
+                    button.setAction(new AbstractAction() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            ((Kompozicija) connection).setFromMultiplicity((String) firstDropdown.getSelectedItem());
+                            ((Kompozicija) connection).setToMultiplicity((String) secondDropdown.getSelectedItem());
+                            connection.setName(textField.getText());
+                            packageView.setPanelPainters(new ArrayList<>());
+                            packageView.setPanelSelectionPainters(new ArrayList<>());
+                            packageView.panelRepaint();
+                            packageView.panelOutsideRefresh();
+                            frame.dispose();
+                        }
+                    });
+                    gbc.gridx = 0;
+                    gbc.gridy = 2;
+                    gbc.gridwidth = 3;
+                    frame.add(button, gbc);
+                });
+            }
+            else if(connection instanceof Generalizacija){
+                SwingUtilities.invokeLater(() -> {
+                    JFrame frame = new JFrame("Add Connection Dialog");
+                    frame.setLayout(new GridBagLayout());
+                    GridBagConstraints gbc = new GridBagConstraints();
+
+                    JTextField textField = new JTextField(connection.getName(), 20);
+                    gbc.gridx = 0;
+                    gbc.gridy = 0;
+                    gbc.gridwidth = 2;
+                    gbc.insets = new Insets(10, 10, 10, 10);
+                    frame.add(textField, gbc);
+
+
+
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    frame.setSize(400, 200);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+
+                    JButton button = new JButton("Confirm");
+                    button.setAction(new AbstractAction() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            connection.setName(textField.getText());
+                            packageView.setPanelPainters(new ArrayList<>());
+                            packageView.setPanelSelectionPainters(new ArrayList<>());
+                            packageView.panelRepaint();
+                            packageView.panelOutsideRefresh();
+                            frame.dispose();
+                        }
+                    });
+                    gbc.gridx = 0;
+                    gbc.gridy = 2;
+                    gbc.gridwidth = 3;
+                    frame.add(button, gbc);
+                });
+            }
+            else if (connection instanceof Zavisnost) {
+                SwingUtilities.invokeLater(() -> {
+                    JFrame frame = new JFrame("Add Connection Dialog");
+                    frame.setLayout(new GridBagLayout());
+                    GridBagConstraints gbc = new GridBagConstraints();
+
+
+                    JTextField textField = new JTextField(connection.getName(), 20);
+                    gbc.gridx = 0;
+                    gbc.gridy = 0;
+                    gbc.gridwidth = 2;
+                    gbc.insets = new Insets(10, 10, 10, 10);
+                    frame.add(textField, gbc);
+
+
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    frame.setSize(400, 200);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+
+                    JButton button = new JButton("Confirm");
+                    button.setAction(new AbstractAction() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            connection.setName(textField.getText());
+                            packageView.setPanelPainters(new ArrayList<>());
+                            packageView.setPanelSelectionPainters(new ArrayList<>());
+                            packageView.panelRepaint();
+                            packageView.panelOutsideRefresh();
+                            frame.dispose();
+                        }
+                    });
+                    gbc.gridx = 0;
+                    gbc.gridy = 2;
+                    gbc.gridwidth = 3;
+                    frame.add(button, gbc);
+                });
+            }
+        }
+        else if(hit && this.klasa != null && addType == AddType.ATRIBUTE_ADD){
             System.out.println(hit);
 
             SwingUtilities.invokeLater(() -> {
@@ -487,7 +727,7 @@ public class AddFieldState implements State
                         //Pravimo novi string koji ce biti ubacen u listu
                         StringBuilder updatedString = new StringBuilder();
                         updatedString.append(newVisibility).append(" ");
-                        updatedString.append(newName).append("(): ");
+                        updatedString.append(newName).append(": ");
 
                         if (newIsStatic)
                             updatedString.append("static ");
@@ -500,7 +740,12 @@ public class AddFieldState implements State
                         //Updejtujemo listu classContents klase
                         this.klasa.updateClassContent(this.klasa.getClassContents().get(selectedIndex), new Atribut(newName, newVisibility1, newIsStatic, newDataType));
                     }
+
                     System.out.println("Update button clicked");
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.setPanelSelectionPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                 });
 
                 removeButton.addActionListener(e -> {
@@ -911,6 +1156,10 @@ public class AddFieldState implements State
                         this.klasa.updateClassContent(this.klasa.getClassContents().get(selectedIndex), new Metod(newName, newVisibility1, newIsStatic, newDataType, null));
                     }
                     System.out.println("Update button clicked");
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.setPanelSelectionPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                 });
 
                 removeButton.addActionListener(e -> {
@@ -1321,6 +1570,10 @@ public class AddFieldState implements State
                         this.interfejs.updateClassContent(this.interfejs.getMetods().get(selectedIndex), new Metod(newName, newVisibility1, newIsStatic, newDataType, null));
                     }
                     System.out.println("Update button clicked");
+                    packageView.setPanelPainters(new ArrayList<>());
+                    packageView.setPanelSelectionPainters(new ArrayList<>());
+                    packageView.panelRepaint();
+                    packageView.panelOutsideRefresh();
                 });
 
                 removeButton.addActionListener(e -> {

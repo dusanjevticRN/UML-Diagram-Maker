@@ -47,12 +47,13 @@ public class AddCompositionState implements State {
             composition = (Kompozicija) comp;
             if (composition.getToElement() == null) {
                 for (DiagramElement diagramElement : packageView.currentDiagramElements()) {
-                    if (diagramElement instanceof Klasa) {
+                    if (diagramElement instanceof InterClass) {
                         if (isHit((InterClass) diagramElement, x, y)) {
                             composition.setFromElement(((InterClass) diagramElement));
                             break;
                         }
                     }
+
                 }
             }
             if (composition.getToElement() == null) {
@@ -83,12 +84,13 @@ public class AddCompositionState implements State {
         startX = 0;
         startY = 0;
         for(DiagramElement diagramElement : packageView.currentDiagramElements()){
-            if(diagramElement instanceof Klasa && diagramElement != composition.getFromElement()){
+            if(diagramElement instanceof InterClass && diagramElement != composition.getFromElement()){
                 if(isHit((InterClass) diagramElement, x, y)){
                     packageView.setPanelPainters(new ArrayList<>());
                     packageView.panelRepaint();
                     packageView.panelOutsideRefresh();
                     composition.setToElement(((InterClass) diagramElement));
+                    composition.setName("Composition:" + composition.getFromElement().getName() + "->" + composition.getToElement().getName());
                     setEnd(composition, (InterClass) diagramElement);
                     compositionPainter.setConnectionElement(composition);
                     compositionPainter = new KompozicijaPainter(composition, 0);

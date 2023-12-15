@@ -238,4 +238,3 @@
 [ Error] [ 2023-12-14 20:24:52.404 ] [ Diagram is zoomed in at its maximum ]
 [ Error] [ 2023-12-14 21:22:56.469 ] [ Adding a project inside another project is not allowed ]
 [ Error] [ 2023-12-14 21:56:21.843 ] [ Field already exists! ]
-[ Error] [ 2023-12-14 22:53:31.753 ] [ Field already exists! ]

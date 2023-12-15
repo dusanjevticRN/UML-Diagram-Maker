@@ -90,7 +90,7 @@ public class InterClassPainter extends ElementPainter
                 {
                     staticPrefix = "static ";
                 }
-                String displayText =prefix + staticPrefix + atribut.getName() + ": " + atribut.getDataType();
+                String displayText =prefix +  atribut.getName() + ": "+ staticPrefix + atribut.getDataType();
                 g.drawString(displayText, (int) interClassElement.getPosition().getFirst(), currentY);
                 currentY += fm.getHeight();
                 maxWidth = Math.max(maxWidth, fm.stringWidth(displayText));
@@ -124,7 +124,7 @@ public class InterClassPainter extends ElementPainter
                 {
                     staticPrefix = "static ";
                 }
-                String displayText = prefix + staticPrefix + metod.getName() + "():" + metod.getReturnType();
+                String displayText = prefix  + metod.getName() + "():"+ staticPrefix + metod.getReturnType();
                 /*
                 for(int i = 0; i < metod.getParametars().size(); i++)
                 {

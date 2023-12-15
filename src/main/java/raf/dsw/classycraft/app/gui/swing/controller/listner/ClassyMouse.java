@@ -94,7 +94,7 @@ public class ClassyMouse implements MouseListener, MouseMotionListener{
                 e.getWhen(),
                 e.getModifiers(),
                 (int) ptDst.getX(),
-                (int) ptDst.getY() - 40, //Namesteno da ga ubodemo zbog offseta
+                (int) ptDst.getY(), //Namesteno da ga ubodemo zbog offseta
                 e.getClickCount(),
                 e.isPopupTrigger(),
                 MouseEvent.NOBUTTON
