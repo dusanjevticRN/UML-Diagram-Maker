@@ -25,27 +25,32 @@ public class ZoomOutState implements State
     }
 
     @Override
-    public void stateMouseDragged(int x, int y, PackageView packageView) {
+    public void stateMouseDragged(int x, int y, PackageView packageView)
+    {
 
     }
 
     @Override
-    public void stateMouseReleased(int x, int y, PackageView packageView) {
+    public void stateMouseReleased(int x, int y, PackageView packageView)
+    {
 
     }
 
     @Override
-    public void stateRightMouseDragged(int x, int y, PackageView packageView) {
+    public void stateRightMouseDragged(int x, int y, PackageView packageView)
+    {
 
     }
 
     @Override
-    public void stateRightMousePressed(int x, int y, PackageView packageView) {
+    public void stateRightMousePressed(int x, int y, PackageView packageView)
+    {
 
     }
 
     @Override
-    public void stateRightMouseReleased(int x, int y, PackageView packageView) {
+    public void stateRightMouseReleased(int x, int y, PackageView packageView)
+    {
 
     }
 }
