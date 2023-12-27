@@ -32,6 +32,8 @@ public class ActionManager
     private SaveAsAction saveAsAction;
     private OpenAction openAction;
     private PatternAction patternAction;
+    private ImageAction imageAction;
+    private CodeConvertAction codeConvertAction;
     public ActionManager()
     {
         initialiseAction();
@@ -62,5 +64,7 @@ public class ActionManager
         this.saveAsAction = new SaveAsAction();
         this.openAction = new OpenAction();
         this.patternAction = new PatternAction();
+        this.imageAction = new ImageAction();
+        this.codeConvertAction = new CodeConvertAction();
     }
 }
