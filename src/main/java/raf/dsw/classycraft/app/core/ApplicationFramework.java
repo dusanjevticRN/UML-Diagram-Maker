@@ -13,15 +13,24 @@ public abstract class ApplicationFramework
     protected Logger consoleLogger;
     protected Logger fileLogger;
     private Serializer serializer;
+    private Serializer patternSerializer;
 
     public abstract void start();
 
-    public void initialise(Gui gui, ClassyRepository classyRepository, MessageGenerator messageGenerator, Serializer serializer)
+    public void initialise(Gui gui, ClassyRepository classyRepository, MessageGenerator messageGenerator, Serializer serializer, Serializer patternSerializer)
     {
         this.gui = gui;
         this.classyRepository = classyRepository;
         this.messageGenerator = messageGenerator;
         this.serializer = serializer;
+        this.patternSerializer = patternSerializer;
+    }
+    {
+        this.gui = gui;
+        this.classyRepository = classyRepository;
+        this.messageGenerator = messageGenerator;
+        this.serializer = serializer;
+        this.patternSerializer = serializer;
     }
 
     public void initialiseLogger(Logger consoleLogger, Logger fileLogger)

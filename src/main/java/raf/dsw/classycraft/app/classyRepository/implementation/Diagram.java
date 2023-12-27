@@ -53,6 +53,7 @@ public class Diagram extends ClassyNodeComposite implements ISubscriber
         mapaElemenata.put(pair, diagramElement);
     }
 
+
     @Override
     public void update(Object notification, Object typeOfUpdate) {
         if(EventType.ADD_CLASS.equals(typeOfUpdate))

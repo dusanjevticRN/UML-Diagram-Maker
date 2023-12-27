@@ -31,6 +31,7 @@ public class ActionManager
     private SaveAction saveAction;
     private SaveAsAction saveAsAction;
     private OpenAction openAction;
+    private PatternAction patternAction;
     public ActionManager()
     {
         initialiseAction();
@@ -60,5 +61,6 @@ public class ActionManager
         this.saveAction = new SaveAction();
         this.saveAsAction = new SaveAsAction();
         this.openAction = new OpenAction();
+        this.patternAction = new PatternAction();
     }
 }

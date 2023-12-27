@@ -15,6 +15,9 @@ import raf.dsw.classycraft.app.messageGenerator.Message;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
 import javax.swing.*;
+import javax.swing.border.MatteBorder;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +39,20 @@ public class MainFrame extends JFrame implements ISubscriber
     private ClassyTree classyTree;
     private List<ISubscriber> subscriberList;
     private PackageView packageView;
-
+    private BasicSplitPaneUI createCustomSplitPaneUI() {
+        return new BasicSplitPaneUI() {
+            public BasicSplitPaneDivider createDefaultDivider() {
+                return new BasicSplitPaneDivider(this) {
+                    public void paint(Graphics g) {
+                        g.setColor(new Color(150, 150, 150));
+                        g.fillRect(0, 0, getSize().width, getSize().height);
+                        setBorder(new MatteBorder(1, 1, 1, 1, Color.BLACK));
+                        super.paint(g);
+                    }
+                };
+            }
+        };
+    }
 
     private MainFrame() {}
 
@@ -57,7 +73,7 @@ public class MainFrame extends JFrame implements ISubscriber
         Dimension screenSize = kit.getScreenSize();
         int screenHeight = screenSize.height;
         int screenWidth = screenSize.width;
-        this.setSize(screenWidth / 2, screenHeight / 2 + 100); //+90 zbog zoomToFita i copy
+        this.setSize(screenWidth / 2, screenHeight / 2 + 145); //+90 zbog zoomToFita i copy
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("ClassyCrafT");
@@ -76,7 +92,12 @@ public class MainFrame extends JFrame implements ISubscriber
         this.add(eastPanel, BorderLayout.EAST);
         this.eastPanel.setVisible(true);
 
-        this.jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        this.jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT) {
+        public void updateUI() {
+            setUI(createCustomSplitPaneUI());
+            revalidate();
+        }
+    };
 
         this.classyTabView = new ClassyTabView();
         this.packageView = new PackageView();
@@ -86,15 +107,28 @@ public class MainFrame extends JFrame implements ISubscriber
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setMinimumSize(new Dimension(200, 150));
 
-        this.splitTabPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        this.splitTabPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT) {
+            public void updateUI() {
+                setUI(createCustomSplitPaneUI());
+                revalidate();
+            }
+        };
         splitTabPane.setTopComponent(classyTabView);
 
         this.splitTabPane.setBottomComponent(packageView);
-        this.splitTabPane.setResizeWeight(0.08);
+        this.splitTabPane.setResizeWeight(0.015);
+
+        splitTabPane.setEnabled(false);
+        splitTabPane.setOneTouchExpandable(false);
+
+        if (splitTabPane.getUI() instanceof BasicSplitPaneUI) {
+            BasicSplitPaneDivider divider = ((BasicSplitPaneUI) splitTabPane.getUI()).getDivider();
+            divider.setBackground(Color.BLACK);
+        }
 
         this.jSplitPane.setLeftComponent(scrollPane);
         this.jSplitPane.setRightComponent(splitTabPane);
-        this.jSplitPane.setOneTouchExpandable(true);
+        this.jSplitPane.setOneTouchExpandable(false);
         this.add(jSplitPane, BorderLayout.CENTER);
     }
 

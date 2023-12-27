@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
-import raf.dsw.classycraft.app.classyRepository.implementation.Project;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Agregacija;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Generalizacija;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Kompozicija;
@@ -17,10 +16,10 @@ import raf.dsw.classycraft.app.serializer.customSerializers.*;
 import java.io.File;
 import java.io.IOException;
 
-public class Pattern_Serializer implements Serializer {
+public class PatternSerializer implements Serializer {
     private final ObjectMapper objectMapper;
 
-    public Pattern_Serializer() {
+    public PatternSerializer() {
         this.objectMapper = new ObjectMapper();
 
         SimpleModule module = new SimpleModule();
@@ -59,6 +58,7 @@ public class Pattern_Serializer implements Serializer {
 
     @Override
     public Object openProject(String filePath) throws IOException {
-        return null;
+        Diagram diagram = objectMapper.readValue(new File(filePath), Diagram.class);
+        return diagram;
     }
 }
