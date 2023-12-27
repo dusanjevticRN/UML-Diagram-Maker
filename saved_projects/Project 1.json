@@ -1,0 +1,46 @@
+{
+  "name" : "Project 1",
+  "author" : "necav",
+  "children" : [ {
+    "typePD" : "package",
+    "name" : "Package 1",
+    "children" : [ {
+      "typePD" : "diagram",
+      "name" : "Diagram 1 ",
+      "diagramElements" : [ {
+        "typeICC" : "class",
+        "position_1st" : 345,
+        "position_2nd" : 133,
+        "size_1st" : 184,
+        "size_2nd" : 70,
+        "name" : "Class:c1",
+        "ClassContent" : [ {
+          "typeMA" : "Atribut",
+          "name" : "asdas",
+          "visibility" : "PRIVATE",
+          "isStatic" : false,
+          "dataType" : "int"
+        } ]
+      }, {
+        "typeICC" : "class",
+        "position_1st" : 739,
+        "position_2nd" : 137,
+        "size_1st" : 184,
+        "size_2nd" : 50,
+        "name" : "Class:c2",
+        "ClassContent" : [ ]
+      }, {
+        "typeICC" : "kompozicija",
+        "name" : "Composition:Class:c1->Class:c2",
+        "start_1st" : 529,
+        "start_2nd" : 168,
+        "end_1st" : 739,
+        "end_2nd" : 162,
+        "fromMultiplicity" : "0",
+        "toMultiplicity" : "1",
+        "fromElement" : "Class:c1",
+        "toElement" : "Class:c2"
+      } ]
+    } ]
+  } ]
+}

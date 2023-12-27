@@ -3,7 +3,6 @@ package raf.dsw.classycraft.app.gui.swing.view;
 import lombok.Getter;
 import lombok.Setter;
 import raf.dsw.classycraft.app.AppCore;
-import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTree;
 import raf.dsw.classycraft.app.gui.swing.ClassyTree.ClassyTreeImplementation;
 import raf.dsw.classycraft.app.gui.swing.controller.ActionManager;
@@ -81,7 +80,7 @@ public class MainFrame extends JFrame implements ISubscriber
 
         this.classyTabView = new ClassyTabView();
         this.packageView = new PackageView();
-        JTree projectExplorer = classyTree.generateTree(AppCore.getInstance().getMapRepository().getProjectExplorer(), classyTabView, packageView);
+        JTree projectExplorer = classyTree.generateTree(AppCore.getInstance().getClassyRepository().getProjectExplorer(), classyTabView, packageView);
         this.workingAreaPane = new JPanel();
         JScrollPane scrollPane = new JScrollPane(projectExplorer);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);

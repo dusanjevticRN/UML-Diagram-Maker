@@ -5,16 +5,18 @@ import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeLeaf;
+import raf.dsw.classycraft.app.core.eventHandler.EventBus;
+import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 
 import java.util.List;
 
 @Getter
 @Setter
-public class Project extends ClassyNodeComposite
+public class Project extends ClassyNodeComposite implements ISubscriber
 {
     private String author, path;
-
+    private boolean changed = true;
     public Project( String name, ClassyNode parent, String author, String path)
     {
         super(parent, name);
@@ -88,4 +90,8 @@ public class Project extends ClassyNodeComposite
         this.path = path;
     }
 
+    @Override
+    public void update(Object notification, Object typeOfUpdate) {
+
+    }
 }

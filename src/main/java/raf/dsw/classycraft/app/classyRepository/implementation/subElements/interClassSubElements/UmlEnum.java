@@ -1,6 +1,7 @@
 package raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements;
 
 import lombok.Getter;
+import lombok.Setter;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 public class UmlEnum extends InterClass
 {
     List<String> constants = new ArrayList<>();

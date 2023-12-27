@@ -28,6 +28,9 @@ public class ActionManager
     private AddContentAction addContentAction;
     private ZoomToFitAction zoomToFitAction;
     private CopyAction copyAction;
+    private SaveAction saveAction;
+    private SaveAsAction saveAsAction;
+    private OpenAction openAction;
     public ActionManager()
     {
         initialiseAction();
@@ -54,5 +57,8 @@ public class ActionManager
         this.addContentAction = new AddContentAction();
         this.zoomToFitAction = new ZoomToFitAction();
         this.copyAction = new CopyAction();
+        this.saveAction = new SaveAction();
+        this.saveAsAction = new SaveAsAction();
+        this.openAction = new OpenAction();
     }
 }

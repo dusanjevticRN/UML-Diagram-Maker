@@ -12,6 +12,8 @@ import java.util.Objects;
 @Setter
 public abstract class Connection extends DiagramElement
 {
+    private String fromElementName;
+    private String toElementName;
     private InterClass fromElement;
     private InterClass toElement;
     private Pair<Integer, Integer> start;
