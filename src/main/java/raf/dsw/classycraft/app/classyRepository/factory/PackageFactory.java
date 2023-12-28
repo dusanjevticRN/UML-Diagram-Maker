@@ -10,6 +10,6 @@ public class PackageFactory extends ClassyNodeFactory
     @Override
     public ClassyNode createFactory(ClassyNode node)
     {
-        return new Package(node, "Package " + cnt++);
+        return new Package(node, "Package" + cnt++);
     }
 }

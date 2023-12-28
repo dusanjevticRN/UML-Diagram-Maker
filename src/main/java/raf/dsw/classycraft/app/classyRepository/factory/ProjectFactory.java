@@ -12,7 +12,7 @@ public class ProjectFactory extends ClassyNodeFactory
     public ClassyNode createFactory(ClassyNode node)
     {
         String userName = System.getProperty("user.name");
-        Project newProject = new Project("Project " + cnt++, node, userName, null);
+        Project newProject = new Project("Project" + cnt++, node, userName, null);
 
         return newProject;
     }

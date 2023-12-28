@@ -28,6 +28,9 @@ public class InterfejsDeserializer extends JsonDeserializer<Interfejs> {
         interfejs.setSize(size);
 
         JsonNode methodsNode = rootNode.get("methods");
+        if(methodsNode == null){
+            return interfejs;
+        }
         if (methodsNode.isArray()) {
             for (JsonNode methodNode : methodsNode) {
                 JsonDeserializer<?> metodDeserializer = deserializationContext.findRootValueDeserializer(
