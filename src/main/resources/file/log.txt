@@ -280,3 +280,8 @@
 [ Error] [ 2023-12-27 21:16:23.146 ] [ Packages can only be added within a project ]
 [ Error] [ 2023-12-27 21:33:23.347 ] [ Adding a diagram inside project is not allowed ]
 [ Error] [ 2023-12-27 21:59:54.42 ] [ Packages can only be added within a project ]
+[ Error] [ 2023-12-28 23:51:26.95 ] [ Diagram is zoomed out at its maximum ]
+[ Error] [ 2023-12-29 01:01:47.066 ] [ Packages can only be added within a project ]
+[ Error] [ 2023-12-29 01:22:14.16 ] [ Name already exists ]
+[ Error] [ 2023-12-29 17:25:20.578 ] [ Packages can only be added within a project ]
+[ Error] [ 2023-12-29 17:25:22.711 ] [ Packages can only be added within a project ]

@@ -11,4 +11,13 @@ public class SwingGui implements Gui
         MainFrame.getInstance().setVisible(true);
     }
 
+    @Override
+    public void enableUndoAction(boolean bool) {
+        MainFrame.getInstance().getActionManager().getUndoAction().setEnabled(bool);
+    }
+
+    @Override
+    public void enableRedoAction(boolean bool) {
+        MainFrame.getInstance().getActionManager().getRedoAction().setEnabled(bool);
+    }
 }

@@ -70,5 +70,6 @@ public enum EventType
     DEL_REL,
     FAULTY_CONNECTION,
     PROJECT_LOADED,
+    ELEMENT_DELETED,
 
 }

@@ -2,6 +2,7 @@ package raf.dsw.classycraft.app.classyRepository.implementation;
 
 import lombok.Getter;
 import lombok.Setter;
+import raf.dsw.classycraft.app.classyRepository.commands.CommandManager;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeLeaf;
@@ -24,8 +25,10 @@ public class Diagram extends ClassyNodeComposite implements ISubscriber
     private List<ClassyNode> children = new ArrayList<>();
     private List<DiagramElement> diagramElements = new ArrayList<>();
     private Map<Pair, DiagramElement> mapaElemenata = new HashMap<>();
+    private CommandManager commandManager;
     public Diagram(String name, ClassyNode parent, boolean isPattern) {
         super(parent, name + " ");
+        this.commandManager = new CommandManager();
         EventBus.getInstance().subscribe(EventType.ADD_CLASS_TO_TREE, this);
         EventBus.getInstance().subscribe(EventType.ADD_ENUM_TO_TREE, this);
         EventBus.getInstance().subscribe(EventType.ADD_INTERFACE_TO_TREE, this);
@@ -78,5 +81,6 @@ public class Diagram extends ClassyNodeComposite implements ISubscriber
     @Override
     public void removeChild(ClassyNode nodeToRemove) {
         this.children.remove(nodeToRemove);
+
     }
 }

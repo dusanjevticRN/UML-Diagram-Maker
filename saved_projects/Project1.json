@@ -1,6 +1,6 @@
 {
   "name" : "Project1",
-  "author" : "necav",
+  "author" : "User",
   "children" : [ {
     "typePD" : "package",
     "name" : "Package1",
@@ -9,67 +9,12 @@
       "name" : "Diagram1 ",
       "diagramElements" : [ {
         "typeICC" : "class",
-        "position_1st" : 126,
-        "position_2nd" : 108,
-        "size_1st" : 184,
-        "size_2nd" : 110,
-        "name" : "Class:c1",
-        "ClassContent" : [ {
-          "typeMA" : "Atribut",
-          "name" : "broj",
-          "visibility" : "PRIVATE",
-          "isStatic" : false,
-          "dataType" : "int"
-        }, {
-          "typeMA" : "Atribut",
-          "name" : "rec",
-          "visibility" : "PUBLIC",
-          "isStatic" : false,
-          "dataType" : "String"
-        }, {
-          "typeMA" : "Metod",
-          "name" : "metoda11",
-          "visibility" : "PRIVATE",
-          "isStatic" : false,
-          "returnType" : "int"
-        } ]
-      }, {
-        "typeICC" : "enum",
-        "position_1st" : 665,
-        "position_2nd" : 280,
-        "size_1st" : 184,
-        "size_2nd" : 110,
-        "name" : "Enum:e1",
-        "children" : [ "ENUMTIP1", "ENUMTIP2", "ENUMTIP3" ]
-      }, {
-        "typeICC" : "interface",
-        "position_1st" : 498,
-        "position_2nd" : 23,
-        "size_1st" : 216,
-        "size_2nd" : 90,
-        "name" : "Interface:i1",
-        "metode" : [ {
-          "typeMA" : "Metod",
-          "name" : "metod1",
-          "visibility" : "PRIVATE",
-          "isStatic" : false,
-          "returnType" : "int"
-        }, {
-          "typeMA" : "Metod",
-          "name" : "metod2",
-          "visibility" : "PROTECTED",
-          "isStatic" : true,
-          "returnType" : "char"
-        } ]
-      }, {
-        "typeICC" : "generalizacija",
-        "start_1st" : 498,
-        "start_2nd" : 68,
-        "end_1st" : 310,
-        "end_2nd" : 163,
-        "name" : "Generalization:Interface:i1->Class:c1",
-        "fromElement" : "Interface:i1",
-        "toElement" : "Class:c1"
+        "position_1st" : 972,
+        "position_2nd" : 273,
+        "size_1st" : 192,
+        "size_2nd" : 50,
+        "name" : "Class:123",
+        "ClassContent" : [ ]
       } ]
     } ]
   } ]

@@ -14,9 +14,12 @@ import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.controller.listner.ClassyMouse;
 import raf.dsw.classycraft.app.gui.swing.state.StateManager;
+import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 import raf.dsw.classycraft.app.gui.swing.view.painters.ElementPainter;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -158,6 +161,7 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
                 }
             }
         }
+
         else if(notification instanceof ClassyNode)
         {
             if(EventType.DIAGRAM_DELETION.equals(typeOfUpdate))
@@ -611,4 +615,5 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
         }
         this.panelOutsideRefresh();
     }
+
 }
