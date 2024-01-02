@@ -34,7 +34,6 @@ public class ActionManager
     private PatternAction patternAction;
     private ImageAction imageAction;
     private CodeConvertAction codeConvertAction;
-    private UpgradeAction upgradeAction;
     public ActionManager()
     {
         initialiseAction();
@@ -67,6 +66,5 @@ public class ActionManager
         this.patternAction = new PatternAction();
         this.imageAction = new ImageAction();
         this.codeConvertAction = new CodeConvertAction();
-        this.upgradeAction = new UpgradeAction();
     }
 }

@@ -23,6 +23,5 @@ public class MyToolBar extends JToolBar
         this.add(MainFrame.getInstance().getActionManager().getSaveAsAction());
         this.add(MainFrame.getInstance().getActionManager().getImageAction());
         this.add(MainFrame.getInstance().getActionManager().getCodeConvertAction());
-        this.add(MainFrame.getInstance().getActionManager().getUpgradeAction());
     }
 }
