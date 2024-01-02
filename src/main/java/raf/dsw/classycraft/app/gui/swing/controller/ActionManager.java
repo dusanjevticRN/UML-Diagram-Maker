@@ -34,6 +34,10 @@ public class ActionManager
     private PatternAction patternAction;
     private ImageAction imageAction;
     private CodeConvertAction codeConvertAction;
+    private UpgradeAction upgradeAction;
+    private RedoAction redoAction;
+    private UndoAction undoAction;
+
     public ActionManager()
     {
         initialiseAction();
@@ -66,5 +70,11 @@ public class ActionManager
         this.patternAction = new PatternAction();
         this.imageAction = new ImageAction();
         this.codeConvertAction = new CodeConvertAction();
+        this.upgradeAction = new UpgradeAction();
+        this.redoAction = new RedoAction();
+        this.undoAction = new UndoAction();
+        this.undoAction.setEnabled(false);
+        this.redoAction.setEnabled(false);
+
     }
 }
