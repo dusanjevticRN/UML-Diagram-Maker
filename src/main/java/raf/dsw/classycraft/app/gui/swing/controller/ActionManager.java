@@ -37,6 +37,7 @@ public class ActionManager
     private UpgradeAction upgradeAction;
     private RedoAction redoAction;
     private UndoAction undoAction;
+
     public ActionManager()
     {
         initialiseAction();
@@ -74,5 +75,6 @@ public class ActionManager
         this.undoAction = new UndoAction();
         this.undoAction.setEnabled(false);
         this.redoAction.setEnabled(false);
+
     }
 }
