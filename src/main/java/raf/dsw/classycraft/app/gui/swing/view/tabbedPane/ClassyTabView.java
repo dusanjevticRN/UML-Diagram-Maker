@@ -9,6 +9,8 @@ import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 @Getter
 @Setter
@@ -21,10 +23,17 @@ public class ClassyTabView extends JPanel implements ISubscriber {
     private JTabbedPane tabbedPane;
 
     public ClassyTabView() {
+        setLayout(new BorderLayout());
+
         projectNameLabel = new JLabel("Select a project...");
-        this.add(projectNameLabel); // Add the label to the panel
+        projectNameLabel.setFont(new Font("Lato", Font.BOLD, 25));
+        projectNameLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
+        this.add(projectNameLabel, BorderLayout.WEST);
+
         authorNameLabel = new JLabel("");
-        this.add(authorNameLabel);
+        authorNameLabel.setFont(new Font("Lato", Font.BOLD, 25));
+        authorNameLabel.setBorder(new EmptyBorder(0, 0, 0, 10));
+        this.add(authorNameLabel, BorderLayout.EAST);
     }
 
     @Override

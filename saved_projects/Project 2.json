@@ -1,0 +1,29 @@
+{
+  "name" : "Project 2",
+  "author" : "necav",
+  "children" : [ {
+    "typePD" : "package",
+    "name" : "Package 1",
+    "children" : [ {
+      "typePD" : "diagram",
+      "name" : "Diagram 1 ",
+      "diagramElements" : [ {
+        "typeICC" : "class",
+        "position_1st" : 328,
+        "position_2nd" : 127,
+        "size_1st" : 184,
+        "size_2nd" : 50,
+        "name" : "Class:c1",
+        "ClassContent" : [ ]
+      }, {
+        "typeICC" : "interface",
+        "position_1st" : 714,
+        "position_2nd" : 75,
+        "size_1st" : 216,
+        "size_2nd" : 50,
+        "name" : "Interface:i1",
+        "metode" : [ ]
+      } ]
+    } ]
+  } ]
+}

@@ -21,6 +21,8 @@ public abstract class ConnectionPainter extends ElementPainter
 
     public void setBounds()
     {
+        if(connectionElement.getStart() == null || connectionElement.getEnd() == null)
+            return;
         this.shape = new Line2D.Float(connectionElement.getStart().getFirst(), connectionElement.getStart().getSecond(), connectionElement.getEnd().getFirst(), connectionElement.getEnd().getSecond());
     }
 }

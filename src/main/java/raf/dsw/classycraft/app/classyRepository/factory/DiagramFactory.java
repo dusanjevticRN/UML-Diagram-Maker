@@ -10,6 +10,6 @@ public class DiagramFactory extends ClassyNodeFactory
     @Override
     public ClassyNode createFactory(ClassyNode node)
     {
-        return new Diagram("Diagram " + cnt++,node,false);
+        return new Diagram("Diagram" + cnt++,node,false);
     }
 }

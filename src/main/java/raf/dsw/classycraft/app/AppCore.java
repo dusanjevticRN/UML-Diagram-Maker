@@ -5,7 +5,8 @@ import raf.dsw.classycraft.app.core.*;
 import raf.dsw.classycraft.app.gui.swing.SwingGui;
 import raf.dsw.classycraft.app.logger.LoggerFactory;
 import raf.dsw.classycraft.app.messageGenerator.MessageGeneratorClass;
-import raf.dsw.classycraft.app.classyRepository.ClassyRepository;
+import raf.dsw.classycraft.app.serializer.JacksonSerializer;
+import raf.dsw.classycraft.app.serializer.PatternSerializer;
 
 @Getter
 public class AppCore extends ApplicationFramework
@@ -28,14 +29,16 @@ public class AppCore extends ApplicationFramework
     {
         ApplicationFramework appCore = AppCore.getInstance();
         Gui gui = new SwingGui();
-        MapRepository mapRepository = new ClassyRepository();
+        ClassyRepository classyRepository = new raf.dsw.classycraft.app.classyRepository.ClassyRepository();
         MessageGenerator messageGenerator = new MessageGeneratorClass();
+        Serializer serializer = new JacksonSerializer(classyRepository.getProjectExplorer());
+        Serializer patternSerializer = new PatternSerializer();
 
         LoggerFactory loggerFactory = new LoggerFactory();
         Logger consoleLogger = loggerFactory.getLogger("ConsoleLogger", messageGenerator);
         Logger fileLogger = loggerFactory.getLogger("FileLogger", messageGenerator);
 
-        appCore.initialise(gui, mapRepository, messageGenerator);
+        appCore.initialise(gui, classyRepository, messageGenerator, serializer, patternSerializer);
         appCore.initialiseLogger(consoleLogger, fileLogger);
 
         appCore.start();

@@ -601,4 +601,14 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
     public void raiseErrorNAE(){
         AppCore.getInstance().getMessageGenerator().generate(EventType.NAME_ALREADY_EXISTS);
     }
+    public void diagramPattern(List<DiagramElement> elements){
+        for(DiagramElement element : elements){
+            for(DiagramElement diagramElement : this.getCurrentDiagramPanel().getDiagram().getDiagramElements()){
+                if(element.getName().equals(diagramElement.getName()))
+                    element.setName(element.getName() + "-Pattern");
+            }
+            this.getCurrentDiagramPanel().getDiagram().addDiagramElement(null,element);
+        }
+        this.panelOutsideRefresh();
+    }
 }
