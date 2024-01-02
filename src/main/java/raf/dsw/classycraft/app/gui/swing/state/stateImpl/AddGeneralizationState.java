@@ -1,5 +1,7 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
+import raf.dsw.classycraft.app.classyRepository.commands.AddSubElementCommand;
+import raf.dsw.classycraft.app.classyRepository.commands.Command;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
@@ -82,6 +84,7 @@ public class AddGeneralizationState implements State {
 
     @Override
     public void stateMouseReleased(int x, int y, PackageView packageView) {
+        ClassyNode classyNode = packageView.getCurrentDiagramPanel().getDiagram();
         packageView.setPanelPainters(new ArrayList<>());
         packageView.panelRepaint();
         packageView.panelOutsideRefresh();
@@ -102,6 +105,8 @@ public class AddGeneralizationState implements State {
                     packageView.setPanelPainters(new ArrayList<>());
                     packageView.panelRepaint();
                     packageView.panelOutsideRefresh();
+                    Command newCommand = new AddSubElementCommand(classyNode, generalization);
+                    packageView.getCurrentDiagramPanel().getDiagram().getCommandManager().addCommand(newCommand);
                     break;
                 }
                 else {

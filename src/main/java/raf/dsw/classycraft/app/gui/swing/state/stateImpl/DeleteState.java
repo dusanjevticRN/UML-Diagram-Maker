@@ -1,5 +1,9 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
+import raf.dsw.classycraft.app.classyRepository.commands.AddSubElementCommand;
+import raf.dsw.classycraft.app.classyRepository.commands.Command;
+import raf.dsw.classycraft.app.classyRepository.commands.DeleteCommand;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.*;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Agregacija;
@@ -37,7 +41,6 @@ public class DeleteState implements State {
 
     @Override
     public void stateMousePressed(int x, int y, PackageView packageView) {
-
         this.selecteElements.clear();
         packageView.setSelectionModel(new UmlSelectionModel());
         System.out.println("Select state");
@@ -87,7 +90,7 @@ public class DeleteState implements State {
         }
         hit = false;
         selectionModel.getSelected().clear();
-        deleteSelectedElements(packageView);
+
     }
 
     @Override
@@ -147,6 +150,8 @@ public class DeleteState implements State {
 
     @Override
     public void stateMouseReleased(int x, int y, PackageView packageView) {
+        ArrayList<ClassyNode> deleteElements = new ArrayList<>();
+        ClassyNode classyNode = packageView.getCurrentDiagramPanel().getDiagram();
         System.out.println("Released");
         String start = startX + "/" + startY;
         String end = x + "/" + y;
@@ -157,6 +162,7 @@ public class DeleteState implements State {
             if(elem instanceof InterClass){
                 InterClass interClass = (InterClass) elem;
                 selectableElements.add(interClass);
+                deleteElements.add(interClass);
                 selecteElements.add(interClass);
             }
             else if(elem instanceof Connection){
@@ -167,6 +173,7 @@ public class DeleteState implements State {
                     selecteElements.add(connection);
                     System.out.println("Hit: " + connection.getName());
                     selectableElements.add(connection);
+                    deleteElements.add(connection);
                     selecteElements.add(connection);
                 }
             }
@@ -207,7 +214,9 @@ public class DeleteState implements State {
         EventBus.getInstance().notifySubscriber(startEnd, EventType.CLEAR_DRAG_DEL);
         startXRight = 0;
         startYRight = 0;
-
+        deleteSelectedElements(packageView);
+        Command newCommand = new DeleteCommand(classyNode, deleteElements);
+        packageView.getCurrentDiagramPanel().getDiagram().getCommandManager().addCommand(newCommand);
         deleteSelectedElements(packageView);
     }
 

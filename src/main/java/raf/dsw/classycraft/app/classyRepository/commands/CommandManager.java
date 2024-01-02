@@ -1,6 +1,9 @@
 package raf.dsw.classycraft.app.classyRepository.commands;
 
 import raf.dsw.classycraft.app.AppCore;
+import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
+import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +28,28 @@ public class CommandManager
         this.doCommand();
     }
 
-    public void doCommand()
+    public void enableBoth(){
+        if(currentCommand < commands.size())
+        {
+            commands.get(currentCommand++);
+            enableUndo(true);
+        }
+
+        if(currentCommand == commands.size())
+            enableRedo(false);
+    }
+    public void doCommand() {
+        Diagram diagram = MainFrame.getInstance().getPackageView().getDiagram();
+        diagram.getProject(diagram).setChanged(true);
+        System.out.println("Changed: " + diagram.getProject(diagram).isChanged());
+        this.enableBoth();
+    }
+
+    public void redoCommand()
     {
         if(currentCommand < commands.size())
         {
-            commands.get(currentCommand++).doCommand();
+            commands.get(currentCommand++).redoCommand();
             enableUndo(true);
         }
 
@@ -47,21 +67,6 @@ public class CommandManager
 
         if(currentCommand == 0)
             enableUndo(false);
-    }
-
-    public void permanentUndoCommand()
-    {
-        commands.get(--currentCommand).undoCommand();
-        commands.remove(currentCommand);
-    }
-
-    public void revalidateActions()
-    {
-        if(currentCommand == 0) enableUndo(false);
-        else enableUndo(true);
-
-        if(currentCommand < commands.size()) enableRedo(true);
-        else enableRedo(false);
     }
 
     public void enableUndo(boolean bool)

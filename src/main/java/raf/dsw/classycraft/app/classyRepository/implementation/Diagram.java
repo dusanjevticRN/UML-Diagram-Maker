@@ -83,4 +83,11 @@ public class Diagram extends ClassyNodeComposite implements ISubscriber
         this.children.remove(nodeToRemove);
 
     }
+
+    public Project getProject(ClassyNode classyNode){
+        if(classyNode instanceof Project)
+            return (Project) classyNode;
+        else
+            return getProject(classyNode.getParent());
+    }
 }

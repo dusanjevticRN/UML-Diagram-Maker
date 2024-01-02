@@ -1,6 +1,8 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
 import raf.dsw.classycraft.app.AppCore;
+import raf.dsw.classycraft.app.classyRepository.commands.AddSubElementCommand;
+import raf.dsw.classycraft.app.classyRepository.commands.Command;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Connection;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
@@ -582,6 +584,9 @@ public class ContentState implements State
                     {
                         this.klasa.addClassContent(atribut); //selektovanoj klasi dodajemo atribut
                         listModel.addElement(sb.toString()); //dodajemo atribut u listu
+                        //TODO dodaj u command manager
+                        //Command newCommand = new AddSubElementCommand(klasa, atribut);
+                        //packageView.getCurrentDiagramPanel().getDiagram().getCommandManager().addCommand(newCommand);
                         System.out.println("Dodat atribut u listu classContents klase (if)");
                     }
 

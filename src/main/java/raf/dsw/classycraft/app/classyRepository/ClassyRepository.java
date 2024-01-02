@@ -24,6 +24,5 @@ public class ClassyRepository implements raf.dsw.classycraft.app.core.ClassyRepo
     @Override
     public void addChild(ClassyNodeComposite parent, ClassyNode child)
     {
-        //TODO: implement add Child method
     }
 }
