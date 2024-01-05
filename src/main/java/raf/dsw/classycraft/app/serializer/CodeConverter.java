@@ -1,5 +1,6 @@
 package raf.dsw.classycraft.app.serializer;
 
+import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
@@ -14,6 +15,7 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.conne
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Kompozicija;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.connectionSubElements.Zavisnost;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.*;
+import raf.dsw.classycraft.app.core.eventHandler.EventType;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,7 +30,7 @@ public class CodeConverter{
         this.project = project;
     }
     public void convert(){
-        String parentDirPath = "saved_codes/";
+        String parentDirPath = "src/main/resources/saved_codes/";
         String codeDirName = project.getName();
         File parentDir = new File(parentDirPath);
         File newFolder = new File(parentDir, codeDirName);
@@ -39,8 +41,16 @@ public class CodeConverter{
         if (created) {
             createReadMe(newFolder);
             createSubFolderTree(newFolder, project);
+            AppCore.getInstance().getMessageGenerator().generate(EventType.CODE_GENERATED);
         } else {
-            System.out.println("ERROR: Failed to create directory.");
+            if(!newFolder.exists()) {
+                AppCore.getInstance().getMessageGenerator().generate(EventType.UNKNOWN);
+                return;
+            }
+            else {
+                AppCore.getInstance().getMessageGenerator().generate(EventType.CODE_ALREADY_EXISTS);
+                return;
+            }
         }
 
     }
@@ -134,15 +144,22 @@ public class CodeConverter{
         for(Connection c: connections){
             if(c instanceof Agregacija){
                 sb.append("A-");
-                if(c.getFromElement().equals(element))
-                    sb.append("F");
-                else sb.append("T");
+                if(c.getFromElement().equals(element)) {
+                    sb.append("F/");
+                    sb.append(c.getFromElement().getName().split(":")[1]);
+                }
+                else {
+                    sb.append("T");
+                }
             }
             else if(c instanceof Kompozicija){
                 sb.append("K-");
-                if(c.getFromElement().equals(element))
-                    sb.append("F");
-                else sb.append("T");
+                if(c.getFromElement().equals(element)) {
+                    sb.append("F/");
+                    sb.append(c.getFromElement().getName().split(":")[1]);
+                }
+                else {
+                    sb.append("T");}
             }
            else if(c instanceof Generalizacija){
                 sb.append("G-");
@@ -181,7 +198,8 @@ public class CodeConverter{
         }
         String conModifier = "";
         String checker = relevantConnections(element, diagram);
-        if(checker.contains("G")){
+        System.out.println(checker);
+        if(checker.contains("G-T")){
             System.out.println(checker);
             if(checker.contains("T")) {
                 conModifier = "extends " + checker.split("/")[1];
@@ -194,6 +212,18 @@ public class CodeConverter{
         //Kod za atribute prvo
         if(type == 1) {
             Klasa tmpK = (Klasa) element;
+            if(checker.contains("A-F")){
+                sb.append("\t");
+                String tmp = checker.split("/")[1];
+                tmp = tmp.substring(0, tmp.length() - 1);
+                sb.append("private " + tmp.toUpperCase() + " " + tmp.toLowerCase() + ";\n");
+            }
+            if(checker.contains("K-F")){
+                sb.append("\t");
+                String tmp = checker.split("/")[1];
+                tmp = tmp.substring(0, tmp.length() - 1);
+                sb.append("private " + tmp.toUpperCase() + " " + tmp.toLowerCase() + ";\n");
+            }
             for (ClassContent cc : tmpK.getClassContents()) {
                 if (cc instanceof Atribut) {
                     Atribut tmpA = (Atribut) cc;

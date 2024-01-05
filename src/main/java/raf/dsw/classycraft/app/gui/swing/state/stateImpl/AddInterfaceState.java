@@ -1,6 +1,9 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
 import raf.dsw.classycraft.app.AppCore;
+import raf.dsw.classycraft.app.classyRepository.commands.AddSubElementCommand;
+import raf.dsw.classycraft.app.classyRepository.commands.Command;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
@@ -25,6 +28,7 @@ public class AddInterfaceState implements State {
 
     @Override
     public void stateMousePressed(int x, int y, PackageView packageView) {
+        ClassyNode classyNode = packageView.getDiagram();
         DiagramPanel diagramPanel = packageView.getCurrentDiagramPanel();
         System.out.println("TEST");
         String name = JOptionPane.showInputDialog("Enter interface name:");
@@ -55,6 +59,8 @@ public class AddInterfaceState implements State {
         packageView.addDiagramElement(new Pair(x, y),inter);
         EventBus.getInstance().notifySubscriber(packageView.getDiagram(), EventType.SET_PANEL);
         EventBus.getInstance().notifySubscriber(inter, EventType.ADD_INTERFACE_TO_TREE_S);
+        Command newCommand = new AddSubElementCommand(classyNode, inter);
+        packageView.getCurrentDiagramPanel().getDiagram().getCommandManager().addCommand(newCommand);
 
     }
 

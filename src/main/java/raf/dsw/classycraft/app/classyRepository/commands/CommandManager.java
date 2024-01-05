@@ -1,76 +1,55 @@
 package raf.dsw.classycraft.app.classyRepository.commands;
 
 import raf.dsw.classycraft.app.AppCore;
+import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
+import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
+import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandManager
-{
+public class CommandManager {
     private int currentCommand;
     private List<Command> commands;
 
-    public CommandManager()
-    {
+    public CommandManager() {
         currentCommand = 0;
         commands = new ArrayList<>();
     }
 
-    public void addCommand(Command command)
-    {
-        while(currentCommand < commands.size())
+    public void addCommand(Command command) {
+        MainFrame.getInstance().getPackageView().getDiagram().getProject(MainFrame.getInstance().getPackageView().getDiagram()).setChanged(true);
+        while (currentCommand < commands.size()) {
             commands.remove(currentCommand);
-
+        }
         commands.add(command);
-        this.doCommand();
+        currentCommand++;
+        this.updateUndoRedoState();
     }
 
-    public void doCommand()
-    {
-        if(currentCommand < commands.size())
-        {
-            commands.get(currentCommand++).doCommand();
-            enableUndo(true);
+    public void redoCommand() {
+        if (currentCommand < commands.size()) {
+            commands.get(currentCommand++).redoCommand();
         }
-
-        if(currentCommand == commands.size())
-            enableRedo(false);
+        this.updateUndoRedoState();
     }
 
-    public void undoCommand()
-    {
-        if(currentCommand > 0)
-        {
+    public void undoCommand() {
+        if (currentCommand > 0) {
             commands.get(--currentCommand).undoCommand();
-            enableRedo(true);
         }
-
-        if(currentCommand == 0)
-            enableUndo(false);
+        this.updateUndoRedoState();
     }
 
-    public void permanentUndoCommand()
-    {
-        commands.get(--currentCommand).undoCommand();
-        commands.remove(currentCommand);
+    private void updateUndoRedoState() {
+        Diagram diagram = MainFrame.getInstance().getPackageView().getDiagram();
+        diagram.updateUndoRedoStateForActiveDiagram();
+    }
+    public boolean canUndo() {
+        return currentCommand > 0;
     }
 
-    public void revalidateActions()
-    {
-        if(currentCommand == 0) enableUndo(false);
-        else enableUndo(true);
-
-        if(currentCommand < commands.size()) enableRedo(true);
-        else enableRedo(false);
-    }
-
-    public void enableUndo(boolean bool)
-    {
-        AppCore.getInstance().getGui().enableUndoAction(bool);
-    }
-
-    public void enableRedo(boolean bool)
-    {
-        AppCore.getInstance().getGui().enableRedoAction(bool);
+    public boolean canRedo() {
+        return currentCommand < commands.size();
     }
 }

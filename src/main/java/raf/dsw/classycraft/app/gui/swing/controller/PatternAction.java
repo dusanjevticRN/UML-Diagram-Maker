@@ -57,7 +57,7 @@ public class PatternAction extends AbstractClassyAction{
                 DefaultListModel<String> listModel = new DefaultListModel<>();
                 JList<String> list = new JList<>(listModel);
 
-                File patternsDir = new File("saved_patterns/");
+                File patternsDir = new File("src/main/resources/saved_patterns/");
                 if (patternsDir.exists() && patternsDir.isDirectory()) {
                     File[] files = patternsDir.listFiles();
                     if (files != null) {
@@ -80,7 +80,7 @@ public class PatternAction extends AbstractClassyAction{
                             return;
                         }
                         try {
-                            Diagram d = (Diagram) AppCore.getInstance().getPatternSerializer().openProject("saved_patterns/" + selected);
+                            Diagram d = (Diagram) AppCore.getInstance().getPatternSerializer().openProject("src/main/resources/saved_patterns/" + selected);
                             MainFrame.getInstance().getPackageView().diagramPattern(d.getDiagramElements());
 
                         } catch (IOException ex) {
@@ -137,7 +137,7 @@ public class PatternAction extends AbstractClassyAction{
                         nameDialog.dispose();
                         dialog.dispose();
                         System.out.println("Save pattern");
-                        String defaultPath = "saved_patterns/" + name[0] + ".json";
+                        String defaultPath = "src/main/resources/saved_patterns/" + name[0] + ".json";
                         try {
                             AppCore.getInstance().getPatternSerializer().saveProject(defaultPath, MainFrame.getInstance().getPackageView().getDiagram());
                         } catch (IOException ex) {

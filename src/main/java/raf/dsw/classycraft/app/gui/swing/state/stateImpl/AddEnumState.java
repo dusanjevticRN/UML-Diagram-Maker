@@ -1,6 +1,9 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
 import raf.dsw.classycraft.app.AppCore;
+import raf.dsw.classycraft.app.classyRepository.commands.AddSubElementCommand;
+import raf.dsw.classycraft.app.classyRepository.commands.Command;
+import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
@@ -25,6 +28,7 @@ public class AddEnumState implements State {
 
     @Override
     public void stateMousePressed(int x, int y, PackageView packageView) {
+        ClassyNode classyNode = packageView.getCurrentDiagramPanel().getDiagram();
         DiagramPanel diagramPanel = packageView.getCurrentDiagramPanel();
         System.out.println("TEST");
         String name = JOptionPane.showInputDialog("Enter enum name:");
@@ -55,7 +59,8 @@ public class AddEnumState implements State {
         packageView.addDiagramElement(new Pair(x, y),enm);
         EventBus.getInstance().notifySubscriber(packageView.getDiagram(), EventType.SET_PANEL);
         EventBus.getInstance().notifySubscriber(enm, EventType.ADD_ENUM_TO_TREE_S);
-
+        Command newCommand = new AddSubElementCommand(classyNode, enm);
+        packageView.getCurrentDiagramPanel().getDiagram().getCommandManager().addCommand(newCommand);
     }
 
     @Override

@@ -17,6 +17,6 @@ public class RedoAction extends AbstractClassyAction
     @Override
     public void actionPerformed(ActionEvent e)
     {
-
+        MainFrame.getInstance().getPackageView().getCurrentDiagramPanel().getDiagram().getCommandManager().redoCommand();
     }
 }

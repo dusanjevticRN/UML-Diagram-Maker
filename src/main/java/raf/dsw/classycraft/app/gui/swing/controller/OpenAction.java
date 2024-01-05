@@ -20,7 +20,7 @@ public class OpenAction extends AbstractClassyAction{
 
 
         //default project path
-        jfc.setCurrentDirectory(new java.io.File("saved_projects/"));
+        jfc.setCurrentDirectory(new java.io.File("src/main/resources/saved_projects/"));
         int chosen = jfc.showOpenDialog(null);
         if(chosen == JFileChooser.APPROVE_OPTION){
             System.out.println("Opening project" + jfc.getSelectedFile().getAbsolutePath());

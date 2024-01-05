@@ -1,11 +1,8 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
-import javafx.scene.web.HTMLEditorSkin;
-import raf.dsw.classycraft.app.AppCore;
-import raf.dsw.classycraft.app.classyRepository.commands.AddClassCommand;
+import raf.dsw.classycraft.app.classyRepository.commands.AddSubElementCommand;
 import raf.dsw.classycraft.app.classyRepository.commands.Command;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
-import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Visibility;
@@ -14,7 +11,6 @@ import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.gui.swing.state.State;
 import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
-import raf.dsw.classycraft.app.gui.swing.view.painters.ElementPainter;
 import raf.dsw.classycraft.app.gui.swing.view.painters.InterClassPainter;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.DiagramPanel;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
@@ -65,8 +61,9 @@ public class AddClassState implements State {
         packageView.addDiagramElement(new Pair(x, y),klas);
         EventBus.getInstance().notifySubscriber(packageView.getCurrentDiagramPanel().getDiagram(), EventType.SET_PANEL);
         EventBus.getInstance().notifySubscriber(klas, EventType.ADD_CLASS_TO_TREE_S);
-        Command newCommand = new AddClassCommand(classyNode, klas);
-        MainFrame.getInstance().getPackageView().getCurrentDiagramPanel().getDiagram().getCommandManager().addCommand(newCommand);
+        //parent i child se salju u add class command
+        Command newCommand = new AddSubElementCommand(classyNode, klas);
+        packageView.getCurrentDiagramPanel().getDiagram().getCommandManager().addCommand(newCommand);
 
     }
 

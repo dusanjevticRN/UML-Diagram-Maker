@@ -1,5 +1,6 @@
 package raf.dsw.classycraft.app.serializer;
 
+import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.Project;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
+import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 import raf.dsw.classycraft.app.serializer.customDeserializers.*;
 import raf.dsw.classycraft.app.serializer.customSerializers.*;
 
@@ -66,7 +68,18 @@ public class JacksonSerializer implements Serializer {
 
     @Override
     public void saveProject(String filePath, ClassyNode project) throws IOException {
+        if(!(project instanceof Project)) {
+            AppCore.getInstance().getMessageGenerator().generate(EventType.NOT_PROJECT);
+            return;
+        }
+        else if(!((Project) project).isChanged()) {
+            System.out.println("Project not changed");
+            AppCore.getInstance().getMessageGenerator().generate(EventType.PROJECT_NOT_CHANGED);
+            return;
+        }
+        ((Project) project).setChanged(false);
         objectMapper.writeValue(new File(filePath),  project);
+        AppCore.getInstance().getMessageGenerator().generate(EventType.PROJECT_SAVED);
     }
 
     @Override
