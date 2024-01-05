@@ -27,25 +27,14 @@ public class SaveAsAction extends AbstractClassyAction {
         }
 
         Project project = (Project) MainFrame.getInstance().getClassyTree().getSelectedNode().getClassyNode();
-
-        if (!project.isChanged()) {
-            return;
-        }
-
-        //project.setChanged(false);
         File projectFile = null;
 
-        if (project.getPath() == null || project.getPath().isEmpty()) {
-            System.out.println("Path is null or empty");
-            if (jfc.showSaveDialog(MainFrame.getInstance()) == JFileChooser.APPROVE_OPTION) {
-                projectFile = jfc.getSelectedFile();
-                project.setPath(projectFile.getPath() + ".json");
-            } else {
-                return;
-            }
-
+        if (jfc.showSaveDialog(MainFrame.getInstance()) == JFileChooser.APPROVE_OPTION) {
+            projectFile = jfc.getSelectedFile();
+            project.setPath(projectFile.getPath() + ".json");
+        } else {
+            return;
         }
-
 
         try {
             System.out.println("Saving project" + project.getName());
@@ -54,6 +43,6 @@ public class SaveAsAction extends AbstractClassyAction {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-
     }
+
 }

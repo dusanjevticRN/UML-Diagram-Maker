@@ -1,6 +1,5 @@
-package raf.dsw.classycraft.app.gui.swing.ClassyTree;
+package raf.dsw.classycraft.app.gui.swing.classyTree;
 
-import jdk.jshell.Diag;
 import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.implementation.*;
 import raf.dsw.classycraft.app.classyRepository.implementation.Package;
@@ -12,8 +11,8 @@ import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 import raf.dsw.classycraft.app.gui.swing.controller.addAction.AddType;
-import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
-import raf.dsw.classycraft.app.gui.swing.ClassyTree.view.ClassyTreeView;
+import raf.dsw.classycraft.app.gui.swing.classyTree.model.ClassyTreeItem;
+import raf.dsw.classycraft.app.gui.swing.classyTree.view.ClassyTreeView;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
 import raf.dsw.classycraft.app.classyRepository.factory.DiagramFactory;
@@ -101,22 +100,26 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
 
         if(classyNode instanceof Project && addType == AddType.PACKAGE_ADD)
         {
+            ((Project) classyNode).setChanged(true);
             PackageFactory packageFactory = new PackageFactory();
             return packageFactory.createFactory(classyNode);
         }
         if(classyNode instanceof Project && addType == AddType.DIAGRAM_ADD)
         {
+            getProject(classyNode).setChanged(true);
             DiagramFactory diagramFactory = new DiagramFactory();
             return diagramFactory.createFactory(classyNode);
         }
 
         if(classyNode instanceof Package && addType == AddType.PACKAGE_ADD)
         {
+            getProject(classyNode).setChanged(true);
             PackageFactory packageFactory = new PackageFactory();
             return packageFactory.createFactory(classyNode);
         }
         if(classyNode instanceof Package && addType == AddType.DIAGRAM_ADD)
         {
+            getProject(classyNode).setChanged(true);
             DiagramFactory diagramFactory = new DiagramFactory();
             return diagramFactory.createFactory(classyNode);
         }
@@ -143,6 +146,7 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
                 ClassyTreeItem selected = (ClassyTreeItem) classyTreeView.getLastSelectedPathComponent();
                 selected.getClassyNode().setName((String) notification);
                 classyTreeView.updateUI();
+                getProject(selected.getClassyNode()).setChanged(true);
                 System.out.println("UPDATE");
                 SwingUtilities.updateComponentTreeUI(classyTreeView);
             }
@@ -150,6 +154,7 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
                 notification = ((String) notification).split("/")[1];
                 ClassyTreeItem selected = (ClassyTreeItem) classyTreeView.getLastSelectedPathComponent();
                 selected.getClassyNode().setName((String) notification);
+                getProject(selected.getClassyNode()).setChanged(true);
                 classyTreeView.updateUI();
                 System.out.println("UPDATE");
                 SwingUtilities.updateComponentTreeUI(classyTreeView);
@@ -158,6 +163,7 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
                 notification = ((String) notification).split("/")[1];
                 ClassyTreeItem selected = (ClassyTreeItem) classyTreeView.getLastSelectedPathComponent();
                 selected.getClassyNode().setName((String) notification);
+                getProject(selected.getClassyNode()).setChanged(true);
                 classyTreeView.updateUI();
                 System.out.println("UPDATE");
                 SwingUtilities.updateComponentTreeUI(classyTreeView);
@@ -326,5 +332,11 @@ public class ClassyTreeImplementation implements ClassyTree, ISubscriber {
             System.out.println("Nema ga");
         }
         expandAllPaths((ClassyTreeItem) classyTreeView.getModel().getRoot());
+    }
+    private Project getProject(ClassyNode classyNode){
+        if(classyNode instanceof Project)
+            return (Project) classyNode;
+        else
+            return getProject(classyNode.getParent());
     }
 }

@@ -26,6 +26,12 @@ public class UmlEnum extends InterClass
         super(parent, name, visibility, x, y);
         this.type = "Enum";
     }
+    public UmlEnum(UmlEnum umlEnum)
+    {
+        super(umlEnum.getParent(), umlEnum.getName(), umlEnum.getVisibility(), umlEnum.getPosition().getFirst(), umlEnum.getPosition().getSecond());
+        this.constants = umlEnum.getConstants();
+        this.type = "Enum";
+    }
     public void updateEnum(String constant, String newConstant)
     {
         int index = this.constants.indexOf(constant);

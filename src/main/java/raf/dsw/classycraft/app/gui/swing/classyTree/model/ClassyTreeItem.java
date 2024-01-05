@@ -1,4 +1,4 @@
-package raf.dsw.classycraft.app.gui.swing.ClassyTree.model;
+package raf.dsw.classycraft.app.gui.swing.classyTree.model;
 
 import lombok.Getter;
 import lombok.Setter;

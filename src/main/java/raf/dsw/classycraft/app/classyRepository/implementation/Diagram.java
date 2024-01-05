@@ -2,6 +2,7 @@ package raf.dsw.classycraft.app.classyRepository.implementation;
 
 import lombok.Getter;
 import lombok.Setter;
+import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.commands.CommandManager;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNode;
 import raf.dsw.classycraft.app.classyRepository.composite.ClassyNodeComposite;
@@ -89,5 +90,12 @@ public class Diagram extends ClassyNodeComposite implements ISubscriber
             return (Project) classyNode;
         else
             return getProject(classyNode.getParent());
+    }
+    public void updateUndoRedoStateForActiveDiagram() {
+
+        boolean canUndo = commandManager.canUndo();
+        boolean canRedo = commandManager.canRedo();
+        AppCore.getInstance().getGui().enableUndoAction(canUndo);
+        AppCore.getInstance().getGui().enableRedoAction(canRedo);
     }
 }

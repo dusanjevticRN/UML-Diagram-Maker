@@ -3,7 +3,7 @@ package raf.dsw.classycraft.app.gui.swing.controller.addAction;
 import raf.dsw.classycraft.app.AppCore;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.ProjectExplorer;
-import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
+import raf.dsw.classycraft.app.gui.swing.classyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.gui.swing.controller.AbstractClassyAction;
 import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;

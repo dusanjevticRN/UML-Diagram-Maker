@@ -1,6 +1,6 @@
-package raf.dsw.classycraft.app.gui.swing.ClassyTree.controller;
+package raf.dsw.classycraft.app.gui.swing.classyTree.controller;
 
-import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
+import raf.dsw.classycraft.app.gui.swing.classyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.core.observer.IPublisher;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
 

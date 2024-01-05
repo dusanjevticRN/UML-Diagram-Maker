@@ -10,11 +10,10 @@ import raf.dsw.classycraft.app.classyRepository.implementation.subElements.Pair;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
 import raf.dsw.classycraft.app.core.eventHandler.EventBus;
 import raf.dsw.classycraft.app.core.observer.ISubscriber;
-import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
+import raf.dsw.classycraft.app.gui.swing.classyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.core.eventHandler.EventType;
 import raf.dsw.classycraft.app.gui.swing.controller.listner.ClassyMouse;
 import raf.dsw.classycraft.app.gui.swing.state.StateManager;
-import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 import raf.dsw.classycraft.app.gui.swing.view.painters.ElementPainter;
 
 import javax.swing.*;
@@ -24,66 +23,74 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Getter
 @Setter
 public class PackageView extends CloseableTabbedPane implements ISubscriber {
-
-
-        private StateManager stateManager = new StateManager();
-        List<Diagram> openDiagrams;
-        List<Component> tabs;
-        public PackageView()
-        {
-            super();
-            openDiagrams = new ArrayList<>();
-            tabs = new ArrayList<>();
-            ClassyMouse classyMouse;
-            if(getCurrentDiagramPanel() != null) {
-                classyMouse = new ClassyMouse(getAffineTransform());
+    private StateManager stateManager = new StateManager();
+    List<Diagram> openDiagrams;
+    List<Component> tabs;
+    public PackageView()
+    {
+        super();
+        openDiagrams = new ArrayList<>();
+        tabs = new ArrayList<>();
+        ClassyMouse classyMouse;
+        this.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                tabChanged();
             }
-            else {
-                classyMouse = new ClassyMouse(new AffineTransform());
-            }
-            EventBus.getInstance().subscribe(EventType.DIAGRAM_SELECTION, this);
-            EventBus.getInstance().subscribe(EventType.DIAGRAM_DELETION, this);
-            EventBus.getInstance().subscribe(EventType.DIAGRAM_RENAME, this);
-            EventBus.getInstance().subscribe(EventType.DIAGRAM_CLOSE, this);
-            EventBus.getInstance().subscribe(EventType.DIAGRAM_LIST_DELETION, this);
-            EventBus.getInstance().subscribe(EventType.CLOSE_TABS, this);
-            EventBus.getInstance().subscribe(EventType.ADD_CLASS, this);
-            EventBus.getInstance().subscribe(EventType.ADD_INTERFACE, this);
-            EventBus.getInstance().subscribe(EventType.ADD_ENUM, this);
-            EventBus.getInstance().subscribe(EventType.ADD_METHOD, this);
-            EventBus.getInstance().subscribe(EventType.ZOOM_IN, this);
-            EventBus.getInstance().subscribe(EventType.ZOOM_OUT, this);
-            EventBus.getInstance().subscribe(EventType.ADD_GENERALIZATION, this);
-            EventBus.getInstance().subscribe(EventType.ADD_AGGREGATION, this);
-            EventBus.getInstance().subscribe(EventType.ADD_COMPOSITION, this);
-            EventBus.getInstance().subscribe(EventType.ADD_DEPENDENCY, this);
-            EventBus.getInstance().subscribe(EventType.CONTENT_STATE, this);
-            EventBus.getInstance().subscribe(EventType.SELECT_ELEMENT, this);
-            EventBus.getInstance().subscribe(EventType.ZOOM_IN_STATE, this);
-            EventBus.getInstance().subscribe(EventType.ZOOM_OUT_STATE, this);
-            EventBus.getInstance().subscribe(EventType.REFRESH, this);
-            EventBus.getInstance().subscribe(EventType.DRAG, this);
-            EventBus.getInstance().subscribe(EventType.CLEAR_DRAG, this);
-            EventBus.getInstance().subscribe(EventType.START_DRAG, this);
-            EventBus.getInstance().subscribe(EventType.DRAG_DEL, this);
-            EventBus.getInstance().subscribe(EventType.CLEAR_DRAG_DEL, this);
-            EventBus.getInstance().subscribe(EventType.START_DRAG_DEL, this);
-            EventBus.getInstance().subscribe(EventType.MOVE, this);
-            EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT_STATE, this);
-            EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT, this);
-            EventBus.getInstance().subscribe(EventType.DELETE, this);
-            EventBus.getInstance().subscribe(EventType.ADD_CLASS_TO_TREE_S, this);
-            EventBus.getInstance().subscribe(EventType.ADD_INTERFACE_TO_TREE_S, this);
-            EventBus.getInstance().subscribe(EventType.ADD_ENUM_TO_TREE_S, this);
-            EventBus.getInstance().subscribe(EventType.DEL_REL, this);
+        });
+        if(getCurrentDiagramPanel() != null) {
+            classyMouse = new ClassyMouse(getAffineTransform());
         }
+        else {
+            classyMouse = new ClassyMouse(new AffineTransform());
+        }
+        EventBus.getInstance().subscribe(EventType.DIAGRAM_SELECTION, this);
+        EventBus.getInstance().subscribe(EventType.DIAGRAM_DELETION, this);
+        EventBus.getInstance().subscribe(EventType.DIAGRAM_RENAME, this);
+        EventBus.getInstance().subscribe(EventType.DIAGRAM_CLOSE, this);
+        EventBus.getInstance().subscribe(EventType.DIAGRAM_LIST_DELETION, this);
+        EventBus.getInstance().subscribe(EventType.CLOSE_TABS, this);
+        EventBus.getInstance().subscribe(EventType.ADD_CLASS, this);
+        EventBus.getInstance().subscribe(EventType.ADD_INTERFACE, this);
+        EventBus.getInstance().subscribe(EventType.ADD_ENUM, this);
+        EventBus.getInstance().subscribe(EventType.ADD_METHOD, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_IN, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_OUT, this);
+        EventBus.getInstance().subscribe(EventType.ADD_GENERALIZATION, this);
+        EventBus.getInstance().subscribe(EventType.ADD_AGGREGATION, this);
+        EventBus.getInstance().subscribe(EventType.ADD_COMPOSITION, this);
+        EventBus.getInstance().subscribe(EventType.ADD_DEPENDENCY, this);
+        EventBus.getInstance().subscribe(EventType.CONTENT_STATE, this);
+        EventBus.getInstance().subscribe(EventType.SELECT_ELEMENT, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_IN_STATE, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_OUT_STATE, this);
+        EventBus.getInstance().subscribe(EventType.REFRESH, this);
+        EventBus.getInstance().subscribe(EventType.DRAG, this);
+        EventBus.getInstance().subscribe(EventType.CLEAR_DRAG, this);
+        EventBus.getInstance().subscribe(EventType.START_DRAG, this);
+        EventBus.getInstance().subscribe(EventType.DRAG_DEL, this);
+        EventBus.getInstance().subscribe(EventType.CLEAR_DRAG_DEL, this);
+        EventBus.getInstance().subscribe(EventType.START_DRAG_DEL, this);
+        EventBus.getInstance().subscribe(EventType.MOVE, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT_STATE, this);
+        EventBus.getInstance().subscribe(EventType.ZOOM_TO_FIT, this);
+        EventBus.getInstance().subscribe(EventType.DELETE, this);
+        EventBus.getInstance().subscribe(EventType.ADD_CLASS_TO_TREE_S, this);
+        EventBus.getInstance().subscribe(EventType.ADD_INTERFACE_TO_TREE_S, this);
+        EventBus.getInstance().subscribe(EventType.ADD_ENUM_TO_TREE_S, this);
+        EventBus.getInstance().subscribe(EventType.DEL_REL, this);
+    }
 
+    private void tabChanged() {
+        if(getCurrentDiagramPanel() != null)
+            EventBus.getInstance().notifySubscriber(getCurrentDiagramPanel().getDiagram(), EventType.SET_PANEL);
+        updateUndoRedoStateForActiveDiagram();
+    }
     @Override
     public void update(Object notification, Object typeOfUpdate)
     {
@@ -129,6 +136,7 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
 
         if(EventType.CLOSE_TABS.equals(typeOfUpdate))
         {
+            updateUndoRedoStateForActiveDiagram();
             this.closeAllTabs();
             return;
         }
@@ -138,6 +146,7 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
 
             if (EventType.DIAGRAM_DELETION.equals(typeOfUpdate))
             {
+                updateUndoRedoStateForActiveDiagram();
                 System.out.println("DELETE in tab");
 
                 this.openDiagrams.remove((Diagram) ((ClassyTreeItem) notification).getClassyNode());
@@ -182,6 +191,7 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
                 }
             }
             else if(EventType.DIAGRAM_SELECTION.equals(typeOfUpdate)){
+                updateUndoRedoStateForActiveDiagram();
                 Diagram selectedDiagram = (Diagram) notification;
                 if(this.openDiagrams.contains((Diagram) notification))
                 {
@@ -193,18 +203,19 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
                 DiagramPanel diagramPanel = new DiagramPanel(selectedDiagram);
                 ClassyMouse classyMouse = new ClassyMouse(diagramPanel.getAffineTransform());
 
-                // Attach the mouse listener and motion listener to the diagram panel
                 diagramPanel.addMouseListener(classyMouse);
                 diagramPanel.addMouseMotionListener(classyMouse);
                 String title = ((ClassyNode) notification).getName();
                 this.addTab(title, diagramPanel);
                 int index = this.indexOfTab(title);
                 this.getComponentAt(index).setName(((ClassyNode) notification).getUniqueId());
+                updateUndoRedoStateForActiveDiagram();
 
             }
         }
         else if(EventType.DIAGRAM_LIST_DELETION.equals(typeOfUpdate))
         {
+            updateUndoRedoStateForActiveDiagram();
             System.out.println("LIST DELETE1");
 
             if(notification instanceof List)
@@ -238,6 +249,7 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
         {
             if(EventType.DIAGRAM_CLOSE.equals(typeOfUpdate))
             {
+                updateUndoRedoStateForActiveDiagram();
                 JPanel temp = (JPanel) notification;
                 String id = temp.getName();
                 String name = "";
@@ -283,6 +295,7 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
         }
         if(EventType.DIAGRAM_RENAME.equals(typeOfUpdate))
         {
+            updateUndoRedoStateForActiveDiagram();
             System.out.println("RENAME");
             System.out.println(notification);
             String oldName = "";
@@ -614,6 +627,14 @@ public class PackageView extends CloseableTabbedPane implements ISubscriber {
             this.getCurrentDiagramPanel().getDiagram().addDiagramElement(null,element);
         }
         this.panelOutsideRefresh();
+    }
+    private void updateUndoRedoStateForActiveDiagram() {
+        if(this.getCurrentDiagramPanel() != null) {
+            Diagram currentDiagram = getCurrentDiagramPanel().getDiagram();
+            if (currentDiagram != null) {
+                currentDiagram.updateUndoRedoStateForActiveDiagram();
+            }
+        }
     }
 
 }

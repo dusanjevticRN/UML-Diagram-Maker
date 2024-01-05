@@ -1,8 +1,8 @@
-package raf.dsw.classycraft.app.gui.swing.ClassyTree.view;
+package raf.dsw.classycraft.app.gui.swing.classyTree.view;
 
 import lombok.Getter;
-import raf.dsw.classycraft.app.gui.swing.ClassyTree.controller.Editor;
-import raf.dsw.classycraft.app.gui.swing.ClassyTree.controller.Listener;
+import raf.dsw.classycraft.app.gui.swing.classyTree.controller.Editor;
+import raf.dsw.classycraft.app.gui.swing.classyTree.controller.Listener;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.ClassyTabView;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 

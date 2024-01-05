@@ -27,6 +27,12 @@ public class Klasa extends InterClass
         this.classContents = new ArrayList<>();
         this.type = "Klasa";
     }
+    public Klasa(Klasa klasa)
+    {
+        super(klasa.getParent(), klasa.getName(), klasa.getVisibility(), klasa.getPosition().getFirst(), klasa.getPosition().getSecond());
+        this.classContents = new ArrayList<>();
+        this.type = "Klasa";
+    }
 
     public void addClassContent(ClassContent classContent)
     {

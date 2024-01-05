@@ -1,7 +1,14 @@
 package raf.dsw.classycraft.app.gui.swing.state.stateImpl;
 
+import com.sun.tools.javac.Main;
+import raf.dsw.classycraft.app.classyRepository.commands.Command;
+import raf.dsw.classycraft.app.classyRepository.commands.MoveCommand;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.UmlSelectionModel;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Interfejs;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
+import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.UmlEnum;
 import raf.dsw.classycraft.app.gui.swing.state.State;
+import raf.dsw.classycraft.app.gui.swing.view.MainFrame;
 import raf.dsw.classycraft.app.gui.swing.view.tabbedPane.PackageView;
 import raf.dsw.classycraft.app.classyRepository.implementation.DiagramElement;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.InterClass;
@@ -13,6 +20,7 @@ import java.util.ArrayList;
 public class MoveElementState implements State {
     private int startX;
     private int startY;
+    private ArrayList<DiagramElement> startPositions;
 
     ArrayList<DiagramElement> elements = new ArrayList<>();
 
@@ -23,15 +31,24 @@ public class MoveElementState implements State {
 
     @Override
     public void stateMousePressed(int x, int y, PackageView packageView) {
+        startPositions = new ArrayList<>();
         this.startX = x;
         this.startY = y;
         //dodamo trenutno selektovne elem u listu
         elements.clear();
-        for(DiagramElement element : packageView.getCurrentDiagramPanel().getSelectedElements()){
-            if(elements.contains(element) || !(element instanceof InterClass)){
+        for(DiagramElement element : packageView.getCurrentDiagramPanel().getSelectedElements()) {
+            if (elements.contains(element) || !(element instanceof InterClass)) {
                 continue;
-            }
-            else {
+            } else {
+                if(element instanceof Klasa){
+                    startPositions.add(new Klasa((Klasa) element));
+                }
+                else if(element instanceof Interfejs){
+                    startPositions.add(new Interfejs((Interfejs) element));
+                }
+                else if(element instanceof UmlEnum){
+                    startPositions.add(new UmlEnum((UmlEnum) element));
+                }
                 elements.add(element);
             }
         }
@@ -57,6 +74,13 @@ public class MoveElementState implements State {
 
     @Override
     public void stateMouseReleased(int x, int y, PackageView packageView) {
+        System.out.println("move element state mouse released");
+        ArrayList<DiagramElement> movedElements = new ArrayList<>();
+        for(DiagramElement element : elements){
+            movedElements.add(element);
+        }
+        Command moveCommand = new MoveCommand(packageView.getDiagram(), movedElements, startPositions);
+        packageView.getCurrentDiagramPanel().getDiagram().getCommandManager().addCommand(moveCommand);
         packageView.clearSelectedAll();
         elements.clear();
     }
@@ -76,6 +100,5 @@ public class MoveElementState implements State {
 
     }
 
-    // The other methods remain unchanged
 }
 

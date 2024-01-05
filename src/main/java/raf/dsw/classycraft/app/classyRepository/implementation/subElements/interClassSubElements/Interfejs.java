@@ -26,6 +26,12 @@ public class Interfejs extends InterClass
         this.metods = new ArrayList<>();
         this.type = "Interfejs";
     }
+    public Interfejs(Interfejs interfejs)
+    {
+        super(interfejs.getParent(), interfejs.getName(), interfejs.getVisibility(), interfejs.getPosition().getFirst(), interfejs.getPosition().getSecond());
+        this.metods = new ArrayList<>();
+        this.type = "Interfejs";
+    }
 
     public void addClassContent(ClassContent classContent)
     {

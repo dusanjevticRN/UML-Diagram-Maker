@@ -1,6 +1,8 @@
 package raf.dsw.classycraft.app;
 
 import lombok.Getter;
+import raf.dsw.classycraft.app.classyRepository.commands.CommandManager;
+import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.core.*;
 import raf.dsw.classycraft.app.gui.swing.SwingGui;
 import raf.dsw.classycraft.app.logger.LoggerFactory;
@@ -8,9 +10,13 @@ import raf.dsw.classycraft.app.messageGenerator.MessageGeneratorClass;
 import raf.dsw.classycraft.app.serializer.JacksonSerializer;
 import raf.dsw.classycraft.app.serializer.PatternSerializer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter
 public class AppCore extends ApplicationFramework
 {
+
     private static AppCore instance;
     private AppCore() {}
     @Override

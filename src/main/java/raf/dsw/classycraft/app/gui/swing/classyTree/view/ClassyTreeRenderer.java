@@ -1,9 +1,9 @@
-package raf.dsw.classycraft.app.gui.swing.ClassyTree.view;
+package raf.dsw.classycraft.app.gui.swing.classyTree.view;
 
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Interfejs;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.Klasa;
 import raf.dsw.classycraft.app.classyRepository.implementation.subElements.interClassSubElements.UmlEnum;
-import raf.dsw.classycraft.app.gui.swing.ClassyTree.model.ClassyTreeItem;
+import raf.dsw.classycraft.app.gui.swing.classyTree.model.ClassyTreeItem;
 import raf.dsw.classycraft.app.classyRepository.implementation.Diagram;
 import raf.dsw.classycraft.app.classyRepository.implementation.Package;
 import raf.dsw.classycraft.app.classyRepository.implementation.Project;
