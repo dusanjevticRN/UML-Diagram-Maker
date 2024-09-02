@@ -8,4 +8,6 @@ In the ClassyCrafT application, users can create classes, interfaces, and enums,
 
 This entire project consists of approximately 10,000 to 12,000 lines of code, maybe slightly more, but no less.
 
+This was done in collaboration with my great colleague and friend.
+
 ![image](https://github.com/user-attachments/assets/7b647ee3-2304-449f-bfb8-06a853bab856)
